@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{befaa802-08e3-4eb2-95e7-6d62ec63f17b}</ItemsProjectGuid>
+    <ItemsRootNamespace>DirectXGame</ItemsRootNamespace>
+    <ItemsProjectName>DirectXGame.Shared</ItemsProjectName>
+    <SharedGUID>2d014abd-655d-41cc-a95c-48a00ae73565</SharedGUID>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Content\TextRenderer.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)App.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)app.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Content\ShaderStructures.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Content\TextRenderer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXGameMain.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXGameMain.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Pch.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DirectXHelper.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="$(MSBuildThisFileDirectory)Content\SamplePixelShader.hlsl">
+      <ShaderType>Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="$(MSBuildThisFileDirectory)Content\SampleVertexShader.hlsl">
+      <ShaderType>Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+</Project>
