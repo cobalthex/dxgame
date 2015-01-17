@@ -9,8 +9,8 @@ using namespace Windows::System::Threading;
 using namespace Concurrency;
 
 // Loads and initializes application assets when the application is loaded.
-DirectXGameMain::DirectXGameMain(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
-	deviceResources(deviceResources)
+DirectXGameMain::DirectXGameMain(const std::shared_ptr<DX::DeviceResources>& DeviceResources) :
+	deviceResources(DeviceResources)
 {
 	// Register to be notified if the Device is lost or recreated
 	deviceResources->RegisterDeviceNotify(this);

@@ -10,41 +10,41 @@ namespace DirectXGame
 	class Sample3DSceneRenderer
 	{
 	public:
-		Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources);
+		Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceResources>& DeviceResources);
 		void CreateDeviceDependentResources();
 		void CreateWindowSizeDependentResources();
 		void ReleaseDeviceDependentResources();
-		void Update(DX::StepTimer const& timer);
+		void Update(const DX::StepTimer& Timer);
 		void Render();
 		void StartTracking();
-		void TrackingUpdate(float positionX);
+		void TrackingUpdate(float PositionX);
 		void StopTracking();
-		bool IsTracking() { return m_tracking; }
+		bool IsTracking() { return tracking; }
 
 
 	private:
-		void Rotate(float radians);
+		void Rotate(float Radians);
 
 	private:
 		// Cached pointer to device resources.
-		std::shared_ptr<DX::DeviceResources> m_deviceResources;
+		std::shared_ptr<DX::DeviceResources> deviceResources;
 
 		// Direct3D resources for cube geometry.
-		Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_inputLayout;
-		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_vertexBuffer;
-		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_indexBuffer;
-		Microsoft::WRL::ComPtr<ID3D11VertexShader>	m_vertexShader;
-		Microsoft::WRL::ComPtr<ID3D11PixelShader>	m_pixelShader;
-		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_constantBuffer;
+		Microsoft::WRL::ComPtr<ID3D11InputLayout>	inputLayout;
+		Microsoft::WRL::ComPtr<ID3D11Buffer>		vertexBuffer;
+		Microsoft::WRL::ComPtr<ID3D11Buffer>		indexBuffer;
+		Microsoft::WRL::ComPtr<ID3D11VertexShader>	vertexShader;
+		Microsoft::WRL::ComPtr<ID3D11PixelShader>	pixelShader;
+		Microsoft::WRL::ComPtr<ID3D11Buffer>		constantBuffer;
 
 		// System resources for cube geometry.
-		ModelViewProjectionConstantBuffer	m_constantBufferData;
-		uint32	m_indexCount;
+		ModelViewProjectionConstantBuffer	constantBufferData;
+		uint32	indexCount;
 
 		// Variables used with the rendering loop.
-		bool	m_loadingComplete;
-		float	m_degreesPerSecond;
-		bool	m_tracking;
+		bool	loadingComplete;
+		float	degreesPerSecond;
+		bool	tracking;
 	};
 }
 

@@ -49,15 +49,15 @@ namespace ScreenRotation
 
 // Constructor for DeviceResources.
 DX::DeviceResources::DeviceResources() : 
-	m_screenViewport(),
-	m_d3dFeatureLevel(D3D_FEATURE_LEVEL_11_1),
-	m_d3dRenderTargetSize(),
-	m_outputSize(),
-	m_logicalSize(),
-	m_nativeOrientation(DisplayOrientations::None),
-	m_currentOrientation(DisplayOrientations::None),
-	m_dpi(-1.0f),
-	m_deviceNotify(nullptr)
+	screenViewport(),
+	d3dFeatureLevel(D3D_FEATURE_LEVEL_11_1),
+	d3dRenderTargetSize(),
+	outputSize(),
+	logicalSize(),
+	nativeOrientation(DisplayOrientations::None),
+	currentOrientation(DisplayOrientations::None),
+	dpi(-1.0f),
+	deviceNotify(nullptr)
 {
 	CreateDeviceIndependentResources();
 	CreateDeviceResources();
@@ -81,7 +81,7 @@ void DX::DeviceResources::CreateDeviceIndependentResources()
 			D2D1_FACTORY_TYPE_SINGLE_THREADED,
 			__uuidof(ID2D1Factory2),
 			&options,
-			&m_d2dFactory
+			&d2dFactory
 			)
 		);
 
@@ -90,7 +90,7 @@ void DX::DeviceResources::CreateDeviceIndependentResources()
 		DWriteCreateFactory(
 			DWRITE_FACTORY_TYPE_SHARED,
 			__uuidof(IDWriteFactory2),
-			&m_dwriteFactory
+			&dwriteFactory
 			)
 		);
 
@@ -100,7 +100,7 @@ void DX::DeviceResources::CreateDeviceIndependentResources()
 			CLSID_WICImagingFactory2,
 			nullptr,
 			CLSCTX_INPROC_SERVER,
-			IID_PPV_ARGS(&m_wicFactory)
+			IID_PPV_ARGS(&wicFactory)
 			)
 		);
 }
@@ -148,7 +148,7 @@ void DX::DeviceResources::CreateDeviceResources()
 		ARRAYSIZE(featureLevels),	// Size of the list above.
 		D3D11_SDK_VERSION,			// Always set this to D3D11_SDK_VERSION for Windows Store apps.
 		&device,					// Returns the Direct3D device created.
-		&m_d3dFeatureLevel,			// Returns feature level of device created.
+		&d3dFeatureLevel,			// Returns feature level of device created.
 		&context					// Returns the device immediate context.
 		);
 
@@ -167,7 +167,7 @@ void DX::DeviceResources::CreateDeviceResources()
 				ARRAYSIZE(featureLevels),
 				D3D11_SDK_VERSION,
 				&device,
-				&m_d3dFeatureLevel,
+				&d3dFeatureLevel,
 				&context
 				)
 			);
@@ -175,27 +175,27 @@ void DX::DeviceResources::CreateDeviceResources()
 
 	// Store pointers to the Direct3D 11.1 API device and immediate context.
 	DX::ThrowIfFailed(
-		device.As(&m_d3dDevice)
+		device.As(&d3dDevice)
 		);
 
 	DX::ThrowIfFailed(
-		context.As(&m_d3dContext)
+		context.As(&d3dContext)
 		);
 
 	// Create the Direct2D device object and a corresponding context.
 	ComPtr<IDXGIDevice3> dxgiDevice;
 	DX::ThrowIfFailed(
-		m_d3dDevice.As(&dxgiDevice)
+		d3dDevice.As(&dxgiDevice)
 		);
 
 	DX::ThrowIfFailed(
-		m_d2dFactory->CreateDevice(dxgiDevice.Get(), &m_d2dDevice)
+		d2dFactory->CreateDevice(dxgiDevice.Get(), &d2dDevice)
 		);
 
 	DX::ThrowIfFailed(
-		m_d2dDevice->CreateDeviceContext(
+		d2dDevice->CreateDeviceContext(
 			D2D1_DEVICE_CONTEXT_OPTIONS_NONE,
-			&m_d2dContext
+			&d2dContext
 			)
 		);
 }
@@ -205,23 +205,23 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 {
 #if (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
 	// Windows Phone does not support resizing the swap chain, so clear it instead of resizing.
-	m_swapChain = nullptr;
+	swapChain = nullptr;
 #endif
 	ID3D11RenderTargetView* nullViews[] = {nullptr};
-	m_d3dContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
-	m_d3dRenderTargetView = nullptr;
-	m_d2dContext->SetTarget(nullptr);
-	m_d2dTargetBitmap = nullptr;
-	m_d3dDepthStencilView = nullptr;
-	m_d3dContext->Flush();
+	d3dContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
+	d3dRenderTargetView = nullptr;
+	d2dContext->SetTarget(nullptr);
+	d2dTargetBitmap = nullptr;
+	d3dDepthStencilView = nullptr;
+	d3dContext->Flush();
 
 	// Calculate the necessary render target size in pixels.
-	m_outputSize.Width = DX::ConvertDipsToPixels(m_logicalSize.Width, m_dpi);
-	m_outputSize.Height = DX::ConvertDipsToPixels(m_logicalSize.Height, m_dpi);
+	outputSize.Width = DX::ConvertDipsToPixels(logicalSize.Width, dpi);
+	outputSize.Height = DX::ConvertDipsToPixels(logicalSize.Height, dpi);
 	
 	// Prevent zero size DirectX content from being created.
-	m_outputSize.Width = max(m_outputSize.Width, 1);
-	m_outputSize.Height = max(m_outputSize.Height, 1);
+	outputSize.Width = max(outputSize.Width, 1);
+	outputSize.Height = max(outputSize.Height, 1);
 
 	// The width and height of the swap chain must be based on the window's
 	// natively-oriented width and height. If the window is not in the native
@@ -229,16 +229,16 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 	DXGI_MODE_ROTATION displayRotation = ComputeDisplayRotation();
 
 	bool swapDimensions = displayRotation == DXGI_MODE_ROTATION_ROTATE90 || displayRotation == DXGI_MODE_ROTATION_ROTATE270;
-	m_d3dRenderTargetSize.Width = swapDimensions ? m_outputSize.Height : m_outputSize.Width;
-	m_d3dRenderTargetSize.Height = swapDimensions ? m_outputSize.Width : m_outputSize.Height;
+	d3dRenderTargetSize.Width = swapDimensions ? outputSize.Height : outputSize.Width;
+	d3dRenderTargetSize.Height = swapDimensions ? outputSize.Width : outputSize.Height;
 
-	if (m_swapChain != nullptr)
+	if (swapChain != nullptr)
 	{
 		// If the swap chain already exists, resize it.
-		HRESULT hr = m_swapChain->ResizeBuffers(
+		HRESULT hr = swapChain->ResizeBuffers(
 			2, // Double-buffered swap chain.
-			lround(m_d3dRenderTargetSize.Width),
-			lround(m_d3dRenderTargetSize.Height),
+			lround(d3dRenderTargetSize.Width),
+			lround(d3dRenderTargetSize.Height),
 			DXGI_FORMAT_B8G8R8A8_UNORM,
 			0
 			);
@@ -262,8 +262,8 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 		// Otherwise, create a new one using the same adapter as the existing Direct3D device.
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
 
-		swapChainDesc.Width = lround(m_d3dRenderTargetSize.Width); // Match the size of the window.
-		swapChainDesc.Height = lround(m_d3dRenderTargetSize.Height);
+		swapChainDesc.Width = lround(d3dRenderTargetSize.Width); // Match the size of the window.
+		swapChainDesc.Height = lround(d3dRenderTargetSize.Height);
 		swapChainDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM; // This is the most common swap chain format.
 		swapChainDesc.Stereo = false;
 		swapChainDesc.SampleDesc.Count = 1; // Don't use multi-sampling.
@@ -278,7 +278,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 		// This sequence obtains the DXGI factory that was used to create the Direct3D device above.
 		ComPtr<IDXGIDevice3> dxgiDevice;
 		DX::ThrowIfFailed(
-			m_d3dDevice.As(&dxgiDevice)
+			d3dDevice.As(&dxgiDevice)
 			);
 
 		ComPtr<IDXGIAdapter> dxgiAdapter;
@@ -293,11 +293,11 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 
 		DX::ThrowIfFailed(
 			dxgiFactory->CreateSwapChainForCoreWindow(
-			m_d3dDevice.Get(),
-			reinterpret_cast<IUnknown*>(m_window.Get()),
+			d3dDevice.Get(),
+			reinterpret_cast<IUnknown*>(window.Get()),
 			&swapChainDesc,
 			nullptr,
-			&m_swapChain
+			&swapChain
 			)
 			);
 
@@ -317,29 +317,29 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 	switch (displayRotation)
 	{
 	case DXGI_MODE_ROTATION_IDENTITY:
-		m_orientationTransform2D = Matrix3x2F::Identity();
-		m_orientationTransform3D = ScreenRotation::Rotation0;
+		orientationTransform2D = Matrix3x2F::Identity();
+		orientationTransform3D = ScreenRotation::Rotation0;
 		break;
 
 	case DXGI_MODE_ROTATION_ROTATE90:
-		m_orientationTransform2D = 
+		orientationTransform2D = 
 			Matrix3x2F::Rotation(90.0f) *
-			Matrix3x2F::Translation(m_logicalSize.Height, 0.0f);
-		m_orientationTransform3D = ScreenRotation::Rotation270;
+			Matrix3x2F::Translation(logicalSize.Height, 0.0f);
+		orientationTransform3D = ScreenRotation::Rotation270;
 		break;
 
 	case DXGI_MODE_ROTATION_ROTATE180:
-		m_orientationTransform2D = 
+		orientationTransform2D = 
 			Matrix3x2F::Rotation(180.0f) *
-			Matrix3x2F::Translation(m_logicalSize.Width, m_logicalSize.Height);
-		m_orientationTransform3D = ScreenRotation::Rotation180;
+			Matrix3x2F::Translation(logicalSize.Width, logicalSize.Height);
+		orientationTransform3D = ScreenRotation::Rotation180;
 		break;
 
 	case DXGI_MODE_ROTATION_ROTATE270:
-		m_orientationTransform2D = 
+		orientationTransform2D = 
 			Matrix3x2F::Rotation(270.0f) *
-			Matrix3x2F::Translation(0.0f, m_logicalSize.Width);
-		m_orientationTransform3D = ScreenRotation::Rotation90;
+			Matrix3x2F::Translation(0.0f, logicalSize.Width);
+		orientationTransform3D = ScreenRotation::Rotation90;
 		break;
 
 	default:
@@ -347,28 +347,28 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 	}
 
 	DX::ThrowIfFailed(
-		m_swapChain->SetRotation(displayRotation)
+		swapChain->SetRotation(displayRotation)
 		);
 
 	// Create a render target view of the swap chain back buffer.
 	ComPtr<ID3D11Texture2D> backBuffer;
 	DX::ThrowIfFailed(
-		m_swapChain->GetBuffer(0, IID_PPV_ARGS(&backBuffer))
+		swapChain->GetBuffer(0, IID_PPV_ARGS(&backBuffer))
 		);
 
 	DX::ThrowIfFailed(
-		m_d3dDevice->CreateRenderTargetView(
+		d3dDevice->CreateRenderTargetView(
 			backBuffer.Get(),
 			nullptr,
-			&m_d3dRenderTargetView
+			&d3dRenderTargetView
 			)
 		);
 
 	// Create a depth stencil view for use with 3D rendering if needed.
 	CD3D11_TEXTURE2D_DESC depthStencilDesc(
 		DXGI_FORMAT_D24_UNORM_S8_UINT, 
-		lround(m_d3dRenderTargetSize.Width),
-		lround(m_d3dRenderTargetSize.Height),
+		lround(d3dRenderTargetSize.Width),
+		lround(d3dRenderTargetSize.Height),
 		1, // This depth stencil view has only one texture.
 		1, // Use a single mipmap level.
 		D3D11_BIND_DEPTH_STENCIL
@@ -376,7 +376,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 
 	ComPtr<ID3D11Texture2D> depthStencil;
 	DX::ThrowIfFailed(
-		m_d3dDevice->CreateTexture2D(
+		d3dDevice->CreateTexture2D(
 			&depthStencilDesc,
 			nullptr,
 			&depthStencil
@@ -385,22 +385,22 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 
 	CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
 	DX::ThrowIfFailed(
-		m_d3dDevice->CreateDepthStencilView(
+		d3dDevice->CreateDepthStencilView(
 			depthStencil.Get(),
 			&depthStencilViewDesc,
-			&m_d3dDepthStencilView
+			&d3dDepthStencilView
 			)
 		);
 	
 	// Set the 3D rendering viewport to target the entire window.
-	m_screenViewport = CD3D11_VIEWPORT(
+	screenViewport = CD3D11_VIEWPORT(
 		0.0f,
 		0.0f,
-		m_d3dRenderTargetSize.Width,
-		m_d3dRenderTargetSize.Height
+		d3dRenderTargetSize.Width,
+		d3dRenderTargetSize.Height
 		);
 
-	m_d3dContext->RSSetViewports(1, &m_screenViewport);
+	d3dContext->RSSetViewports(1, &screenViewport);
 
 	// Create a Direct2D target bitmap associated with the
 	// swap chain back buffer and set it as the current target.
@@ -408,75 +408,75 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 		D2D1::BitmapProperties1(
 			D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
 			D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
-			m_dpi,
-			m_dpi
+			dpi,
+			dpi
 			);
 
 	ComPtr<IDXGISurface2> dxgiBackBuffer;
 	DX::ThrowIfFailed(
-		m_swapChain->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer))
+		swapChain->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer))
 		);
 
 	DX::ThrowIfFailed(
-		m_d2dContext->CreateBitmapFromDxgiSurface(
+		d2dContext->CreateBitmapFromDxgiSurface(
 			dxgiBackBuffer.Get(),
 			&bitmapProperties,
-			&m_d2dTargetBitmap
+			&d2dTargetBitmap
 			)
 		);
 
-	m_d2dContext->SetTarget(m_d2dTargetBitmap.Get());
+	d2dContext->SetTarget(d2dTargetBitmap.Get());
 
 	// Grayscale text anti-aliasing is recommended for all Windows Store apps.
-	m_d2dContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
+	d2dContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
 }
 
 // This method is called when the CoreWindow is created (or re-created).
-void DX::DeviceResources::SetWindow(CoreWindow^ window)
+void DX::DeviceResources::SetWindow(CoreWindow^ Window)
 {
 	DisplayInformation^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
 
-	m_window = window;
-	m_logicalSize = Windows::Foundation::Size(window->Bounds.Width, window->Bounds.Height);
-	m_nativeOrientation = currentDisplayInformation->NativeOrientation;
-	m_currentOrientation = currentDisplayInformation->CurrentOrientation;
-	m_dpi = currentDisplayInformation->LogicalDpi;
-	m_d2dContext->SetDpi(m_dpi, m_dpi);
+	window = Window;
+	logicalSize = Windows::Foundation::Size(window->Bounds.Width, window->Bounds.Height);
+	nativeOrientation = currentDisplayInformation->NativeOrientation;
+	currentOrientation = currentDisplayInformation->CurrentOrientation;
+	dpi = currentDisplayInformation->LogicalDpi;
+	d2dContext->SetDpi(dpi, dpi);
 
 	CreateWindowSizeDependentResources();
 }
 
 // This method is called in the event handler for the SizeChanged event.
-void DX::DeviceResources::SetLogicalSize(Windows::Foundation::Size logicalSize)
+void DX::DeviceResources::SetLogicalSize(Windows::Foundation::Size LogicalSize)
 {
-	if (m_logicalSize != logicalSize)
+	if (logicalSize != LogicalSize)
 	{
-		m_logicalSize = logicalSize;
+		logicalSize = LogicalSize;
 		CreateWindowSizeDependentResources();
 	}
 }
 
 // This method is called in the event handler for the DpiChanged event.
-void DX::DeviceResources::SetDpi(float dpi)
+void DX::DeviceResources::SetDpi(float Dpi)
 {
-	if (dpi != m_dpi)
+	if (dpi != Dpi)
 	{
-		m_dpi = dpi;
+		dpi = Dpi;
 
 		// When the display DPI changes, the logical size of the window (measured in Dips) also changes and needs to be updated.
-		m_logicalSize = Windows::Foundation::Size(m_window->Bounds.Width, m_window->Bounds.Height);
+		logicalSize = Windows::Foundation::Size(window->Bounds.Width, window->Bounds.Height);
 
-		m_d2dContext->SetDpi(m_dpi, m_dpi);
+		d2dContext->SetDpi(dpi, dpi);
 		CreateWindowSizeDependentResources();
 	}
 }
 
 // This method is called in the event handler for the OrientationChanged event.
-void DX::DeviceResources::SetCurrentOrientation(DisplayOrientations currentOrientation)
+void DX::DeviceResources::SetCurrentOrientation(DisplayOrientations CurrentOrientation)
 {
-	if (m_currentOrientation != currentOrientation)
+	if (currentOrientation != CurrentOrientation)
 	{
-		m_currentOrientation = currentOrientation;
+		currentOrientation = CurrentOrientation;
 		CreateWindowSizeDependentResources();
 	}
 }
@@ -490,7 +490,7 @@ void DX::DeviceResources::ValidateDevice()
 	// First, get the information for the default adapter from when the device was created.
 
 	ComPtr<IDXGIDevice3> dxgiDevice;
-	DX::ThrowIfFailed(m_d3dDevice.As(&dxgiDevice));
+	DX::ThrowIfFailed(d3dDevice.As(&dxgiDevice));
 
 	ComPtr<IDXGIAdapter> deviceAdapter;
 	DX::ThrowIfFailed(dxgiDevice->GetAdapter(&deviceAdapter));
@@ -520,7 +520,7 @@ void DX::DeviceResources::ValidateDevice()
 
 	if (previousDesc.AdapterLuid.LowPart != currentDesc.AdapterLuid.LowPart ||
 		previousDesc.AdapterLuid.HighPart != currentDesc.AdapterLuid.HighPart ||
-		FAILED(m_d3dDevice->GetDeviceRemovedReason()))
+		FAILED(d3dDevice->GetDeviceRemovedReason()))
 	{
 		// Release references to resources related to the old device.
 		dxgiDevice = nullptr;
@@ -536,27 +536,27 @@ void DX::DeviceResources::ValidateDevice()
 // Recreate all device resources and set them back to the current state.
 void DX::DeviceResources::HandleDeviceLost()
 {
-	m_swapChain = nullptr;
+	swapChain = nullptr;
 
-	if (m_deviceNotify != nullptr)
+	if (deviceNotify != nullptr)
 	{
-		m_deviceNotify->OnDeviceLost();
+		deviceNotify->OnDeviceLost();
 	}
 
 	CreateDeviceResources();
-	m_d2dContext->SetDpi(m_dpi, m_dpi);
+	d2dContext->SetDpi(dpi, dpi);
 	CreateWindowSizeDependentResources();
 
-	if (m_deviceNotify != nullptr)
+	if (deviceNotify != nullptr)
 	{
-		m_deviceNotify->OnDeviceRestored();
+		deviceNotify->OnDeviceRestored();
 	}
 }
 
 // Register our DeviceNotify to be informed on device lost and creation.
-void DX::DeviceResources::RegisterDeviceNotify(DX::IDeviceNotify* deviceNotify)
+void DX::DeviceResources::RegisterDeviceNotify(DX::IDeviceNotify* DeviceNotify)
 {
-	m_deviceNotify = deviceNotify;
+	deviceNotify = DeviceNotify;
 }
 
 // Call this method when the app suspends. It provides a hint to the driver that the app 
@@ -564,7 +564,7 @@ void DX::DeviceResources::RegisterDeviceNotify(DX::IDeviceNotify* deviceNotify)
 void DX::DeviceResources::Trim()
 {
 	ComPtr<IDXGIDevice3> dxgiDevice;
-	m_d3dDevice.As(&dxgiDevice);
+	d3dDevice.As(&dxgiDevice);
 
 	dxgiDevice->Trim();
 }
@@ -575,15 +575,15 @@ void DX::DeviceResources::Present()
 	// The first argument instructs DXGI to block until VSync, putting the application
 	// to sleep until the next VSync. This ensures we don't waste any cycles rendering
 	// frames that will never be displayed to the screen.
-	HRESULT hr = m_swapChain->Present(1, 0);
+	HRESULT hr = swapChain->Present(1, 0);
 
 	// Discard the contents of the render target.
 	// This is a valid operation only when the existing contents will be entirely
 	// overwritten. If dirty or scroll rects are used, this call should be removed.
-	m_d3dContext->DiscardView(m_d3dRenderTargetView.Get());
+	d3dContext->DiscardView(d3dRenderTargetView.Get());
 
 	// Discard the contents of the depth stencil.
-	m_d3dContext->DiscardView(m_d3dDepthStencilView.Get());
+	d3dContext->DiscardView(d3dDepthStencilView.Get());
 
 	// If the device was removed either by a disconnection or a driver upgrade, we 
 	// must recreate all device resources.
@@ -605,10 +605,10 @@ DXGI_MODE_ROTATION DX::DeviceResources::ComputeDisplayRotation()
 
 	// Note: NativeOrientation can only be Landscape or Portrait even though
 	// the DisplayOrientations enum has other values.
-	switch (m_nativeOrientation)
+	switch (nativeOrientation)
 	{
 	case DisplayOrientations::Landscape:
-		switch (m_currentOrientation)
+		switch (currentOrientation)
 		{
 		case DisplayOrientations::Landscape:
 			rotation = DXGI_MODE_ROTATION_IDENTITY;
@@ -629,7 +629,7 @@ DXGI_MODE_ROTATION DX::DeviceResources::ComputeDisplayRotation()
 		break;
 
 	case DisplayOrientations::Portrait:
-		switch (m_currentOrientation)
+		switch (currentOrientation)
 		{
 		case DisplayOrientations::Landscape:
 			rotation = DXGI_MODE_ROTATION_ROTATE90;

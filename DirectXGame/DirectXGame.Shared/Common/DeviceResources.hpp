@@ -14,38 +14,38 @@ namespace DX
 	{
 	public:
 		DeviceResources();
-		void SetWindow(Windows::UI::Core::CoreWindow^ window);
-		void SetLogicalSize(Windows::Foundation::Size logicalSize);
+		void SetWindow(Windows::UI::Core::CoreWindow^ Window);
+		void SetLogicalSize(Windows::Foundation::Size LogicalSize);
 		void SetCurrentOrientation(Windows::Graphics::Display::DisplayOrientations currentOrientation);
-		void SetDpi(float dpi);
+		void SetDpi(float Dpi = 0); //DPI of 0 uses system DPI
 		void ValidateDevice();
 		void HandleDeviceLost();
-		void RegisterDeviceNotify(IDeviceNotify* deviceNotify);
+		void RegisterDeviceNotify(IDeviceNotify* DeviceNotify);
 		void Trim();
 		void Present();
 
 		// Device Accessors.
-		Windows::Foundation::Size GetOutputSize() const					{ return m_outputSize; }
-		Windows::Foundation::Size GetLogicalSize() const				{ return m_logicalSize; }
+		Windows::Foundation::Size GetOutputSize() const					{ return outputSize; }
+		Windows::Foundation::Size GetLogicalSize() const				{ return logicalSize; }
 
 		// D3D Accessors.
-		ID3D11Device2*			GetD3DDevice() const					{ return m_d3dDevice.Get(); }
-		ID3D11DeviceContext2*	GetD3DDeviceContext() const				{ return m_d3dContext.Get(); }
-		IDXGISwapChain1*		GetSwapChain() const					{ return m_swapChain.Get(); }
-		D3D_FEATURE_LEVEL		GetDeviceFeatureLevel() const			{ return m_d3dFeatureLevel; }
-		ID3D11RenderTargetView*	GetBackBufferRenderTargetView() const	{ return m_d3dRenderTargetView.Get(); }
-		ID3D11DepthStencilView* GetDepthStencilView() const				{ return m_d3dDepthStencilView.Get(); }
-		D3D11_VIEWPORT			GetScreenViewport() const				{ return m_screenViewport; }
-		DirectX::XMFLOAT4X4		GetOrientationTransform3D() const		{ return m_orientationTransform3D; }
+		ID3D11Device2*			GetD3DDevice() const					{ return d3dDevice.Get(); }
+		ID3D11DeviceContext2*	GetD3DDeviceContext() const				{ return d3dContext.Get(); }
+		IDXGISwapChain1*		GetSwapChain() const					{ return swapChain.Get(); }
+		D3D_FEATURE_LEVEL		GetDeviceFeatureLevel() const			{ return d3dFeatureLevel; }
+		ID3D11RenderTargetView*	GetBackBufferRenderTargetView() const	{ return d3dRenderTargetView.Get(); }
+		ID3D11DepthStencilView* GetDepthStencilView() const				{ return d3dDepthStencilView.Get(); }
+		D3D11_VIEWPORT			GetScreenViewport() const				{ return screenViewport; }
+		DirectX::XMFLOAT4X4		GetOrientationTransform3D() const		{ return orientationTransform3D; }
 
 		// D2D Accessors.
-		ID2D1Factory2*			GetD2DFactory() const					{ return m_d2dFactory.Get(); }
-		ID2D1Device1*			GetD2DDevice() const					{ return m_d2dDevice.Get(); }
-		ID2D1DeviceContext1*	GetD2DDeviceContext() const				{ return m_d2dContext.Get(); }
-		ID2D1Bitmap1*			GetD2DTargetBitmap() const				{ return m_d2dTargetBitmap.Get(); }
-		IDWriteFactory2*		GetDWriteFactory() const				{ return m_dwriteFactory.Get();	 }
-		IWICImagingFactory2*	GetWicImagingFactory() const			{ return m_wicFactory.Get(); }
-		D2D1::Matrix3x2F		GetOrientationTransform2D() const		{ return m_orientationTransform2D; }
+		ID2D1Factory2*			GetD2DFactory() const					{ return d2dFactory.Get(); }
+		ID2D1Device1*			GetD2DDevice() const					{ return d2dDevice.Get(); }
+		ID2D1DeviceContext1*	GetD2DDeviceContext() const				{ return d2dContext.Get(); }
+		ID2D1Bitmap1*			GetD2DTargetBitmap() const				{ return d2dTargetBitmap.Get(); }
+		IDWriteFactory2*		GetDWriteFactory() const				{ return dwriteFactory.Get();	 }
+		IWICImagingFactory2*	GetWicImagingFactory() const			{ return wicFactory.Get(); }
+		D2D1::Matrix3x2F		GetOrientationTransform2D() const		{ return orientationTransform2D; }
 
 	private:
 		void CreateDeviceIndependentResources();
@@ -54,42 +54,42 @@ namespace DX
 		DXGI_MODE_ROTATION ComputeDisplayRotation();
 
 		// Direct3D objects.
-		Microsoft::WRL::ComPtr<ID3D11Device2>			m_d3dDevice;
-		Microsoft::WRL::ComPtr<ID3D11DeviceContext2>	m_d3dContext;
-		Microsoft::WRL::ComPtr<IDXGISwapChain1>			m_swapChain;
+		Microsoft::WRL::ComPtr<ID3D11Device2>			d3dDevice;
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext2>	d3dContext;
+		Microsoft::WRL::ComPtr<IDXGISwapChain1>			swapChain;
 
 		// Direct3D rendering objects. Required for 3D.
-		Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	m_d3dRenderTargetView;
-		Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_d3dDepthStencilView;
-		D3D11_VIEWPORT									m_screenViewport;
+		Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	d3dRenderTargetView;
+		Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	d3dDepthStencilView;
+		D3D11_VIEWPORT									screenViewport;
 
 		// Direct2D drawing components.
-		Microsoft::WRL::ComPtr<ID2D1Factory2>		m_d2dFactory;
-		Microsoft::WRL::ComPtr<ID2D1Device1>		m_d2dDevice;
-		Microsoft::WRL::ComPtr<ID2D1DeviceContext1>	m_d2dContext;
-		Microsoft::WRL::ComPtr<ID2D1Bitmap1>		m_d2dTargetBitmap;
+		Microsoft::WRL::ComPtr<ID2D1Factory2>		d2dFactory;
+		Microsoft::WRL::ComPtr<ID2D1Device1>		d2dDevice;
+		Microsoft::WRL::ComPtr<ID2D1DeviceContext1>	d2dContext;
+		Microsoft::WRL::ComPtr<ID2D1Bitmap1>		d2dTargetBitmap;
 
 		// DirectWrite drawing components.
-		Microsoft::WRL::ComPtr<IDWriteFactory2>		m_dwriteFactory;
-		Microsoft::WRL::ComPtr<IWICImagingFactory2>	m_wicFactory;
+		Microsoft::WRL::ComPtr<IDWriteFactory2>		dwriteFactory;
+		Microsoft::WRL::ComPtr<IWICImagingFactory2>	wicFactory;
 
 		// Cached reference to the Window.
-		Platform::Agile<Windows::UI::Core::CoreWindow> m_window;
+		Platform::Agile<Windows::UI::Core::CoreWindow> window;
 
 		// Cached device properties.
-		D3D_FEATURE_LEVEL								m_d3dFeatureLevel;
-		Windows::Foundation::Size						m_d3dRenderTargetSize;
-		Windows::Foundation::Size						m_outputSize;
-		Windows::Foundation::Size						m_logicalSize;
-		Windows::Graphics::Display::DisplayOrientations	m_nativeOrientation;
-		Windows::Graphics::Display::DisplayOrientations	m_currentOrientation;
-		float											m_dpi;
+		D3D_FEATURE_LEVEL								d3dFeatureLevel;
+		Windows::Foundation::Size						d3dRenderTargetSize;
+		Windows::Foundation::Size						outputSize;
+		Windows::Foundation::Size						logicalSize;
+		Windows::Graphics::Display::DisplayOrientations	nativeOrientation;
+		Windows::Graphics::Display::DisplayOrientations	currentOrientation;
+		float											dpi;
 
 		// Transforms used for display orientation.
-		D2D1::Matrix3x2F	m_orientationTransform2D;
-		DirectX::XMFLOAT4X4	m_orientationTransform3D;
+		D2D1::Matrix3x2F	orientationTransform2D;
+		DirectX::XMFLOAT4X4	orientationTransform3D;
 
 		// The IDeviceNotify can be held directly as it owns the DeviceResources.
-		IDeviceNotify* m_deviceNotify;
+		IDeviceNotify* deviceNotify;
 	};
 }

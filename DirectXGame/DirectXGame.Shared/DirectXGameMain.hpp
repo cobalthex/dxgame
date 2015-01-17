@@ -12,7 +12,7 @@ namespace DirectXGame
 	class DirectXGameMain : public DX::IDeviceNotify
 	{
 	public:
-		DirectXGameMain(const std::shared_ptr<DX::DeviceResources>& deviceResources);
+		DirectXGameMain(const std::shared_ptr<DX::DeviceResources>& DeviceResources);
 		~DirectXGameMain();
 		void CreateWindowSizeDependentResources();
 		void Update();

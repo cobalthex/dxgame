@@ -30,17 +30,17 @@ IFrameworkView^ Direct3DApplicationSource::CreateView()
 }
 
 App::App() :
-	m_windowClosed(false),
-	m_windowVisible(true)
+	windowClosed(false),
+	windowVisible(true)
 {
 }
 
 // The first method called when the IFrameworkView is being created.
-void App::Initialize(CoreApplicationView^ applicationView)
+void App::Initialize(CoreApplicationView^ ApplicationView)
 {
 	// Register event handlers for app lifecycle. This example includes Activated, so that we
 	// can make the CoreWindow active and start rendering on the window.
-	applicationView->Activated +=
+	ApplicationView->Activated +=
 		ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &App::OnActivated);
 
 	CoreApplication::Suspending +=
@@ -51,16 +51,16 @@ void App::Initialize(CoreApplicationView^ applicationView)
 
 	// At this point we have access to the device. 
 	// We can create the device-dependent resources.
-	m_deviceResources = std::make_shared<DX::DeviceResources>();
+	deviceResources = std::make_shared<DX::DeviceResources>();
 }
 
 // Called when the CoreWindow object is created (or re-created).
-void App::SetWindow(CoreWindow^ window)
+void App::SetWindow(CoreWindow^ Window)
 {
-	window->VisibilityChanged +=
+	Window->VisibilityChanged +=
 		ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &App::OnVisibilityChanged);
 
-	window->Closed += 
+	Window->Closed += 
 		ref new TypedEventHandler<CoreWindow^, CoreWindowEventArgs^>(this, &App::OnWindowClosed);
 
 	DisplayInformation^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
@@ -69,7 +69,7 @@ void App::SetWindow(CoreWindow^ window)
 		ref new TypedEventHandler<DisplayInformation^, Object^>(this, &App::OnDisplayContentsInvalidated);
 
 #if !(WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
-	window->SizeChanged +=
+	Window->SizeChanged +=
 		ref new TypedEventHandler<CoreWindow^, WindowSizeChangedEventArgs^>(this, &App::OnWindowSizeChanged);
 
 	currentDisplayInformation->DpiChanged +=
@@ -85,31 +85,29 @@ void App::SetWindow(CoreWindow^ window)
 	pointerVisualizationSettings->IsBarrelButtonFeedbackEnabled = false;
 #endif
 
-	m_deviceResources->SetWindow(window);
+	deviceResources->SetWindow(Window);
 }
 
 // Initializes scene resources, or loads a previously saved app state.
-void App::Load(Platform::String^ entryPoint)
+void App::Load(Platform::String^ EntryPoint)
 {
-	if (m_main == nullptr)
-	{
-		m_main = std::unique_ptr<DirectXGameMain>(new DirectXGameMain(m_deviceResources));
-	}
+	if (main == nullptr)
+		main = std::unique_ptr<DirectXGameMain>(new DirectXGameMain(deviceResources));
 }
 
 // This method is called after the window becomes active.
 void App::Run()
 {
-	while (!m_windowClosed)
+	while (!windowClosed)
 	{
-		if (m_windowVisible)
+		if (windowVisible)
 		{
 			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
-			m_main->Update();
+			main->Update();
 
-			if (m_main->Render())
-				m_deviceResources->Present();
+			if (main->Render())
+				deviceResources->Present();
 		}
 		else
 			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
@@ -125,23 +123,23 @@ void App::Uninitialize()
 
 // Application lifecycle event handlers.
 
-void App::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
+void App::OnActivated(CoreApplicationView^ ApplicationView, IActivatedEventArgs^ Args)
 {
 	// Run() won't start until the CoreWindow is activated.
 	CoreWindow::GetForCurrentThread()->Activate();
 }
 
-void App::OnSuspending(Platform::Object^ sender, SuspendingEventArgs^ args)
+void App::OnSuspending(Platform::Object^ Sender, SuspendingEventArgs^ Args)
 {
 	// Save app state asynchronously after requesting a deferral. Holding a deferral
 	// indicates that the application is busy performing suspending operations. Be
 	// aware that a deferral may not be held indefinitely. After about five seconds,
 	// the app will be forced to exit.
-	SuspendingDeferral^ deferral = args->SuspendingOperation->GetDeferral();
+	SuspendingDeferral^ deferral = Args->SuspendingOperation->GetDeferral();
 
 	create_task([this, deferral]()
 	{
-        m_deviceResources->Trim();
+        deviceResources->Trim();
 
 		// Insert your code here.
 
@@ -149,7 +147,7 @@ void App::OnSuspending(Platform::Object^ sender, SuspendingEventArgs^ args)
 	});
 }
 
-void App::OnResuming(Platform::Object^ sender, Platform::Object^ args)
+void App::OnResuming(Platform::Object^ Sender, Platform::Object^ Args)
 {
 	// Restore any data or state that was unloaded on suspend. By default, data
 	// and state are persisted when resuming from suspend. Note that this event
@@ -160,42 +158,42 @@ void App::OnResuming(Platform::Object^ sender, Platform::Object^ args)
 
 // Window event handlers.
 
-void App::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
+void App::OnVisibilityChanged(CoreWindow^ Sender, VisibilityChangedEventArgs^ Args)
 {
-	m_windowVisible = args->Visible;
+	windowVisible = Args->Visible;
 }
 
-void App::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
+void App::OnWindowClosed(CoreWindow^ Sender, CoreWindowEventArgs^ Args)
 {
-	m_windowClosed = true;
+	windowClosed = true;
 }
 
 #if !(WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
-void App::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
+void App::OnWindowSizeChanged(CoreWindow^ Sender, WindowSizeChangedEventArgs^ Args)
 {
-	m_deviceResources->SetLogicalSize(Size(sender->Bounds.Width, sender->Bounds.Height));
-	m_main->CreateWindowSizeDependentResources();
+	deviceResources->SetLogicalSize(Size(Sender->Bounds.Width, Sender->Bounds.Height));
+	main->CreateWindowSizeDependentResources();
 }
 #endif
 
 // DisplayInformation event handlers.
 
-void App::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
+void App::OnDisplayContentsInvalidated(DisplayInformation^ Sender, Object^ Args)
 {
-	m_deviceResources->ValidateDevice();
+	deviceResources->ValidateDevice();
 }
 
 
 #if !(WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
-void App::OnDpiChanged(DisplayInformation^ sender, Object^ args)
+void App::OnDpiChanged(DisplayInformation^ Sender, Object^ Args)
 {
-	m_deviceResources->SetDpi(sender->LogicalDpi);
-	m_main->CreateWindowSizeDependentResources();
+	deviceResources->SetDpi(Sender->LogicalDpi);
+	main->CreateWindowSizeDependentResources();
 }
 
-void App::OnOrientationChanged(DisplayInformation^ sender, Object^ args)
+void App::OnOrientationChanged(DisplayInformation^ Sender, Object^ Args)
 {
-	m_deviceResources->SetCurrentOrientation(sender->CurrentOrientation);
-	m_main->CreateWindowSizeDependentResources();
+	deviceResources->SetCurrentOrientation(Sender->CurrentOrientation);
+	main->CreateWindowSizeDependentResources();
 }
 #endif

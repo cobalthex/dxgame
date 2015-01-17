@@ -6,15 +6,15 @@
 using namespace DirectXGame;
 
 // Initializes D2D resources used for text rendering.
-SampleFpsTextRenderer::SampleFpsTextRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources) : 
-	m_text(L""),
-	m_deviceResources(deviceResources)
+SampleFpsTextRenderer::SampleFpsTextRenderer(const std::shared_ptr<DX::DeviceResources>& DeviceResources) : 
+	text(L""),
+	deviceResources(DeviceResources)
 {
-	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
+	ZeroMemory(&textMetrics, sizeof(DWRITE_TEXT_METRICS));
 
 	// Create device independent resources
 	DX::ThrowIfFailed(
-		m_deviceResources->GetDWriteFactory()->CreateTextFormat(
+		deviceResources->GetDWriteFactory()->CreateTextFormat(
 			L"Segoe UI",
 			nullptr,
 			DWRITE_FONT_WEIGHT_LIGHT,
@@ -22,70 +22,70 @@ SampleFpsTextRenderer::SampleFpsTextRenderer(const std::shared_ptr<DX::DeviceRes
 			DWRITE_FONT_STRETCH_NORMAL,
 			32.0f,
 			L"en-US",
-			&m_textFormat
+			&textFormat
 			)
 		);
 
 	DX::ThrowIfFailed(
-		m_textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR)
+		textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR)
 		);
 
 	DX::ThrowIfFailed(
-		m_deviceResources->GetD2DFactory()->CreateDrawingStateBlock(&m_stateBlock)
+		deviceResources->GetD2DFactory()->CreateDrawingStateBlock(&stateBlock)
 		);
 
 	CreateDeviceDependentResources();
 }
 
 // Updates the text to be displayed.
-void SampleFpsTextRenderer::Update(DX::StepTimer const& timer)
+void SampleFpsTextRenderer::Update(const DX::StepTimer& Timer)
 {
 	// Update display text.
-	uint32 fps = timer.GetFramesPerSecond();
+	uint32 fps = Timer.GetFramesPerSecond();
 
-	m_text = (fps > 0) ? std::to_wstring(fps) + L" FPS" : L" - FPS";
+	text = (fps > 0) ? std::to_wstring(fps) + L" FPS" : L" - FPS";
 
 	DX::ThrowIfFailed(
-		m_deviceResources->GetDWriteFactory()->CreateTextLayout(
-			m_text.c_str(),
-			(uint32) m_text.length(),
-			m_textFormat.Get(),
+		deviceResources->GetDWriteFactory()->CreateTextLayout(
+			text.c_str(),
+			(uint32) text.length(),
+			textFormat.Get(),
 			240.0f, // Max width of the input text.
 			50.0f, // Max height of the input text.
-			&m_textLayout
+			&textLayout
 			)
 		);
 
 	DX::ThrowIfFailed(
-		m_textLayout->GetMetrics(&m_textMetrics)
+		textLayout->GetMetrics(&textMetrics)
 		);
 }
 
 // Renders a frame to the screen.
 void SampleFpsTextRenderer::Render()
 {
-	ID2D1DeviceContext* context = m_deviceResources->GetD2DDeviceContext();
-	Windows::Foundation::Size logicalSize = m_deviceResources->GetLogicalSize();
+	ID2D1DeviceContext* context = deviceResources->GetD2DDeviceContext();
+	Windows::Foundation::Size logicalSize = deviceResources->GetLogicalSize();
 
-	context->SaveDrawingState(m_stateBlock.Get());
+	context->SaveDrawingState(stateBlock.Get());
 	context->BeginDraw();
 
 	// Position on the bottom right corner
 	D2D1::Matrix3x2F screenTranslation = D2D1::Matrix3x2F::Translation(
-		logicalSize.Width - m_textMetrics.layoutWidth,
-		logicalSize.Height - m_textMetrics.height
+		logicalSize.Width - textMetrics.layoutWidth,
+		logicalSize.Height - textMetrics.height
 		);
 
-	context->SetTransform(screenTranslation * m_deviceResources->GetOrientationTransform2D());
+	context->SetTransform(screenTranslation * deviceResources->GetOrientationTransform2D());
 
 	DX::ThrowIfFailed(
-		m_textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING)
+		textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING)
 		);
 
 	context->DrawTextLayout(
 		D2D1::Point2F(0.f, 0.f),
-		m_textLayout.Get(),
-		m_whiteBrush.Get()
+		textLayout.Get(),
+		whiteBrush.Get()
 		);
 
 	// Ignore D2DERR_RECREATE_TARGET here. This error indicates that the device
@@ -96,16 +96,16 @@ void SampleFpsTextRenderer::Render()
 		DX::ThrowIfFailed(hr);
 	}
 
-	context->RestoreDrawingState(m_stateBlock.Get());
+	context->RestoreDrawingState(stateBlock.Get());
 }
 
 void SampleFpsTextRenderer::CreateDeviceDependentResources()
 {
 	DX::ThrowIfFailed(
-		m_deviceResources->GetD2DDeviceContext()->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &m_whiteBrush)
+		deviceResources->GetD2DDeviceContext()->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &whiteBrush)
 		);
 }
 void SampleFpsTextRenderer::ReleaseDeviceDependentResources()
 {
-	m_whiteBrush.Reset();
+	whiteBrush.Reset();
 }
