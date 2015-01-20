@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "Common\StepTimer.hpp"
-#include "Common\DeviceResources.hpp"
-#include "Content\Sample3DSceneRenderer.hpp"
-#include "Content\SampleFpsTextRenderer.hpp"
-#include "Content\TextRenderer.hpp"
+#include "Common/StepTimer.hpp"
+#include "Common/DeviceResources.hpp"
+#include "Game/Sample3DSceneRenderer.hpp"
+#include "Graphics/Text/SampleFpsTextRenderer.hpp"
+#include "Graphics/Text/TextRenderer.hpp"
 
 // Renders Direct2D and 3D content on the screen.
 namespace DirectXGame
@@ -33,7 +33,7 @@ namespace DirectXGame
 		TextLayoutParams tlParams;
 		D2DBrush brush;
 
-		// Rendering loop timer.
+		// Rendering loop timer
 		DX::StepTimer timer;
 	};
 }

@@ -41,14 +41,14 @@ SampleFpsTextRenderer::SampleFpsTextRenderer(const std::shared_ptr<DX::DeviceRes
 void SampleFpsTextRenderer::Update(const DX::StepTimer& Timer)
 {
 	// Update display text.
-	uint32 fps = Timer.GetFramesPerSecond();
+	uint32_t fps = Timer.GetFramesPerSecond();
 
 	text = (fps > 0) ? std::to_wstring(fps) + L" FPS" : L" - FPS";
 
 	DX::ThrowIfFailed(
 		deviceResources->GetDWriteFactory()->CreateTextLayout(
 			text.c_str(),
-			(uint32) text.length(),
+			(uint32_t) text.length(),
 			textFormat.Get(),
 			240.0f, // Max width of the input text.
 			50.0f, // Max height of the input text.

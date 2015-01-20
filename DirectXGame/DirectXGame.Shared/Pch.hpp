@@ -20,5 +20,13 @@
 
 #include <string>
 #include <vector>
+#include <queue>
 #include <map>
 #include <memory>
+#include <iostream>
+#include <fstream>
+#include <mutex>
+#include <condition_variable>
+
+//Convenience
+using Microsoft::WRL::ComPtr;

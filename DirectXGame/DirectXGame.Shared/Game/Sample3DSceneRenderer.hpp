@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "..\Common\DeviceResources.hpp"
-#include "ShaderStructures.hpp"
-#include "..\Common\StepTimer.hpp"
+#include "Common/DeviceResources.hpp"
+#include "Graphics/ShaderStructures.hpp"
+#include "Common/StepTimer.hpp"
 
 namespace DirectXGame
 {
@@ -38,8 +38,8 @@ namespace DirectXGame
 		Microsoft::WRL::ComPtr<ID3D11Buffer>		constantBuffer;
 
 		// System resources for cube geometry.
-		ModelViewProjectionConstantBuffer	constantBufferData;
-		uint32	indexCount;
+		ModelViewProjectionConstantBuffer constantBufferData;
+		uint32_t indexCount;
 
 		// Variables used with the rendering loop.
 		bool	loadingComplete;

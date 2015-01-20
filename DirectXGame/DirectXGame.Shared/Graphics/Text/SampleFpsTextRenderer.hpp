@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include "Pch.hpp"
-#include "..\Common\DeviceResources.hpp"
-#include "..\Common\StepTimer.hpp"
+#include "Common/DeviceResources.hpp"
+#include "Common/StepTimer.hpp"
 
 namespace DirectXGame
 {

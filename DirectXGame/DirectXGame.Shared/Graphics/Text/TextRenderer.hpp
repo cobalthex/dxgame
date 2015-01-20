@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Pch.hpp"
-#include "..\Common\DeviceResources.hpp"
+#include "Common/DeviceResources.hpp"
 #include "Common/DirectXHelper.hpp"
 
 namespace DirectXGame

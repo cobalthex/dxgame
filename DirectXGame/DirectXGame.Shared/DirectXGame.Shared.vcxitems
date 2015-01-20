@@ -14,13 +14,34 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Content\TextRenderer.cpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)App.hpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)app.cpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Content\ShaderStructures.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Content\TextRenderer.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXGameMain.hpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXGameMain.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Sequence.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Timeline.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Sequence.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackCollection.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackId.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Time.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Timeline.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Animation\TimelineEvents.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Event.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\EventQueue.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Helpers.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Data\ISerializable.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Bone.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmToModel.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\iqm.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\util.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.hpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -29,16 +50,16 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\DirectXHelper.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.hpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\SampleFpsTextRenderer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\SampleFpsTextRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Content\SamplePixelShader.hlsl">
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\SamplePixelShader.hlsl">
       <ShaderType>Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Content\SampleVertexShader.hlsl">
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\SampleVertexShader.hlsl">
       <ShaderType>Vertex</ShaderType>
       <FileType>Document</FileType>
     </FxCompile>
