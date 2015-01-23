@@ -11,10 +11,13 @@
 #include <wincodec.h>
 #include <DirectXColors.h>
 #include <DirectXMath.h>
+#include <DirectXPackedVector.h>
+#include <DirectXCollision.h>
 #include <agile.h>
 #include <concrt.h>
 #include <collection.h>
 #include <ppltasks.h>
+#include <memory.h>
 
 //C++SL includes
 
@@ -27,6 +30,7 @@
 #include <fstream>
 #include <mutex>
 #include <condition_variable>
+#include <functional>
 
 //Convenience
 using Microsoft::WRL::ComPtr;

@@ -8,8 +8,6 @@
 class Model
 {
 public:
-
-protected:
 	std::vector<Mesh> meshes;
 	std::vector<Bone> bones; //a collection of all of the bones in the mesh
 	Bone* root; //the root bone (null if bones is empty)

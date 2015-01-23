@@ -18,7 +18,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Timeline.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\SimpleMath.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Sequence.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackCollection.hpp" />
@@ -33,7 +36,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\ISerializable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Bone.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmToModel.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.hpp" />
@@ -54,6 +57,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.hpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\SampleFpsTextRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\SamplePixelShader.hlsl">
@@ -66,5 +70,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Assets\test.iqm">
+      <DeploymentContent>true</DeploymentContent>
+      <FileType>Document</FileType>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />
   </ItemGroup>
 </Project>

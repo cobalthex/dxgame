@@ -29,12 +29,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp">
       <Filter>App</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\iqm.hpp">
-      <Filter>Graphics\Models\Formats\IQM</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmToModel.hpp">
-      <Filter>Graphics\Models\Formats\IQM</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\util.hpp">
       <Filter>Graphics\Models\Formats\IQM</Filter>
     </ClInclude>
@@ -55,6 +49,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Time.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackId.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackCollection.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.hpp">
+      <Filter>Graphics\Models\Formats\IQM</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\iqm.hpp">
+      <Filter>Graphics\Models\Formats\IQM</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.cpp">
@@ -79,6 +80,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Sequence.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Timeline.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\SimpleMath.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\SampleVertexShader.hlsl">
@@ -91,6 +95,7 @@
   <ItemGroup>
     <Filter Include="Content">
       <UniqueIdentifier>{87949101-735c-40ac-b028-2147f45c9a78}</UniqueIdentifier>
+      <Extensions>Content\</Extensions>
     </Filter>
     <Filter Include="App">
       <UniqueIdentifier>{319b8011-cbb5-4ce9-a0f7-abb548915cb4}</UniqueIdentifier>
@@ -116,5 +121,9 @@
     <Filter Include="Graphics\Models\Formats\IQM">
       <UniqueIdentifier>{13999686-bf5f-4e14-9a37-2f02ed6a2075}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Assets\test.iqm" />
+    <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />
   </ItemGroup>
 </Project>

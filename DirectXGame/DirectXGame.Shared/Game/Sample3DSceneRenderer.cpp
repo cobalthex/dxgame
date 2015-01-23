@@ -1,7 +1,9 @@
 ﻿#include "Pch.hpp"
 #include "Sample3DSceneRenderer.hpp"
 
-#include "..\Common\DirectXHelper.hpp"
+#include "Common/DirectXHelper.hpp"
+
+#include "Graphics/Models/Formats/IQM/IqmLoader.hpp"
 
 using namespace DirectXGame;
 
@@ -127,23 +129,6 @@ void Sample3DSceneRenderer::Render()
 		0
 		);
 
-	// Each vertex is one instance of the VertexPositionColor struct.
-	UINT stride = sizeof(VertexPositionColor);
-	UINT offset = 0;
-	context->IASetVertexBuffers(
-		0,
-		1,
-		vertexBuffer.GetAddressOf(),
-		&stride,
-		&offset
-		);
-
-	context->IASetIndexBuffer(
-		indexBuffer.Get(),
-		DXGI_FORMAT_R16_UINT, // Each index is one 16-bit unsigned integer (short).
-		0
-		);
-
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	context->IASetInputLayout(inputLayout.Get());
@@ -169,12 +154,32 @@ void Sample3DSceneRenderer::Render()
 		0
 		);
 
-	// Draw the objects.
-	context->DrawIndexed(
-		indexCount,
-		0,
-		0
-		);
+	for (auto& m : iqm.meshes)
+	{
+		// Each vertex is one instance of the VertexPositionColor struct.
+		UINT stride = sizeof(VertexPositionColor);
+		UINT offset = 0;
+		context->IASetVertexBuffers(
+			0,
+			1,
+			m.Vertices().GetAddressOf(),
+			&stride,
+			&offset
+			);
+
+		context->IASetIndexBuffer(
+			m.Indices().Get(),
+			DXGI_FORMAT_R32_UINT, // Each index is one 32-bit unsigned integer.
+			0
+			);
+
+		// Draw the objects.
+		context->DrawIndexed(
+			m.IndexCount(),
+			0,
+			0
+			);
+	}
 }
 
 void Sample3DSceneRenderer::CreateDeviceDependentResources()
@@ -301,6 +306,8 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 				&indexBuffer
 				)
 			);
+
+		Iqm::Load(deviceResources, "Assets/test.iqm", iqm);
 	});
 
 	// Once the cube is loaded, the object is ready to be rendered.

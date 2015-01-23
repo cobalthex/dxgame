@@ -92,4 +92,5 @@ namespace DX
 		// The IDeviceNotify can be held directly as it owns the DeviceResources.
 		IDeviceNotify* deviceNotify;
 	};
+	typedef std::shared_ptr<DX::DeviceResources> DeviceResourcesPtr;
 }

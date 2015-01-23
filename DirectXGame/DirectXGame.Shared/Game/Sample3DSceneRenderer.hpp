@@ -3,6 +3,7 @@
 #include "Common/DeviceResources.hpp"
 #include "Graphics/ShaderStructures.hpp"
 #include "Common/StepTimer.hpp"
+#include "Graphics/Models/Model.hpp"
 
 namespace DirectXGame
 {
@@ -10,7 +11,7 @@ namespace DirectXGame
 	class Sample3DSceneRenderer
 	{
 	public:
-		Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceResources>& DeviceResources);
+		Sample3DSceneRenderer(const DX::DeviceResourcesPtr& DeviceResources);
 		void CreateDeviceDependentResources();
 		void CreateWindowSizeDependentResources();
 		void ReleaseDeviceDependentResources();
@@ -27,15 +28,18 @@ namespace DirectXGame
 
 	private:
 		// Cached pointer to device resources.
-		std::shared_ptr<DX::DeviceResources> deviceResources;
+		DX::DeviceResourcesPtr deviceResources;
 
 		// Direct3D resources for cube geometry.
-		Microsoft::WRL::ComPtr<ID3D11InputLayout>	inputLayout;
-		Microsoft::WRL::ComPtr<ID3D11Buffer>		vertexBuffer;
-		Microsoft::WRL::ComPtr<ID3D11Buffer>		indexBuffer;
-		Microsoft::WRL::ComPtr<ID3D11VertexShader>	vertexShader;
-		Microsoft::WRL::ComPtr<ID3D11PixelShader>	pixelShader;
-		Microsoft::WRL::ComPtr<ID3D11Buffer>		constantBuffer;
+		ComPtr<ID3D11InputLayout>	inputLayout;
+		ComPtr<ID3D11Buffer>		vertexBuffer;
+		ComPtr<ID3D11Buffer>		indexBuffer;
+		ComPtr<ID3D11VertexShader>	vertexShader;
+		ComPtr<ID3D11PixelShader>	pixelShader;
+		ComPtr<ID3D11Buffer>		constantBuffer;
+
+
+		Model iqm;
 
 		// System resources for cube geometry.
 		ModelViewProjectionConstantBuffer constantBufferData;
