@@ -14,7 +14,6 @@ using namespace Windows::Foundation;
 Sample3DSceneRenderer::Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceResources>& DeviceResources) :
 	loadingComplete(false),
 	degreesPerSecond(45),
-	indexCount(0),
 	tracking(false),
 	deviceResources(DeviceResources)
 {
@@ -59,9 +58,8 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources()
 		XMMatrixTranspose(perspectiveMatrix * orientationMatrix)
 		);
 
-	// Eye is at (0,0.7,1.5), looking at point (0,-0.1,0) with the up-vector along the y-axis.
-	static const XMVECTORF32 eye = { 0.0f, 0.7f, 1.5f, 0.0f };
-	static const XMVECTORF32 at = { 0.0f, -0.1f, 0.0f, 0.0f };
+	static const XMVECTORF32 eye = { 0.0f, 5.0f, 8.5f, 0.0f };
+	static const XMVECTORF32 at = { 0.0f, 3.0f, 0.0f, 0.0f };
 	static const XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };
 
 	XMStoreFloat4x4(&constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
@@ -154,32 +152,7 @@ void Sample3DSceneRenderer::Render()
 		0
 		);
 
-	for (auto& m : iqm.meshes)
-	{
-		// Each vertex is one instance of the VertexPositionColor struct.
-		UINT stride = sizeof(VertexPositionColor);
-		UINT offset = 0;
-		context->IASetVertexBuffers(
-			0,
-			1,
-			m.Vertices().GetAddressOf(),
-			&stride,
-			&offset
-			);
-
-		context->IASetIndexBuffer(
-			m.Indices().Get(),
-			DXGI_FORMAT_R32_UINT, // Each index is one 32-bit unsigned integer.
-			0
-			);
-
-		// Draw the objects.
-		context->DrawIndexed(
-			m.IndexCount(),
-			0,
-			0
-			);
-	}
+	iqm.Draw();
 }
 
 void Sample3DSceneRenderer::CreateDeviceDependentResources()
@@ -238,80 +211,11 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 	});
 
 	// Once both shaders are loaded, create the mesh.
-	auto createCubeTask = (createPSTask && createVSTask).then([this] () {
-
-		// Load mesh vertices. Each vertex has a position and a color.
-		static const VertexPositionColor cubeVertices[] = 
-		{
-			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f)},
-			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f)},
-			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f)},
-			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f, 1.0f, 1.0f)},
-			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f)},
-			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(1.0f, 0.0f, 1.0f)},
-			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f)},
-			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f)},
-		};
-
-		D3D11_SUBRESOURCE_DATA vertexBufferData = {0};
-		vertexBufferData.pSysMem = cubeVertices;
-		vertexBufferData.SysMemPitch = 0;
-		vertexBufferData.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(cubeVertices), D3D11_BIND_VERTEX_BUFFER);
-		DX::ThrowIfFailed(
-			deviceResources->GetD3DDevice()->CreateBuffer(
-				&vertexBufferDesc,
-				&vertexBufferData,
-				&vertexBuffer
-				)
-			);
-
-		// Load mesh indices. Each trio of indices represents
-		// a triangle to be rendered on the screen.
-		// For example: 0,2,1 means that the vertices with indexes
-		// 0, 2 and 1 from the vertex buffer compose the 
-		// first triangle of this mesh.
-		static const unsigned short cubeIndices [] =
-		{
-			0,2,1, // -x
-			1,2,3,
-
-			4,5,6, // +x
-			5,7,6,
-
-			0,1,5, // -y
-			0,5,4,
-
-			2,6,7, // +y
-			2,7,3,
-
-			0,4,6, // -z
-			0,6,2,
-
-			1,3,7, // +z
-			1,7,5,
-		};
-
-		indexCount = ARRAYSIZE(cubeIndices);
-
-		D3D11_SUBRESOURCE_DATA indexBufferData = {0};
-		indexBufferData.pSysMem = cubeIndices;
-		indexBufferData.SysMemPitch = 0;
-		indexBufferData.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC indexBufferDesc(sizeof(cubeIndices), D3D11_BIND_INDEX_BUFFER);
-		DX::ThrowIfFailed(
-			deviceResources->GetD3DDevice()->CreateBuffer(
-				&indexBufferDesc,
-				&indexBufferData,
-				&indexBuffer
-				)
-			);
-
+	auto loadMeshTask = (createPSTask && createVSTask).then([this] ()
+	{
 		Iqm::Load(deviceResources, "Assets/test.iqm", iqm);
-	});
-
-	// Once the cube is loaded, the object is ready to be rendered.
-	createCubeTask.then([this] () {
+	}).then([this] ()
+	{
 		loadingComplete = true;
 	});
 }
@@ -323,6 +227,4 @@ void Sample3DSceneRenderer::ReleaseDeviceDependentResources()
 	inputLayout.Reset();
 	pixelShader.Reset();
 	constantBuffer.Reset();
-	vertexBuffer.Reset();
-	indexBuffer.Reset();
 }

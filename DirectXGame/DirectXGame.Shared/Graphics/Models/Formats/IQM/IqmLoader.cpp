@@ -4,7 +4,6 @@
 #include "Common/SimpleMath.hpp"
 #include "Graphics/ShaderStructures.hpp" //contains vertex types
 
-using namespace Iqm;
 using namespace DirectX::SimpleMath;
 
 //Todo: maybe move to memory mapped files
@@ -14,7 +13,7 @@ float* vpos = NULL, *vnorm = NULL, *vtan = NULL, *vtc = NULL;
 struct IqmTemp
 {
 	const char* file = nullptr; //the name of the file that was loaded (Only valid for the duration of Load()
-	Header header;
+	Iqm::Header header;
 
 	uint8_t* buffer = nullptr; //The file read into memory. Most of the pointers in this temp are directly mapped here
 
@@ -38,12 +37,18 @@ struct IqmTemp
 	char* texts = nullptr; //all of the texts
 	char* comments = nullptr; //all of the comments
 
-	Extension* extensions = nullptr;
+	Iqm::Extension* extensions = nullptr;
 };
 
 bool LoadMeshes(IqmTemp& Temp); //Load the meshes (and materials) from the buffer
 bool LoadAnimations(IqmTemp& Temp); //Load the animations from the buffer
-void CleanupTemp(IqmTemp& Temp);
+
+void CleanupTemp(IqmTemp& Temp)
+{
+	delete[] Temp.buffer;
+	Temp.buffer = 0;
+	Temp.file = 0;
+}
 
 bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, const std::string& Filename, __out Model& mdl)
 {
@@ -88,19 +93,20 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, const std::string&
 	//Create model from generated data
 
 	std::vector<::Mesh> meshes;
+	std::vector<::Bone> bones;
+	std::vector<DirectXGame::VertexPositionColor> vertices;
+	std::vector<unsigned> indices;
 	for (unsigned i = 0; i < tmp.header.numMeshes; i++)
 	{
 		auto& m = tmp.meshes[i];
 
-		std::vector<DirectXGame::VertexPositionColor> verts;
-		std::vector<unsigned> indices; //number of triangles in mesh * 3
-
 		//indices
-		for (unsigned i = 0; i < m.numTriangles; i++)
+		for (unsigned j = 0; j < m.numTriangles; j++)
 		{
-			indices.push_back(tmp.tris[m.firstTriangle + i].vertex[0]);
-			indices.push_back(tmp.tris[m.firstTriangle + i].vertex[1]);
-			indices.push_back(tmp.tris[m.firstTriangle + i].vertex[2]);
+			//For independent vertex buffers, subtract m.firstVertex from each of the vertices of the triangle
+			indices.push_back(tmp.tris[m.firstTriangle + j].vertex[0]);
+			indices.push_back(tmp.tris[m.firstTriangle + j].vertex[1]);
+			indices.push_back(tmp.tris[m.firstTriangle + j].vertex[2]);
 		}
 
 		//vertices
@@ -109,18 +115,18 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, const std::string&
 			DirectXGame::VertexPositionColor v;
 			auto& _v = tmp.vertices[m.firstVertex + j];
 			auto& _c = tmp.colors[m.firstVertex + j];
-			v.pos = Vector3(_v.x, _v.y, _v.z);
+			v.pos = Vector3(_v.y, _v.z, _v.x); //Right hand to left hand
 			if (tmp.colors != nullptr)
 				v.color = Vector3(_c.r, _c.g, _c.b);
 			else
 				v.color = Vector3();
-			verts.push_back(v);
+			vertices.push_back(v);
 		}
 
-		meshes.emplace_back(DeviceResources, verts, indices);
+		meshes.emplace_back(m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3);
 	}
 
-	mdl.meshes = std::move(meshes);
+	mdl = Model(DeviceResources, PrimitiveTopology::List, vertices, indices, meshes, bones);
 
 	CleanupTemp(tmp);
 	return true;
@@ -129,60 +135,60 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, const std::string&
 bool LoadMeshes(IqmTemp& Temp)
 {
 	//make sure in correct endian
-	LilSwap((uint*)&Temp.buffer[Temp.header.ofsVertexArrays], Temp.header.numVertexArrays* sizeof(VertexArray) / sizeof(uint));
-	LilSwap((uint*)&Temp.buffer[Temp.header.ofsTriangles], Temp.header.numTriangles* sizeof(Triangle) / sizeof(uint));
+	LilSwap((uint*)&Temp.buffer[Temp.header.ofsVertexArrays], Temp.header.numVertexArrays* sizeof(Iqm::VertexArray) / sizeof(uint));
+	LilSwap((uint*)&Temp.buffer[Temp.header.ofsTriangles], Temp.header.numTriangles* sizeof(Iqm::Triangle) / sizeof(uint));
 	LilSwap((uint*)&Temp.buffer[Temp.header.ofsMeshes], Temp.header.numMeshes* sizeof(Iqm::Mesh) / sizeof(uint));
-	LilSwap((uint*)&Temp.buffer[Temp.header.ofsJoints], Temp.header.numJoints* sizeof(Joint) / sizeof(uint));
+	LilSwap((uint*)&Temp.buffer[Temp.header.ofsJoints], Temp.header.numJoints* sizeof(Iqm::Joint) / sizeof(uint));
 
 	uchar* vindex = NULL, *vweight = NULL;
-	VertexArray* vas = (VertexArray*)&Temp.buffer[Temp.header.ofsVertexArrays];
+	Iqm::VertexArray* vas = (Iqm::VertexArray*)&Temp.buffer[Temp.header.ofsVertexArrays];
 	for (unsigned i = 0; i < Temp.header.numVertexArrays; i++)
 	{
-		VertexArray &va = vas[i];
+		Iqm::VertexArray &va = vas[i];
 		switch (va.type)
 		{
-		case IQM_POSITION:
+		case Iqm::IQM_POSITION:
 			//Make sure format is valid
-			if (va.format != IQM_FLOAT || va.size != 3)
+			if (va.format != Iqm::IQM_FLOAT || va.size != 3)
 				return false;
 
 			Temp.vertices = (Iqm::Vertex*)&Temp.buffer[va.offset];
 			LilSwap(Temp.vertices, 3 * Temp.header.numVertices);
 			break;
 
-		case IQM_NORMAL:
-			if (va.format != IQM_FLOAT || va.size != 3)
+		case Iqm::IQM_NORMAL:
+			if (va.format != Iqm::IQM_FLOAT || va.size != 3)
 				return false;
 
 			Temp.normals = (Iqm::Normal*)&Temp.buffer[va.offset];
 			LilSwap(Temp.normals, 3 * Temp.header.numVertices);
 			break;
 
-		case IQM_TANGENT:
-			if (va.format != IQM_FLOAT || va.size != 4)
+		case Iqm::IQM_TANGENT:
+			if (va.format != Iqm::IQM_FLOAT || va.size != 4)
 				return false;
 
 			Temp.tangents = (Iqm::Tangent*)&Temp.buffer[va.offset];
 			LilSwap(Temp.tangents, 4 * Temp.header.numVertices);
 			break;
 
-		case IQM_TEXCOORD:
-			if (va.format != IQM_FLOAT || va.size != 2)
+		case Iqm::IQM_TEXCOORD:
+			if (va.format != Iqm::IQM_FLOAT || va.size != 2)
 				return false;
 
 			Temp.texCoords = (Iqm::TexCoord*)&Temp.buffer[va.offset];
 			LilSwap(Temp.normals, 2 * Temp.header.numVertices);
 			break;
 
-		case IQM_BLENDINDEXES:
-			if (va.format != IQM_UBYTE || va.size != 4)
+		case Iqm::IQM_BLENDINDEXES:
+			if (va.format != Iqm::IQM_UBYTE || va.size != 4)
 				return false;
 
 			Temp.blendIndices = (Iqm::BlendIndex*)&Temp.buffer[va.offset];
 			break;
 
-		case IQM_BLENDWEIGHTS:
-			if (va.format != IQM_UBYTE || va.size != 4)
+		case Iqm::IQM_BLENDWEIGHTS:
+			if (va.format != Iqm::IQM_UBYTE || va.size != 4)
 				return false;
 
 			Temp.blendWeights = (Iqm::BlendWeight*)&Temp.buffer[va.offset];
@@ -194,11 +200,11 @@ bool LoadMeshes(IqmTemp& Temp)
 		return false;
 
 	Temp.meshes = (Iqm::Mesh*)&Temp.buffer[Temp.header.ofsMeshes];
-	Temp.tris = (Triangle*)&Temp.buffer[Temp.header.ofsTriangles];
-	Temp.joints = (Joint*)&Temp.buffer[Temp.header.ofsJoints];
+	Temp.tris = (Iqm::Triangle*)&Temp.buffer[Temp.header.ofsTriangles];
+	Temp.joints = (Iqm::Joint*)&Temp.buffer[Temp.header.ofsJoints];
 
 	if (Temp.header.ofsAdjacency > 0)
-		Temp.adjacencies = (Adjacency*)&Temp.buffer[Temp.header.ofsAdjacency];
+		Temp.adjacencies = (Iqm::Adjacency*)&Temp.buffer[Temp.header.ofsAdjacency];
 
 	Temp.texts = Temp.header.ofsText > 0 ? (char*)&Temp.buffer[Temp.header.ofsText] : "";
 	Temp.comments = Temp.header.ofsComment > 0 ? (char*)&Temp.buffer[Temp.header.ofsComment] : "";
@@ -352,10 +358,4 @@ bool LoadAnimations(IqmTemp& Temp)
 	sortblendcombos();
 	*/
 	return true;
-}
-void CleanupTemp(IqmTemp& Temp)
-{
-	delete[] Temp.buffer;
-	Temp.buffer = 0;
-	Temp.file = 0;
 }

@@ -32,18 +32,13 @@ namespace DirectXGame
 
 		// Direct3D resources for cube geometry.
 		ComPtr<ID3D11InputLayout>	inputLayout;
-		ComPtr<ID3D11Buffer>		vertexBuffer;
-		ComPtr<ID3D11Buffer>		indexBuffer;
 		ComPtr<ID3D11VertexShader>	vertexShader;
 		ComPtr<ID3D11PixelShader>	pixelShader;
 		ComPtr<ID3D11Buffer>		constantBuffer;
 
-
 		Model iqm;
 
-		// System resources for cube geometry.
 		ModelViewProjectionConstantBuffer constantBufferData;
-		uint32_t indexCount;
 
 		// Variables used with the rendering loop.
 		bool	loadingComplete;

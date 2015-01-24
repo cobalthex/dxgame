@@ -82,7 +82,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Timeline.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\SimpleMath.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\SampleVertexShader.hlsl">

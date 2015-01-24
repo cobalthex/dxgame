@@ -19,7 +19,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\SimpleMath.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
