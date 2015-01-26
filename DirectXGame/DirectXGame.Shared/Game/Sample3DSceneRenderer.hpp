@@ -4,6 +4,7 @@
 #include "Graphics/ShaderStructures.hpp"
 #include "Common/StepTimer.hpp"
 #include "Graphics/Models/Model.hpp"
+#include "Graphics/Textures/Texture2D.hpp"
 
 namespace DirectXGame
 {
@@ -37,6 +38,7 @@ namespace DirectXGame
 		ComPtr<ID3D11Buffer>		constantBuffer;
 
 		Model iqm;
+		Texture2D tex;
 
 		ModelViewProjectionConstantBuffer constantBufferData;
 

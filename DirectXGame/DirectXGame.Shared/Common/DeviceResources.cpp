@@ -1,6 +1,6 @@
 ﻿#include "Pch.hpp"
 #include "DeviceResources.hpp"
-#include "DirectXHelper.hpp"
+#include "PlatformHelpers.hpp"
 
 using namespace D2D1;
 using namespace DirectX;

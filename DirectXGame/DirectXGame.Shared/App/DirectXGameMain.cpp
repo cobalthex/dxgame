@@ -1,6 +1,6 @@
 ﻿#include "pch.hpp"
 #include "DirectXGameMain.hpp"
-#include "Common\DirectXHelper.hpp"
+#include "Common/PlatformHelpers.hpp"
 
 using namespace DirectXGame;
 

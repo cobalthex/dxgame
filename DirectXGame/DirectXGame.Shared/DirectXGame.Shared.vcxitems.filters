@@ -56,6 +56,13 @@
       <Filter>Graphics\Models\Formats\IQM</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDS.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\PlatformHelpers.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.cpp">
@@ -83,6 +90,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\SimpleMath.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\SampleVertexShader.hlsl">
@@ -91,6 +102,8 @@
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\SamplePixelShader.hlsl">
       <Filter>Graphics\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="$(MSBuildThisFileDirectory)Content\Shaders\SamplePixelShader.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Content\Shaders\SampleVertexShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Content">
@@ -123,7 +136,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Assets\test.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />
+    <None Include="$(MSBuildThisFileDirectory)Content\sword_lowpoly.iqm" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Content\ship.iqm" />
+    <None Include="$(MSBuildThisFileDirectory)Content\test.iqm" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Body.tga" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Head.tga" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="$(MSBuildThisFileDirectory)Content\sword.png" />
   </ItemGroup>
 </Project>

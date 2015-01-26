@@ -33,7 +33,7 @@ namespace Iqm
 		unsigned int firstTriangle, numTriangles;
 	};
 
-	enum Types
+	enum VertexArrayTypes
 	{
 		IQM_POSITION = 0,		// float, 3
 		IQM_TEXCOORD = 1,		// float, 2

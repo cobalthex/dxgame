@@ -18,13 +18,15 @@ enum class PrimitiveTopology
 class Model
 {
 public:
+	typedef DirectXGame::VertexPositionNormalTexture VertexType;
+
 	Model()
 		: meshes(), bones(), deviceResources(nullptr), vertices(nullptr), indices(nullptr), vertexCount(0), indexCount(0), topology(PrimitiveTopology::Unknown) { }
 	Model
 	(
 		const DX::DeviceResourcesPtr& DeviceResources,
 		PrimitiveTopology Topology,
-		const std::vector<DirectXGame::VertexPositionColor>& Vertices, 
+		const std::vector<VertexType>& Vertices, 
 		const std::vector<unsigned>& Indices,
 		const std::vector<Mesh>& Meshes,
 		const std::vector<Bone>& Bones

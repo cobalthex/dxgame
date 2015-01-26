@@ -50,7 +50,7 @@ void CleanupTemp(IqmTemp& Temp)
 	Temp.file = 0;
 }
 
-bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, const std::string& Filename, __out Model& mdl)
+bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, const std::string& Filename, __out ::Model& mdl)
 {
 	const char* fn = Filename.c_str();
 	FILE* f = nullptr;
@@ -94,7 +94,7 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, const std::string&
 
 	std::vector<::Mesh> meshes;
 	std::vector<::Bone> bones;
-	std::vector<DirectXGame::VertexPositionColor> vertices;
+	std::vector<::Model::VertexType> vertices;
 	std::vector<unsigned> indices;
 	for (unsigned i = 0; i < tmp.header.numMeshes; i++)
 	{
@@ -112,18 +112,30 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, const std::string&
 		//vertices
 		for (unsigned j = 0; j < m.numVertices; j++)
 		{
-			DirectXGame::VertexPositionColor v;
+			::Model::VertexType v;
+
 			auto& _v = tmp.vertices[m.firstVertex + j];
+			auto& _n = tmp.normals[m.firstVertex + j];
+			auto& _t = tmp.texCoords[m.firstVertex + j];
 			auto& _c = tmp.colors[m.firstVertex + j];
+
 			v.pos = Vector3(_v.y, _v.z, _v.x); //Right hand to left hand
-			if (tmp.colors != nullptr)
-				v.color = Vector3(_c.r, _c.g, _c.b);
-			else
-				v.color = Vector3();
+			if (tmp.normals != nullptr)
+				v.normal = Vector3(_n.x, _n.y, _n.z);
+			if (tmp.texCoords != nullptr)
+				v.texture = Vector2(_t.u, _t.v);
+			/*if (tmp.colors != nullptr)
+				v.color = Vector3(_c.r, _c.g, _c.b);*/
 			vertices.push_back(v);
 		}
 
-		meshes.emplace_back(m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3);
+		//material
+		char* tex = tmp.texts + m.material;
+
+		Material mat;
+		mat.texture = new Texture2D(DeviceResources, tex);
+
+		meshes.emplace_back(m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat);
 	}
 
 	mdl = Model(DeviceResources, PrimitiveTopology::List, vertices, indices, meshes, bones);
@@ -177,7 +189,15 @@ bool LoadMeshes(IqmTemp& Temp)
 				return false;
 
 			Temp.texCoords = (Iqm::TexCoord*)&Temp.buffer[va.offset];
-			LilSwap(Temp.normals, 2 * Temp.header.numVertices);
+			LilSwap(Temp.texCoords, 2 * Temp.header.numVertices);
+			break;
+
+		case Iqm::IQM_COLOR:
+			if (va.format != Iqm::IQM_UBYTE || va.size != 4)
+				return false;
+
+			Temp.colors = (Iqm::Color*)&Temp.buffer[va.offset];
+			LilSwap(Temp.colors, 4 * Temp.header.numVertices);
 			break;
 
 		case Iqm::IQM_BLENDINDEXES:

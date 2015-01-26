@@ -1,8 +1,6 @@
 ﻿#include "Pch.hpp"
 #include "Sample3DSceneRenderer.hpp"
-
-#include "Common/DirectXHelper.hpp"
-
+#include "Common/PlatformHelpers.hpp"
 #include "Graphics/Models/Formats/IQM/IqmLoader.hpp"
 
 using namespace DirectXGame;
@@ -172,16 +170,10 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 				)
 			);
 
-		static const D3D11_INPUT_ELEMENT_DESC vertexDesc [] =
-		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		};
-
 		DX::ThrowIfFailed(
 			deviceResources->GetD3DDevice()->CreateInputLayout(
-				vertexDesc,
-				ARRAYSIZE(vertexDesc),
+				Model::VertexType::ElementDesc,
+				ARRAYSIZE(Model::VertexType::ElementDesc),
 				&fileData[0],
 				fileData.size(),
 				&inputLayout
@@ -211,9 +203,9 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 	});
 
 	// Once both shaders are loaded, create the mesh.
-	auto loadMeshTask = (createPSTask && createVSTask).then([this] ()
+	auto loadModelTask = (createPSTask && createVSTask).then([this] ()
 	{
-		Iqm::Load(deviceResources, "Assets/test.iqm", iqm);
+		Iqm::Load(deviceResources, "Content/ship.iqm", iqm);
 	}).then([this] ()
 	{
 		loadingComplete = true;

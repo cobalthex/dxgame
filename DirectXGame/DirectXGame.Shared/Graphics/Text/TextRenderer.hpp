@@ -2,7 +2,7 @@
 
 #include "Pch.hpp"
 #include "Common/DeviceResources.hpp"
-#include "Common/DirectXHelper.hpp"
+#include "Common/PlatformHelpers.hpp"
 
 namespace DirectXGame
 {

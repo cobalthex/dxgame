@@ -1,21 +1,21 @@
 #include "Pch.hpp"
 #include "Model.hpp"
-#include "Common/DirectXHelper.hpp"
+#include "Common/PlatformHelpers.hpp"
 
-const unsigned Model::vertexStride = sizeof(DirectXGame::VertexPositionColor);
+const unsigned Model::vertexStride = sizeof(VertexType);
 
 Model::Model
 (
 	const DX::DeviceResourcesPtr& DeviceResources,
 	PrimitiveTopology Topology,
-	const std::vector<DirectXGame::VertexPositionColor>& Vertices,
+	const std::vector<VertexType>& Vertices,
 	const std::vector<unsigned>& Indices,
 	const std::vector<Mesh>& Meshes,
 	const std::vector<Bone>& Bones
 ) : deviceResources(DeviceResources), vertexCount(Vertices.size()), indexCount(Indices.size()), meshes(Meshes), bones(Bones), topology(Topology)
 {
 	//create vertex buffer
-	CD3D11_BUFFER_DESC vertexBufferDesc(Vertices.size() * sizeof(DirectXGame::VertexPositionColor), D3D11_BIND_VERTEX_BUFFER);
+	CD3D11_BUFFER_DESC vertexBufferDesc(Vertices.size() * vertexStride, D3D11_BIND_VERTEX_BUFFER);
 
 	D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
 	vertexBufferData.pSysMem = Vertices.data();

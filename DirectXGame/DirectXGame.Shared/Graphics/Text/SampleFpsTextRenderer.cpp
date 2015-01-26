@@ -1,7 +1,7 @@
 ﻿#include "Pch.hpp"
 #include "SampleFpsTextRenderer.hpp"
 
-#include "Common/DirectXHelper.hpp"
+#include "Common/PlatformHelpers.hpp"
 
 using namespace DirectXGame;
 
