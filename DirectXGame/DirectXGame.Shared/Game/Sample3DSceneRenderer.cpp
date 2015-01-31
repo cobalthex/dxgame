@@ -47,20 +47,41 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources()
 		100.0f
 		);
 
+	constantBuffer = ConstantBuffer<SceneConstantBufferDef>(deviceResources);
+	matCb = ConstantBuffer<MaterialConstantBufferDef>(deviceResources);
+
 	XMFLOAT4X4 orientation = deviceResources->GetOrientationTransform3D();
 
 	XMMATRIX orientationMatrix = XMLoadFloat4x4(&orientation);
 
 	XMStoreFloat4x4(
-		&constantBufferData.projection,
+		&constantBuffer.data.projection,
 		XMMatrixTranspose(perspectiveMatrix * orientationMatrix)
 		);
 
-	static const XMVECTORF32 eye = { 0.0f, 5.0f, 8.5f, 0.0f };
+	static const XMVECTORF32 eye = { 0.0f, 7.0f, 8.5f, 0.0f };
 	static const XMVECTORF32 at = { 0.0f, 3.0f, 0.0f, 0.0f };
 	static const XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };
 
-	XMStoreFloat4x4(&constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
+	XMStoreFloat4x4(&constantBuffer.data.view, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
+
+	Light li;
+	li.color = Color(1, 1, 1, 1);
+	li.spotAngle = XMConvertToRadians(45);
+	li.constantAttenuation = 1;
+	li.linearAttenuation = 0.08f;
+	li.quadraticAttenuation = 0;
+	li.position = Vector4(1, 1, 0, 0);
+	li.direction = -li.position;
+	li.isEnabled = true;
+	li.type = LightType::Directional;
+	
+	lightingBuffer = ConstantBuffer<LightConstantBufferDef>(deviceResources);
+	lightingBuffer.data.lights[0] = li;
+	lightingBuffer.data.eyePosition = Vector4(eye.v);
+	lightingBuffer.data.globalAmbience = Color(0, 0, 0, 0);
+	lightingBuffer.Update();
+	lightingBuffer.ApplyPS(1);
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
@@ -81,7 +102,7 @@ void Sample3DSceneRenderer::Update(const DX::StepTimer& Timer)
 void Sample3DSceneRenderer::Rotate(float Radians)
 {
 	// Prepare to pass the updated model matrix to the shader
-	XMStoreFloat4x4(&constantBufferData.model, XMMatrixTranspose(XMMatrixRotationY(Radians)));
+	XMStoreFloat4x4(&constantBuffer.data.model, XMMatrixTranspose(XMMatrixRotationY(Radians)));
 }
 
 void Sample3DSceneRenderer::StartTracking()
@@ -115,16 +136,6 @@ void Sample3DSceneRenderer::Render()
 
 	auto context = deviceResources->GetD3DDeviceContext();
 
-	// Prepare the constant buffer to send it to the graphics device.
-	context->UpdateSubresource(
-		constantBuffer.Get(),
-		0,
-		NULL,
-		&constantBufferData,
-		0,
-		0
-		);
-
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	context->IASetInputLayout(inputLayout.Get());
@@ -136,12 +147,8 @@ void Sample3DSceneRenderer::Render()
 		0
 		);
 
-	// Send the constant buffer to the graphics device.
-	context->VSSetConstantBuffers(
-		0,
-		1,
-		constantBuffer.GetAddressOf()
-		);
+	constantBuffer.Update();
+	constantBuffer.ApplyVS();
 
 	// Attach our pixel shader.
 	context->PSSetShader(
@@ -150,20 +157,32 @@ void Sample3DSceneRenderer::Render()
 		0
 		);
 
-	iqm.Draw();
+	matCb.ApplyPS(0);
+	iqm.Apply();
+	const auto& cxt = deviceResources->GetD3DDeviceContext();
+	for (auto& mesh : iqm.meshes)
+	{
+		matCb.data.FillFromMaterial(mesh.material);
+		matCb.Update();
+
+		mesh.material.texture->Apply();
+		cxt->DrawIndexed(mesh.IndexCount(), mesh.StartIndex(), 0);
+	}
+	//iqm.Draw();
 }
 
 void Sample3DSceneRenderer::CreateDeviceDependentResources()
 {
 	// Load shaders asynchronously.
-	auto loadVSTask = DX::ReadDataAsync(L"SampleVertexShader.cso");
-	auto loadPSTask = DX::ReadDataAsync(L"SamplePixelShader.cso");
+	auto loadVSTask = DX::ReadDataAsync(L"Lit.vs.cso");
+	auto loadPSTask = DX::ReadDataAsync(L"Lit.ps.cso");
 
 	// After the vertex shader file is loaded, create the shader and input layout.
-	auto createVSTask = loadVSTask.then([this](const std::vector<byte>& fileData) {
+	auto createVSTask = loadVSTask.then([this](const std::vector<byte>& fileData)
+	{
 		DX::ThrowIfFailed(
 			deviceResources->GetD3DDevice()->CreateVertexShader(
-				&fileData[0],
+				fileData.data(),
 				fileData.size(),
 				nullptr,
 				&vertexShader
@@ -172,9 +191,9 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 
 		DX::ThrowIfFailed(
 			deviceResources->GetD3DDevice()->CreateInputLayout(
-				Model::VertexType::ElementDesc,
-				ARRAYSIZE(Model::VertexType::ElementDesc),
-				&fileData[0],
+				DirectXGame::VertexSkinned::ElementDesc,
+				DirectXGame::VertexSkinned::ElementCount,
+				fileData.data(),
 				fileData.size(),
 				&inputLayout
 				)
@@ -182,7 +201,8 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 	});
 
 	// After the pixel shader file is loaded, create the shader and constant buffer.
-	auto createPSTask = loadPSTask.then([this](const std::vector<byte>& fileData) {
+	auto createPSTask = loadPSTask.then([this](const std::vector<byte>& fileData)
+	{
 		DX::ThrowIfFailed(
 			deviceResources->GetD3DDevice()->CreatePixelShader(
 				&fileData[0],
@@ -191,21 +211,13 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 				&pixelShader
 				)
 			);
-
-		CD3D11_BUFFER_DESC constantBufferDesc(sizeof(ModelViewProjectionConstantBuffer) , D3D11_BIND_CONSTANT_BUFFER);
-		DX::ThrowIfFailed(
-			deviceResources->GetD3DDevice()->CreateBuffer(
-				&constantBufferDesc,
-				nullptr,
-				&constantBuffer
-				)
-			);
 	});
 
 	// Once both shaders are loaded, create the mesh.
 	auto loadModelTask = (createPSTask && createVSTask).then([this] ()
 	{
-		Iqm::Load(deviceResources, "Content/ship.iqm", iqm);
+		Iqm::Load(deviceResources, ccache, "Content/test.iqm", iqm);
+
 	}).then([this] ()
 	{
 		loadingComplete = true;
@@ -218,5 +230,4 @@ void Sample3DSceneRenderer::ReleaseDeviceDependentResources()
 	vertexShader.Reset();
 	inputLayout.Reset();
 	pixelShader.Reset();
-	constantBuffer.Reset();
 }

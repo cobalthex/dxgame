@@ -24,6 +24,8 @@ namespace DX
 		void Trim();
 		void Present();
 
+		//Helper for managing assets.
+
 		// Device Accessors.
 		Windows::Foundation::Size GetOutputSize() const					{ return outputSize; }
 		Windows::Foundation::Size GetLogicalSize() const				{ return logicalSize; }

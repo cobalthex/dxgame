@@ -26,6 +26,7 @@
 #include <queue>
 #include <map>
 #include <memory>
+#include <new>
 #include <iostream>
 #include <fstream>
 #include <mutex>

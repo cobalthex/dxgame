@@ -1,40 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.hpp">
-      <Filter>Content</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.hpp">
-      <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.hpp">
-      <Filter>Base</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DirectXHelper.hpp">
-      <Filter>Base</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.hpp">
-      <Filter>Base</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\SampleFpsTextRenderer.hpp">
-      <Filter>Graphics\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.hpp">
-      <Filter>Graphics\Text</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.hpp">
-      <Filter>App</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp">
-      <Filter>App</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\util.hpp">
-      <Filter>Graphics\Models\Formats\IQM</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp">
-      <Filter>Graphics\Models</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Bone.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.hpp" />
@@ -49,12 +16,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Time.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackId.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackCollection.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.hpp">
-      <Filter>Graphics\Models\Formats\IQM</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\iqm.hpp">
-      <Filter>Graphics\Models\Formats\IQM</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDS.hpp" />
@@ -63,27 +24,26 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\PlatformHelpers.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\ContentCache.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\StbImage.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ConstantBuffer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\iqm.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\util.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\SampleFpsTextRenderer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Lighting.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\AlignedStorage.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.cpp">
-      <Filter>Content</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\SampleFpsTextRenderer.cpp">
-      <Filter>Graphics\Text</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.cpp">
-      <Filter>Graphics\Text</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.cpp">
-      <Filter>App</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp">
-      <Filter>App</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Sequence.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Timeline.cpp" />
@@ -93,59 +53,30 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\SampleFpsTextRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\SampleVertexShader.hlsl">
-      <Filter>Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\SamplePixelShader.hlsl">
-      <Filter>Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Content\Shaders\SamplePixelShader.hlsl" />
-    <FxCompile Include="$(MSBuildThisFileDirectory)Content\Shaders\SampleVertexShader.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Content">
-      <UniqueIdentifier>{87949101-735c-40ac-b028-2147f45c9a78}</UniqueIdentifier>
-      <Extensions>Content\</Extensions>
-    </Filter>
-    <Filter Include="App">
-      <UniqueIdentifier>{319b8011-cbb5-4ce9-a0f7-abb548915cb4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Graphics">
-      <UniqueIdentifier>{f5901abd-46b2-402f-b25b-519968018c01}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Base">
-      <UniqueIdentifier>{2d014abd-655d-41cc-a95c-48a00ae73565}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Graphics\Text">
-      <UniqueIdentifier>{8de8fb81-1210-4a81-8ac5-9bc17b918f83}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Graphics\Shaders">
-      <UniqueIdentifier>{85ec6b29-2a64-4a27-afdb-5c315ae8619b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Graphics\Models">
-      <UniqueIdentifier>{c3898ad7-76ab-434f-9348-79f7955f3d3d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Graphics\Models\Formats">
-      <UniqueIdentifier>{bd586988-2312-4d25-b6b3-4edae9011f73}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Graphics\Models\Formats\IQM">
-      <UniqueIdentifier>{13999686-bf5f-4e14-9a37-2f02ed6a2075}</UniqueIdentifier>
-    </Filter>
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Lit.ps.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Lit.vs.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />
-    <None Include="$(MSBuildThisFileDirectory)Content\sword_lowpoly.iqm" />
+    <None Include="$(MSBuildThisFileDirectory)Content\sword.iqm" />
+    <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Lighting.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\ship.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Content\test.iqm" />
-    <Image Include="$(MSBuildThisFileDirectory)Content\Body.tga" />
-    <Image Include="$(MSBuildThisFileDirectory)Content\Head.tga" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="$(MSBuildThisFileDirectory)Content\sword.png" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Body.dds" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Head.dds" />
   </ItemGroup>
 </Project>

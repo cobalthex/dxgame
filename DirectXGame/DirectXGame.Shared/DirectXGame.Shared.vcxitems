@@ -20,16 +20,20 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\SimpleMath.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Sequence.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\AlignedStorage.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackCollection.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackId.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\ContentCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\PlatformHelpers.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Time.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Timeline.hpp" />
@@ -40,18 +44,25 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Helpers.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\ISerializable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ConstantBuffer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Lighting.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Bone.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.hpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\iqm.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDS.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\StbImage.hpp">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.hpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.hpp" />
@@ -62,7 +73,6 @@
     </ClCompile>
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.hpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DirectXHelper.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\SampleFpsTextRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.hpp" />
@@ -71,20 +81,17 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Content\Shaders\SamplePixelShader.hlsl">
-      <ShaderModel>4.0</ShaderModel>
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Lit.ps.hlsl">
       <ShaderType>Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Content\Shaders\SampleVertexShader.hlsl">
       <ShaderModel>4.0</ShaderModel>
-      <ShaderType>Vertex</ShaderType>
+      <FileType>Document</FileType>
+      <EnableDebuggingInformation>true</EnableDebuggingInformation>
     </FxCompile>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\SamplePixelShader.hlsl">
-      <ShaderType>Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\SampleVertexShader.hlsl">
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Lit.vs.hlsl">
       <ShaderType>Vertex</ShaderType>
       <FileType>Document</FileType>
+      <ShaderModel>4.0</ShaderModel>
+      <EnableDebuggingInformation>true</EnableDebuggingInformation>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,11 +99,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />
-    <None Include="$(MSBuildThisFileDirectory)Content\sword_lowpoly.iqm">
+    <None Include="$(MSBuildThisFileDirectory)Content\sword.iqm">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Lighting.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="$(MSBuildThisFileDirectory)Content\Body.dds">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Content\Head.dds">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
     <Image Include="$(MSBuildThisFileDirectory)Content\sword.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
@@ -106,11 +120,5 @@
     <None Include="$(MSBuildThisFileDirectory)Content\test.iqm">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <Image Include="$(MSBuildThisFileDirectory)Content\Body.tga">
-      <DeploymentContent>true</DeploymentContent>
-    </Image>
-    <Image Include="$(MSBuildThisFileDirectory)Content\Head.tga">
-      <DeploymentContent>true</DeploymentContent>
-    </Image>
   </ItemGroup>
 </Project>

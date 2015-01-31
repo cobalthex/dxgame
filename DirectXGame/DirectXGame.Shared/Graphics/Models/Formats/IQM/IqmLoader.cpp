@@ -2,13 +2,12 @@
 #include "util.hpp"
 #include "IqmLoader.hpp"
 #include "Common/SimpleMath.hpp"
-#include "Graphics/ShaderStructures.hpp" //contains vertex types
+#include "Graphics/VertexTypes.hpp" //contains vertex types
 
 using namespace DirectX::SimpleMath;
 
 //Todo: maybe move to memory mapped files
 
-float* vpos = NULL, *vnorm = NULL, *vtan = NULL, *vtc = NULL;
 //Temporary storage for loading IQM data
 struct IqmTemp
 {
@@ -50,7 +49,7 @@ void CleanupTemp(IqmTemp& Temp)
 	Temp.file = 0;
 }
 
-bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, const std::string& Filename, __out ::Model& mdl)
+bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cache, const std::string& Filename, __out ::Model& mdl)
 {
 	const char* fn = Filename.c_str();
 	FILE* f = nullptr;
@@ -116,24 +115,38 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, const std::string&
 
 			auto& _v = tmp.vertices[m.firstVertex + j];
 			auto& _n = tmp.normals[m.firstVertex + j];
+			auto& _g = tmp.tangents[m.firstVertex + j];
 			auto& _t = tmp.texCoords[m.firstVertex + j];
 			auto& _c = tmp.colors[m.firstVertex + j];
+			auto& _i = tmp.blendIndices[m.firstVertex + j];
+			auto& _w = tmp.blendWeights[m.firstVertex + j];
 
-			v.pos = Vector3(_v.y, _v.z, _v.x); //Right hand to left hand
+			v.position = Vector3(_v.y, _v.z, _v.x); //correct orientation
 			if (tmp.normals != nullptr)
 				v.normal = Vector3(_n.x, _n.y, _n.z);
+			if (tmp.tangents != nullptr)
+				v.tangent = Vector4(_g.x, _g.y, _g.z, _g.w);
 			if (tmp.texCoords != nullptr)
-				v.texture = Vector2(_t.u, _t.v);
-			/*if (tmp.colors != nullptr)
-				v.color = Vector3(_c.r, _c.g, _c.b);*/
+				v.texCoord = Vector2(_t.u, _t.v);
+			if (tmp.colors != nullptr)
+				v.color = DirectXGame::PackVector(_c.r, _c.g, _c.b, 1);
+			if (tmp.blendIndices != nullptr)
+				v.indices = DirectX::XMUINT4(_i.a, _i.b, _i.c, _i.d);
+			if (tmp.blendWeights != nullptr)
+				v.weights = DirectXGame::PackVector(_w.a, _w.b, _w.c, _w.d);
+
 			vertices.push_back(v);
 		}
 
 		//material
-		char* tex = tmp.texts + m.material;
-
+		std::string texFile = "Content/" + std::string(tmp.texts + m.material);
 		Material mat;
-		mat.texture = new Texture2D(DeviceResources, tex);
+		mat.texture = Cache.CreateTexture2D(texFile, DeviceResources, texFile);
+		mat.emissive = ::Color(0, 0, 0, 1);
+		mat.ambient = ::Color(1, 1, 1, 1);
+		mat.diffuse = ::Color(1, 1, 1, 1);
+		mat.specular = ::Color(1, 1, 1, 1);
+		mat.specularPower = 128;
 
 		meshes.emplace_back(m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat);
 	}
@@ -257,125 +270,123 @@ bool LoadMeshes(IqmTemp& Temp)
 
 	return true;
 }
-
-bool LoadAnimations(IqmTemp& Temp)
-{
-	/*
-	Joint* joints = (Joint*)&Temp.buffer[Temp.header.ofsJoints];
-
-	if (Temp.header.numJoints)
-	{
-		if (skel->numbones <= 0)
-		{
-			skel->numbones = Temp.header.numjoints;
-			skel->bones = new boneinfo[skel->numbones];
-			for (int i = 0; i < Temp.header.numJoints; i++)
-			{
-				joint &j = joints[i];
-				boneinfo &b = skel->bones[i];
-				if (!b.name) b.name = newstring(&str[j.name]);
-				b.parent = j.parent;
-				if (skel->shared <= 1)
-				{
-					j.pos.y = -j.pos.y;
-					j.orient.x = -j.orient.x;
-					j.orient.z = -j.orient.z;
-					j.orient.normalize();
-					b.base = dualquat(j.orient, j.pos);
-					if (b.parent >= 0) b.base.mul(skel->bones[b.parent].base, dualquat(b.base));
-					(b.invbase = b.base).invert();
-				}
-			}
-		}
-
-		if (skel->shared <= 1)
-			skel->linkchildren();
-	}
-
-	for (int i = 0; i < Temp.header.numMeshes; i++)
-	{
-		mesh &im = imeshes[i];
-		skelmesh* m = new skelmesh;
-		m->group = this;
-		meshes.add(m);
-		m->name = newstring(&str[im.name]);
-		m->numverts = im.numvertexes;
-		int noblend = -1;
-		if (m->numverts)
-		{
-			m->verts = new vert[m->numverts];
-			if (vtan) m->bumpverts = new bumpvert[m->numverts];
-			if (!vindex || !vweight)
-			{
-				blendcombo c;
-				c.finalize(0);
-				noblend = m->addblendcombo(c);
-			}
-		}
-		int fv = im.firstIQM_vertex;
-		float* mpos = vpos + 3* fv,
-			* mnorm = vnorm ? vnorm + 3* fv : NULL,
-			* mtan = vtan ? vtan + 4* fv : NULL,
-			* mtc = vtc ? vtc + 2* fv : NULL;
-		uchar* mindex = vindex ? vindex + 4* fv : NULL,* mweight = vweight ? vweight + 4* fv : NULL;
-
-		for (int j = 0; j < im.numVertexes; j++)
-		{
-			vert &v = m->verts[j];
-			v.pos = vec(mpos[0], -mpos[1], mpos[2]);
-			mpos += 3;
-			if (mtc)
-			{
-				v.u = mtc[0];
-				v.v = mtc[1];
-				mtc += 2;
-			}
-			else v.u = v.v = 0;
-			if (mnorm)
-			{
-				v.norm = vec(mnorm[0], -mnorm[1], mnorm[2]);
-				mnorm += 3;
-				if (mtan)
-				{
-					bumpvert &bv = m->bumpverts[j];
-					bv.tangent = vec(mtan[0], -mtan[1], mtan[2]);
-					bv.bitangent = mtan[3];
-					mtan += 4;
-				}
-			}
-			else v.norm = vec(0, 0, 0);
-			if (noblend < 0)
-			{
-				blendcombo c;
-				int sorted = 0;
-				loopk(4) sorted = c.addweight(sorted, mweight[k], mindex[k]);
-				mweight += 4;
-				mindex += 4;
-				c.finalize(sorted);
-				v.blend = m->addblendcombo(c);
-			}
-			else v.blend = noblend;
-		}
-		m->numtris = im.numtriangles;
-		if (m->numtris) m->tris = new tri[m->numtris];
-		triangle* mtris = tris + im.firstIQM_triangle;
-		loopj(im.numtriangles)
-		{
-			tri &t = m->tris[j];
-			t.vert[0] = mtris->vertex[0] - fv;
-			t.vert[1] = mtris->vertex[1] - fv;
-			t.vert[2] = mtris->vertex[2] - fv;
-			++mtris;
-		}
-		if (!m->numtris || !m->numverts)
-		{
-			conoutf("empty mesh in %s", filename);
-			meshes.removeobj(m);
-			delete m;
-		}
-	}
-
-	sortblendcombos();
-	*/
-	return true;
-}
+bool LoadAnimations(IqmTemp& Temp) { return true; }
+//
+//bool LoadAnimations(IqmTemp& Temp)
+//{
+//	if (Temp.header.numJoints > 0)
+//	{
+//		if (skel->numbones <= 0)
+//		{
+//			skel->numbones = Temp.header.numjoints;
+//			skel->bones = new boneinfo[skel->numbones];
+//			for (int i = 0; i < Temp.header.numJoints; i++)
+//			{
+//				joint &j = joints[i];
+//				boneinfo &b = skel->bones[i];
+//				if (!b.name) b.name = newstring(&str[j.name]);
+//				b.parent = j.parent;
+//				if (skel->shared <= 1)
+//				{
+//					j.pos.y = -j.pos.y;
+//					j.orient.x = -j.orient.x;
+//					j.orient.z = -j.orient.z;
+//					j.orient.normalize();
+//					b.base = dualquat(j.orient, j.pos);
+//					if (b.parent >= 0) b.base.mul(skel->bones[b.parent].base, dualquat(b.base));
+//					(b.invbase = b.base).invert();
+//				}
+//			}
+//		}
+//
+//		if (skel->shared <= 1)
+//			skel->linkchildren();
+//	}
+//
+//	for (int i = 0; i < Temp.header.numMeshes; i++)
+//	{
+//		mesh &im = imeshes[i];
+//		skelmesh* m = new skelmesh;
+//		m->group = this;
+//		meshes.add(m);
+//		m->name = newstring(&str[im.name]);
+//		m->numverts = im.numvertexes;
+//		int noblend = -1;
+//		if (m->numverts)
+//		{
+//			m->verts = new vert[m->numverts];
+//			if (vtan) m->bumpverts = new bumpvert[m->numverts];
+//			if (!vindex || !vweight)
+//			{
+//				blendcombo c;
+//				c.finalize(0);
+//				noblend = m->addblendcombo(c);
+//			}
+//		}
+//		int fv = im.firstIQM_vertex;
+//		float* mpos = vpos + 3* fv,
+//			* mnorm = vnorm ? vnorm + 3* fv : NULL,
+//			* mtan = vtan ? vtan + 4* fv : NULL,
+//			* mtc = vtc ? vtc + 2* fv : NULL;
+//		uchar* mindex = vindex ? vindex + 4* fv : NULL,* mweight = vweight ? vweight + 4* fv : NULL;
+//
+//		for (int j = 0; j < im.numVertexes; j++)
+//		{
+//			vert &v = m->verts[j];
+//			v.pos = vec(mpos[0], -mpos[1], mpos[2]);
+//			mpos += 3;
+//			if (mtc)
+//			{
+//				v.u = mtc[0];
+//				v.v = mtc[1];
+//				mtc += 2;
+//			}
+//			else v.u = v.v = 0;
+//			if (mnorm)
+//			{
+//				v.norm = vec(mnorm[0], -mnorm[1], mnorm[2]);
+//				mnorm += 3;
+//				if (mtan)
+//				{
+//					bumpvert &bv = m->bumpverts[j];
+//					bv.tangent = vec(mtan[0], -mtan[1], mtan[2]);
+//					bv.bitangent = mtan[3];
+//					mtan += 4;
+//				}
+//			}
+//			else v.norm = vec(0, 0, 0);
+//			if (noblend < 0)
+//			{
+//				blendcombo c;
+//				int sorted = 0;
+//				loopk(4) sorted = c.addweight(sorted, mweight[k], mindex[k]);
+//				mweight += 4;
+//				mindex += 4;
+//				c.finalize(sorted);
+//				v.blend = m->addblendcombo(c);
+//			}
+//			else v.blend = noblend;
+//		}
+//		m->numtris = im.numtriangles;
+//		if (m->numtris) m->tris = new tri[m->numtris];
+//		triangle* mtris = tris + im.firstIQM_triangle;
+//		loopj(im.numtriangles)
+//		{
+//			tri &t = m->tris[j];
+//			t.vert[0] = mtris->vertex[0] - fv;
+//			t.vert[1] = mtris->vertex[1] - fv;
+//			t.vert[2] = mtris->vertex[2] - fv;
+//			++mtris;
+//		}
+//		if (!m->numtris || !m->numverts)
+//		{
+//			conoutf("empty mesh in %s", filename);
+//			meshes.removeobj(m);
+//			delete m;
+//		}
+//	}
+//
+//	sortblendcombos();
+//	
+//	return true;
+//}

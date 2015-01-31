@@ -4,7 +4,7 @@
 #include "Mesh.hpp"
 #include "Bone.hpp"
 #include "Common/DeviceResources.hpp"
-#include "Graphics/ShaderStructures.hpp"
+#include "Graphics/VertexTypes.hpp"
 
 //The primitive topologies available. Does not distinguish between points, lines, or triangles
 enum class PrimitiveTopology
@@ -18,10 +18,11 @@ enum class PrimitiveTopology
 class Model
 {
 public:
-	typedef DirectXGame::VertexPositionNormalTexture VertexType;
+	typedef DirectXGame::VertexSkinned VertexType;
+
 
 	Model()
-		: meshes(), bones(), deviceResources(nullptr), vertices(nullptr), indices(nullptr), vertexCount(0), indexCount(0), topology(PrimitiveTopology::Unknown) { }
+		: meshes(), bones(), devContext(nullptr), vertices(nullptr), indices(nullptr), vertexCount(0), indexCount(0), topology(PrimitiveTopology::Unknown) { }
 	Model
 	(
 		const DX::DeviceResourcesPtr& DeviceResources,
@@ -48,10 +49,11 @@ public:
 
 	static const unsigned VertexStride() { return vertexStride; }
 
-	void Draw() const; //Draws the mesh using default values. Does not set any shaders, input states, etc
+	void Apply(unsigned Slot = 0) const; //Binds vertex/index data to be drawn. This is automatically called by Draw()
+	void Draw(unsigned Slot = 0) const; //Draws the mesh using default values. Does not set any shaders, input states, etc
 
 protected:
-	DX::DeviceResourcesPtr deviceResources;
+	ComPtr<ID3D11DeviceContext> devContext;
 
 	VertexBuffer vertices;
 	IndexBuffer indices;
