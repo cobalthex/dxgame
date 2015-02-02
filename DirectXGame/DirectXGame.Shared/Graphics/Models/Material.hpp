@@ -30,6 +30,7 @@ struct MaterialConstantBufferDef : public ConstantBufferDef
 
 	void FillFromMaterial(const Material& Material)
 	{
+		emissive = Material.emissive;
 		ambient = Material.ambient;
 		diffuse = Material.diffuse;
 		specular = Material.specular;

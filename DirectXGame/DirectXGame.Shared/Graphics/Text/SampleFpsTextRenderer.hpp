@@ -23,9 +23,12 @@ namespace DirectXGame
 		// Resources related to text rendering.
 		std::wstring                                    text;
 		DWRITE_TEXT_METRICS	                            textMetrics;
-		Microsoft::WRL::ComPtr<ID2D1SolidColorBrush>    whiteBrush;
-		Microsoft::WRL::ComPtr<ID2D1DrawingStateBlock>  stateBlock;
-		Microsoft::WRL::ComPtr<IDWriteTextLayout>       textLayout;
-		Microsoft::WRL::ComPtr<IDWriteTextFormat>		textFormat;
+		ComPtr<ID2D1SolidColorBrush>    whiteBrush;
+		ComPtr<ID2D1SolidColorBrush>    blackBrush;
+
+		ComPtr<ID2D1DrawingStateBlock>  stateBlock;
+		ComPtr<IDWriteTextLayout>       textLayout;
+		ComPtr<IDWriteTextFormat>		textFormat;
+		size_t lastFps; //the last fps (for caching)
 	};
 }

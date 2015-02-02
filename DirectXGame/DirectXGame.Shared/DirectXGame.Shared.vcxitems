@@ -20,7 +20,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
@@ -44,6 +44,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Helpers.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\ISerializable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\Camera.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ConstantBuffer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Lighting.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Bone.hpp" />
@@ -51,7 +52,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\VertexTypes.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\ChaseCamera.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.hpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\iqm.hpp" />

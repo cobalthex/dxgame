@@ -2,7 +2,7 @@
 #include "util.hpp"
 #include "IqmLoader.hpp"
 #include "Common/SimpleMath.hpp"
-#include "Graphics/VertexTypes.hpp" //contains vertex types
+#include "Graphics/ShaderStructures.hpp" //contains vertex types
 
 using namespace DirectX::SimpleMath;
 

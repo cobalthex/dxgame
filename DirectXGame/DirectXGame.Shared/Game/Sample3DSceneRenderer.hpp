@@ -1,13 +1,14 @@
 ﻿#pragma once
 
 #include "Common/DeviceResources.hpp"
-#include "Graphics/VertexTypes.hpp"
+#include "Graphics/ShaderStructures.hpp"
 #include "Common/StepTimer.hpp"
 #include "Graphics/Models/Model.hpp"
 #include "Graphics/Textures/Texture2D.hpp"
 #include "Common/ContentCache.hpp"
 #include "Graphics/ConstantBuffer.hpp"
 #include "Graphics/Lighting.hpp"
+#include "Graphics/Scene/Camera.hpp"
 #include "Common/AlignedStorage.hpp"
 
 namespace DirectXGame
@@ -41,12 +42,15 @@ namespace DirectXGame
 		ComPtr<ID3D11InputLayout>	inputLayout;
 		ComPtr<ID3D11VertexShader>	vertexShader;
 		ComPtr<ID3D11PixelShader>	pixelShader;
+		ComPtr<ID3D11SamplerState>	sampler;
 
-		CBUFFER_ALIGN ConstantBuffer<SceneConstantBufferDef> constantBuffer;
-		CBUFFER_ALIGN ConstantBuffer<LightConstantBufferDef> lightingBuffer;
+		Camera cam;
+		
+		ConstantBuffer<ObjectConstantBufferDef> objectCBuffer;
+		ConstantBuffer<LightConstantBufferDef> lightingCBuffer;
+		ConstantBuffer<MaterialConstantBufferDef> materialCBuffer;
 
 		Model iqm;
-		ConstantBuffer<MaterialConstantBufferDef> matCb;
 		Texture2D* tex;
 
 		// Variables used with the rendering loop.

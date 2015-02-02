@@ -35,7 +35,7 @@ Model::Model
 	DX::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateBuffer(&indexBufferDesc, &indexBufferData, &indices));
 }
 
-void Model::Apply(unsigned Slot) const
+void Model::Bind(unsigned Slot) const
 {
 	if (vertexCount < 1 || indexCount < 1)
 		return; //nothing to draw
@@ -49,7 +49,7 @@ void Model::Apply(unsigned Slot) const
 }
 void Model::Draw(unsigned Slot) const
 {
-	Apply(Slot);
+	Bind(Slot);
 
 	//Draw all of the meshes
 	for (auto& m : meshes)

@@ -1,5 +1,5 @@
 #include "Pch.hpp"
-#include "VertexTypes.hpp"
+#include "ShaderStructures.hpp"
 
 using namespace DirectXGame;
 

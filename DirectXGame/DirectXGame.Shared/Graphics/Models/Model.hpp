@@ -4,7 +4,7 @@
 #include "Mesh.hpp"
 #include "Bone.hpp"
 #include "Common/DeviceResources.hpp"
-#include "Graphics/VertexTypes.hpp"
+#include "Graphics/ShaderStructures.hpp"
 
 //The primitive topologies available. Does not distinguish between points, lines, or triangles
 enum class PrimitiveTopology
@@ -49,7 +49,7 @@ public:
 
 	static const unsigned VertexStride() { return vertexStride; }
 
-	void Apply(unsigned Slot = 0) const; //Binds vertex/index data to be drawn. This is automatically called by Draw()
+	void Bind(unsigned Slot = 0) const; //Binds vertex/index data to be drawn. This is automatically called by Draw()
 	void Draw(unsigned Slot = 0) const; //Draws the mesh using default values. Does not set any shaders, input states, etc
 
 protected:
