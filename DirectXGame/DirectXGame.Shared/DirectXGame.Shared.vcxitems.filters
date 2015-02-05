@@ -3,7 +3,6 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Bone.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Sequence.hpp" />
@@ -43,6 +42,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\Camera.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\ChaseCamera.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Skinning.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -62,6 +62,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Skinning.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Lit.ps.hlsl" />

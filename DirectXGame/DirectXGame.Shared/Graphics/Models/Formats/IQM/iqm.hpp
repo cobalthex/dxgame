@@ -13,16 +13,16 @@ namespace Iqm
 		unsigned int fileSize;
 		unsigned int flags;
 		//file position offsets and counts
-		unsigned int numText, ofsText;
-		unsigned int numMeshes, ofsMeshes;
-		unsigned int numVertexArrays, numVertices, ofsVertexArrays;
-		unsigned int numTriangles, ofsTriangles, ofsAdjacency;
-		unsigned int numJoints, ofsJoints;
-		unsigned int numPoses, ofsPoses;
-		unsigned int numAnims, ofsAnims;
-		unsigned int numFrames, numFrameChannels, ofsFrames, ofsBounds;
-		unsigned int numComment, ofsComment;
-		unsigned int numExtensions, ofsExtensions;
+		unsigned int numText, offsetText;
+		unsigned int numMeshes, offsetMeshes;
+		unsigned int numVertexArrays, numVertices, offsetVertexArrays;
+		unsigned int numTriangles, offsetTriangles, offsetAdjacency;
+		unsigned int numJoints, offsetJoints;
+		unsigned int numPoses, offsetPoses;
+		unsigned int numAnims, offsetAnims;
+		unsigned int numFrames, numFrameChannels, offsetFrames, offsetBounds;
+		unsigned int numComment, offsetComment;
+		unsigned int numExtensions, offsetExtensions;
 	};
 
 	struct Mesh
@@ -105,14 +105,6 @@ namespace Iqm
 		float translate[3], rotate[4], scale[3];
 	};
 
-	struct Posev1
-	{
-		int parent;
-		unsigned int mask;
-		float channelOffset[9];
-		float channelScale[9];
-	};
-
 	struct Pose
 	{
 		int parent;
@@ -152,7 +144,7 @@ namespace Iqm
 	struct Extension
 	{
 		unsigned int name;
-		unsigned int numData, ofsData;
-		unsigned int ofsExtensions; // pointer to next extension
+		unsigned int numData, offsetData;
+		unsigned int offsetExtensions; // pointer to next extension
 	};
 }

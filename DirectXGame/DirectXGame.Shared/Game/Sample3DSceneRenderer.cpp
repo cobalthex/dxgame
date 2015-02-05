@@ -60,15 +60,15 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources()
 	cam.CalcMatrices();
 
 	Light li;
-	li.color = Color(1, 1, 0, 1);
+	li.color = Color(1, 1, 1, 1);
 	li.spotAngle = XMConvertToRadians(45);
 	li.constantAttenuation = 1;
 	li.linearAttenuation = 0.08f;
 	li.quadraticAttenuation = 0;
-	li.position = Vector4(1, 1, 0, 0);
+	li.position = Vector4(1, 6, 3, 0);
 	li.direction = -li.position;
 	li.isEnabled = true;
-	li.type = LightType::Directional;
+	li.type = LightType::Point;
 	
 	lightingCBuffer = ConstantBuffer<LightConstantBufferDef>(deviceResources);
 	lightingCBuffer.data.lights[0] = li;

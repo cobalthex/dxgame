@@ -23,6 +23,8 @@ public:
 		sub.SysMemPitch = 0;
 		sub.SysMemSlicePitch = 0;
 		DX::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateBuffer(&constantBufferDesc, &sub, &constantBuffer));
+
+		static_assert((sizeof(BufferType) % 16) == 0, "Constant Buffer must be 16-byte aligned");
 	}
 	ConstantBuffer(const DX::DeviceResourcesPtr& DeviceResources) : ConstantBuffer(DeviceResources, BufferType()) { }
 

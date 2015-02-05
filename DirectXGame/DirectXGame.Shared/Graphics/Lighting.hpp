@@ -6,10 +6,10 @@
 
 using namespace DirectX::SimpleMath;
 
-#define MAX_LIGHTS 8
+#define MAX_LIGHTS 4
 
 //The available light types
-enum class LightType
+enum class LightType : unsigned
 {
 	Directional = 0, //Light that emits in a direction but has no position 
 	Point = 1, //Emits light around a point in every direction

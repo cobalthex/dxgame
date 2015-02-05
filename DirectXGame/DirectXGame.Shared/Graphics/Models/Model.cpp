@@ -11,8 +11,8 @@ Model::Model
 	const std::vector<VertexType>& Vertices,
 	const std::vector<unsigned>& Indices,
 	const std::vector<Mesh>& Meshes,
-	const std::vector<Bone>& Bones
-	) : devContext(DeviceResources->GetD3DDeviceContext()), vertexCount(Vertices.size()), indexCount(Indices.size()), meshes(Meshes), bones(Bones), topology(Topology)
+	const std::vector<Joint>& Joints
+	) : devContext(DeviceResources->GetD3DDeviceContext()), vertexCount(Vertices.size()), indexCount(Indices.size()), meshes(Meshes), joints(Joints), topology(Topology)
 {
 	//create vertex buffer
 	CD3D11_BUFFER_DESC vertexBufferDesc(Vertices.size() * vertexStride, D3D11_BIND_VERTEX_BUFFER);

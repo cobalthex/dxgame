@@ -1,7 +1,7 @@
 //Provides structures and functions for implementing phong/blinn lighting
 //parts borrowed from http://3dgep.com/texturing-lighting-directx-11/#Shaders
 
-#define MAX_LIGHTS 8 //the total number of lights allowed by this shader
+#define MAX_LIGHTS 4 //the total number of lights allowed by this shader
 
 
 #define LIGHT_DIRECTIONAL 0 //Light that emits in a direction but has no position (think sun)
@@ -30,7 +30,7 @@ struct Light
 	float linearAttenuation;
 	float quadraticAttenuation;
 
-	int type; //directional, point, or spot
+	uint type; //directional, point, or spot
 	bool isEnabled;
 };
 

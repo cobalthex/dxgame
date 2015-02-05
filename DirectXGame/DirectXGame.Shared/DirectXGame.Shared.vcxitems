@@ -20,6 +20,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Skinning.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.cpp">
@@ -47,7 +48,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\Camera.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ConstantBuffer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Lighting.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Bone.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Skinning.hpp">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp" />

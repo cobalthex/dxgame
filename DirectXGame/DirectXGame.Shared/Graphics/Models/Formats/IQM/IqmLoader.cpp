@@ -31,7 +31,13 @@ struct IqmTemp
 	Iqm::Pose* poses = nullptr;
 	Iqm::Anim* anims = nullptr;
 	Iqm::Bounds* bounds = nullptr;
-	uint16_t* frames; //animation frames
+	//Matrix* frames = nullptr; //animation frames
+
+	::Pose* genPoses; //A collection of generated poses from the Iqm poses
+	::Joint* genJoints; //A collection of joints in the mesh
+
+	//Matrix* baseFrames = nullptr;
+	//Matrix* inverseBaseFrames = nullptr;
 
 	char* texts = nullptr; //all of the texts
 	char* comments = nullptr; //all of the comments
@@ -45,8 +51,10 @@ bool LoadAnimations(IqmTemp& Temp); //Load the animations from the buffer
 void CleanupTemp(IqmTemp& Temp)
 {
 	delete[] Temp.buffer;
-	Temp.buffer = 0;
-	Temp.file = 0;
+
+	/*delete[] Temp.baseFrames;
+	delete[] Temp.inverseBaseFrames;
+	delete[] Temp.frames;*/
 }
 
 bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cache, const std::string& Filename, __out ::Model& mdl)
@@ -92,7 +100,7 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 	//Create model from generated data
 
 	std::vector<::Mesh> meshes;
-	std::vector<::Bone> bones;
+	std::vector<::Joint> joints;
 	std::vector<::Model::VertexType> vertices;
 	std::vector<unsigned> indices;
 	for (unsigned i = 0; i < tmp.header.numMeshes; i++)
@@ -146,12 +154,14 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 		mat.ambient = ::Color(1, 1, 1, 1);
 		mat.diffuse = ::Color(1, 1, 1, 1);
 		mat.specular = ::Color(1, 1, 1, 1);
-		mat.specularPower = 128;
+		mat.specularPower = 1;
 
 		meshes.emplace_back(m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat);
 	}
 
-	mdl = Model(DeviceResources, PrimitiveTopology::List, vertices, indices, meshes, bones);
+
+
+	mdl = Model(DeviceResources, PrimitiveTopology::List, vertices, indices, meshes, joints);
 
 	CleanupTemp(tmp);
 	return true;
@@ -160,13 +170,13 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 bool LoadMeshes(IqmTemp& Temp)
 {
 	//make sure in correct endian
-	LilSwap((uint*)&Temp.buffer[Temp.header.ofsVertexArrays], Temp.header.numVertexArrays* sizeof(Iqm::VertexArray) / sizeof(uint));
-	LilSwap((uint*)&Temp.buffer[Temp.header.ofsTriangles], Temp.header.numTriangles* sizeof(Iqm::Triangle) / sizeof(uint));
-	LilSwap((uint*)&Temp.buffer[Temp.header.ofsMeshes], Temp.header.numMeshes* sizeof(Iqm::Mesh) / sizeof(uint));
-	LilSwap((uint*)&Temp.buffer[Temp.header.ofsJoints], Temp.header.numJoints* sizeof(Iqm::Joint) / sizeof(uint));
+	LilSwap((unsigned*)&Temp.buffer[Temp.header.offsetVertexArrays], Temp.header.numVertexArrays * sizeof(Iqm::VertexArray) / sizeof(unsigned));
+	LilSwap((unsigned*)&Temp.buffer[Temp.header.offsetTriangles], Temp.header.numTriangles * sizeof(Iqm::Triangle) / sizeof(unsigned));
+	LilSwap((unsigned*)&Temp.buffer[Temp.header.offsetMeshes], Temp.header.numMeshes * sizeof(Iqm::Mesh) / sizeof(unsigned));
+	LilSwap((unsigned*)&Temp.buffer[Temp.header.offsetJoints], Temp.header.numJoints * sizeof(Iqm::Joint) / sizeof(unsigned));
 
 	uchar* vindex = NULL, *vweight = NULL;
-	Iqm::VertexArray* vas = (Iqm::VertexArray*)&Temp.buffer[Temp.header.ofsVertexArrays];
+	Iqm::VertexArray* vas = (Iqm::VertexArray*)&Temp.buffer[Temp.header.offsetVertexArrays];
 	for (unsigned i = 0; i < Temp.header.numVertexArrays; i++)
 	{
 		Iqm::VertexArray &va = vas[i];
@@ -232,161 +242,102 @@ bool LoadMeshes(IqmTemp& Temp)
 	if (Temp.vertices == nullptr)
 		return false;
 
-	Temp.meshes = (Iqm::Mesh*)&Temp.buffer[Temp.header.ofsMeshes];
-	Temp.tris = (Iqm::Triangle*)&Temp.buffer[Temp.header.ofsTriangles];
-	Temp.joints = (Iqm::Joint*)&Temp.buffer[Temp.header.ofsJoints];
+	Temp.meshes = (Iqm::Mesh*)&Temp.buffer[Temp.header.offsetMeshes];
+	Temp.tris = (Iqm::Triangle*)&Temp.buffer[Temp.header.offsetTriangles];
+	Temp.joints = (Iqm::Joint*)&Temp.buffer[Temp.header.offsetJoints];
 
-	if (Temp.header.ofsAdjacency > 0)
-		Temp.adjacencies = (Iqm::Adjacency*)&Temp.buffer[Temp.header.ofsAdjacency];
+	if (Temp.header.offsetAdjacency > 0)
+		Temp.adjacencies = (Iqm::Adjacency*)&Temp.buffer[Temp.header.offsetAdjacency];
 
-	Temp.texts = Temp.header.ofsText > 0 ? (char*)&Temp.buffer[Temp.header.ofsText] : "";
-	Temp.comments = Temp.header.ofsComment > 0 ? (char*)&Temp.buffer[Temp.header.ofsComment] : "";
+	Temp.texts = Temp.header.offsetText > 0 ? (char*)&Temp.buffer[Temp.header.offsetText] : "";
+	Temp.comments = Temp.header.offsetComment > 0 ? (char*)&Temp.buffer[Temp.header.offsetComment] : "";
 
 	//load joints
-	auto baseFrame = new Matrix[Temp.header.numJoints];
-	auto inverseBaseFrame = new Matrix[Temp.header.numJoints];
+	
+	//Temp.baseFrames = new Matrix[Temp.header.numJoints];
+	//Temp.inverseBaseFrames = new Matrix[Temp.header.numJoints];
+	Temp.genJoints = new Joint[Temp.header.numJoints];
 	for (unsigned i = 0; i < Temp.header.numJoints; i++)
 	{
 		auto& j = Temp.joints[i];
 
-		auto q = Quaternion(j.rotate); q.Normalize();
-		baseFrame[i] = Matrix((Vector3)q, Vector3(j.translate), Vector3(j.scale));
-		inverseBaseFrame[i] = baseFrame[i]; inverseBaseFrame[i].Invert();
+		Temp.genJoints[i].index = i;
+		Temp.genJoints[i].parent = j.parent < 0 ? nullptr : &Temp.genJoints[j.parent];
+		Temp.genJoints[i].name = std::string(Temp.texts + j.name);
+		Temp.genJoints[i].rotation = Quaternion(j.rotate);
+		Temp.genJoints[i].rotation.Normalize();
+		Temp.genJoints[i].scale = Vector3(j.scale);
+		Temp.genJoints[i].translation = Vector3(j.translate);
+		/*
+		Temp.baseFrames[i] = Matrix((Vector3)q, Vector3(j.translate), Vector3(j.scale));
+		Temp.inverseBaseFrames[i] = Temp.baseFrames[i]; Temp.inverseBaseFrames[i].Invert();
 
 		if (j.parent >= 0)
 		{
-			baseFrame[i] = baseFrame[j.parent] * baseFrame[i];
-			inverseBaseFrame[i] *= inverseBaseFrame[j.parent];
+			Temp.baseFrames[i] = Temp.baseFrames[j.parent] * Temp.baseFrames[i];
+			Temp.inverseBaseFrames[i] *= Temp.inverseBaseFrames[j.parent];
 		}
+		*/
 	}
-	//load materials (and textures)
-	/*for (unsigned i = 0; i < Temp.header.numMeshes; i++)
-	{
-		auto& m = Temp.meshes[i];
-		printf("%s: loaded mesh: %s\n", Temp.file, &str[m.name]);
-		textures[i] = loadtexture(&str[m.material], 0);
-		if (textures[i]) printf("%s: loaded material: %s\n", filename, &str[m.material]);
-	}*/
+	
 
 	return true;
 }
-bool LoadAnimations(IqmTemp& Temp) { return true; }
-//
-//bool LoadAnimations(IqmTemp& Temp)
-//{
-//	if (Temp.header.numJoints > 0)
-//	{
-//		if (skel->numbones <= 0)
-//		{
-//			skel->numbones = Temp.header.numjoints;
-//			skel->bones = new boneinfo[skel->numbones];
-//			for (int i = 0; i < Temp.header.numJoints; i++)
-//			{
-//				joint &j = joints[i];
-//				boneinfo &b = skel->bones[i];
-//				if (!b.name) b.name = newstring(&str[j.name]);
-//				b.parent = j.parent;
-//				if (skel->shared <= 1)
-//				{
-//					j.pos.y = -j.pos.y;
-//					j.orient.x = -j.orient.x;
-//					j.orient.z = -j.orient.z;
-//					j.orient.normalize();
-//					b.base = dualquat(j.orient, j.pos);
-//					if (b.parent >= 0) b.base.mul(skel->bones[b.parent].base, dualquat(b.base));
-//					(b.invbase = b.base).invert();
-//				}
-//			}
-//		}
-//
-//		if (skel->shared <= 1)
-//			skel->linkchildren();
-//	}
-//
-//	for (int i = 0; i < Temp.header.numMeshes; i++)
-//	{
-//		mesh &im = imeshes[i];
-//		skelmesh* m = new skelmesh;
-//		m->group = this;
-//		meshes.add(m);
-//		m->name = newstring(&str[im.name]);
-//		m->numverts = im.numvertexes;
-//		int noblend = -1;
-//		if (m->numverts)
-//		{
-//			m->verts = new vert[m->numverts];
-//			if (vtan) m->bumpverts = new bumpvert[m->numverts];
-//			if (!vindex || !vweight)
-//			{
-//				blendcombo c;
-//				c.finalize(0);
-//				noblend = m->addblendcombo(c);
-//			}
-//		}
-//		int fv = im.firstIQM_vertex;
-//		float* mpos = vpos + 3* fv,
-//			* mnorm = vnorm ? vnorm + 3* fv : NULL,
-//			* mtan = vtan ? vtan + 4* fv : NULL,
-//			* mtc = vtc ? vtc + 2* fv : NULL;
-//		uchar* mindex = vindex ? vindex + 4* fv : NULL,* mweight = vweight ? vweight + 4* fv : NULL;
-//
-//		for (int j = 0; j < im.numVertexes; j++)
-//		{
-//			vert &v = m->verts[j];
-//			v.pos = vec(mpos[0], -mpos[1], mpos[2]);
-//			mpos += 3;
-//			if (mtc)
-//			{
-//				v.u = mtc[0];
-//				v.v = mtc[1];
-//				mtc += 2;
-//			}
-//			else v.u = v.v = 0;
-//			if (mnorm)
-//			{
-//				v.norm = vec(mnorm[0], -mnorm[1], mnorm[2]);
-//				mnorm += 3;
-//				if (mtan)
-//				{
-//					bumpvert &bv = m->bumpverts[j];
-//					bv.tangent = vec(mtan[0], -mtan[1], mtan[2]);
-//					bv.bitangent = mtan[3];
-//					mtan += 4;
-//				}
-//			}
-//			else v.norm = vec(0, 0, 0);
-//			if (noblend < 0)
-//			{
-//				blendcombo c;
-//				int sorted = 0;
-//				loopk(4) sorted = c.addweight(sorted, mweight[k], mindex[k]);
-//				mweight += 4;
-//				mindex += 4;
-//				c.finalize(sorted);
-//				v.blend = m->addblendcombo(c);
-//			}
-//			else v.blend = noblend;
-//		}
-//		m->numtris = im.numtriangles;
-//		if (m->numtris) m->tris = new tri[m->numtris];
-//		triangle* mtris = tris + im.firstIQM_triangle;
-//		loopj(im.numtriangles)
-//		{
-//			tri &t = m->tris[j];
-//			t.vert[0] = mtris->vertex[0] - fv;
-//			t.vert[1] = mtris->vertex[1] - fv;
-//			t.vert[2] = mtris->vertex[2] - fv;
-//			++mtris;
-//		}
-//		if (!m->numtris || !m->numverts)
-//		{
-//			conoutf("empty mesh in %s", filename);
-//			meshes.removeobj(m);
-//			delete m;
-//		}
-//	}
-//
-//	sortblendcombos();
-//	
-//	return true;
-//}
+bool LoadAnimations(IqmTemp& Temp)
+{
+
+	LilSwap((unsigned*)&Temp.buffer[Temp.header.offsetPoses], Temp.header.numPoses * sizeof(Iqm::Pose) / sizeof(unsigned));
+	LilSwap((unsigned*)&Temp.buffer[Temp.header.offsetAnims], Temp.header.numAnims * sizeof(Iqm::Anim) / sizeof(unsigned));
+	LilSwap((unsigned*)&Temp.buffer[Temp.header.offsetFrames], Temp.header.numFrames * Temp.header.numFrameChannels);
+
+	Temp.anims = (Iqm::Anim*)&Temp.buffer[Temp.header.offsetAnims];
+	Temp.poses = (Iqm::Pose*)&Temp.buffer[Temp.header.offsetPoses];
+	//Temp.frames = new Matrix[Temp.header.numFrames * Temp.header.numPoses];
+	unsigned short* frameData = (unsigned short*)&Temp.buffer[Temp.header.offsetFrames];
+
+	for (int i = 0; i < (int)Temp.header.numFrames; i++)
+	{
+		::Pose pose;
+		pose.translations = new Vector3[Temp.header.numPoses];
+		pose.scales = new Vector3[Temp.header.numPoses];
+		pose.rotations= new Quaternion[Temp.header.numPoses];
+
+		for (int j = 0; j < (int)Temp.header.numPoses; j++)
+		{
+			auto& p = Temp.poses[j];
+
+			pose.translations[j].x = p.channelOffset[0]; if (p.mask & 0x01) pose.translations[j].x += *frameData++ * p.channelScale[0];
+			pose.translations[j].y = p.channelOffset[1]; if (p.mask & 0x02) pose.translations[j].y += *frameData++ * p.channelScale[1];
+			pose.translations[j].z = p.channelOffset[2]; if (p.mask & 0x04) pose.translations[j].z += *frameData++ * p.channelScale[2];
+			
+			pose.rotations[j].x = p.channelOffset[3]; if (p.mask & 0x08) pose.rotations[j].x += *frameData++ * p.channelScale[3];
+			pose.rotations[j].y = p.channelOffset[4]; if (p.mask & 0x10) pose.rotations[j].y += *frameData++ * p.channelScale[4];
+			pose.rotations[j].z = p.channelOffset[5]; if (p.mask & 0x20) pose.rotations[j].z += *frameData++ * p.channelScale[5];
+			pose.rotations[j].w = p.channelOffset[6]; if (p.mask & 0x40) pose.rotations[j].w += *frameData++ * p.channelScale[6];
+			
+			pose.scales[j].x = p.channelOffset[7]; if (p.mask & 0x080) pose.scales[j].x += *frameData++ * p.channelScale[7];
+			pose.scales[j].y = p.channelOffset[8]; if (p.mask & 0x100) pose.scales[j].y += *frameData++ * p.channelScale[8];
+			pose.scales[j].z = p.channelOffset[9]; if (p.mask & 0x200) pose.scales[j].z += *frameData++ * p.channelScale[9];
+
+			pose.rotations[j].Normalize();
+
+			/*
+			// Concatenate each pose with the inverse base pose to avoid doing this at animation time.
+			// If the joint has a parent, then it needs to be pre-concatenated with its parent's base pose.
+			// Thus it all negates at animation time like so: 
+			//   (parentPose * parentInverseBasePose) * (parentBasePose * childPose * childInverseBasePose) =>
+			//   parentPose * (parentInverseBasePose * parentBasePose) * childPose * childInverseBasePose =>
+			//   parentPose * childPose * childInverseBasePose
+			rotate.Normalize();
+			Matrix m ((Vector3)rotate, translate, scale);
+
+			if (p.parent >= 0)
+				Temp.frames[i * Temp.header.numPoses + j] = Temp.baseFrames[p.parent] * m * Temp.inverseBaseFrames[j];
+			else
+				Temp.frames[i * Temp.header.numPoses + j] = m * Temp.inverseBaseFrames[j];
+			*/
+		}
+	}
+
+	return true;
+}

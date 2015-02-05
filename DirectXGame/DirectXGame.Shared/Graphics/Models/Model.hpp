@@ -2,7 +2,7 @@
 
 #include "Pch.hpp"
 #include "Mesh.hpp"
-#include "Bone.hpp"
+#include "Skinning.hpp"
 #include "Common/DeviceResources.hpp"
 #include "Graphics/ShaderStructures.hpp"
 
@@ -22,7 +22,7 @@ public:
 
 
 	Model()
-		: meshes(), bones(), devContext(nullptr), vertices(nullptr), indices(nullptr), vertexCount(0), indexCount(0), topology(PrimitiveTopology::Unknown) { }
+		: meshes(), joints(), devContext(nullptr), vertices(nullptr), indices(nullptr), vertexCount(0), indexCount(0), topology(PrimitiveTopology::Unknown) { }
 	Model
 	(
 		const DX::DeviceResourcesPtr& DeviceResources,
@@ -30,12 +30,12 @@ public:
 		const std::vector<VertexType>& Vertices, 
 		const std::vector<unsigned>& Indices,
 		const std::vector<Mesh>& Meshes,
-		const std::vector<Bone>& Bones
+		const std::vector<Joint>& Joints
 	);
 
-	std::vector<Mesh> meshes;
-	std::vector<Bone> bones; //a collection of all of the bones in the mesh
-	Bone* root; //the root bone (null if bones is empty)
+	std::vector<Mesh> meshes; //All of the meshes that make up this model
+	std::vector<Joint> joints; //All of the joints connecting the meshes in this model
+	std::vector<Pose> poses; //A collection of poses 
 
 	typedef ComPtr<ID3D11Buffer> VertexBuffer;
 	typedef ComPtr<ID3D11Buffer> IndexBuffer;
@@ -50,7 +50,7 @@ public:
 	static const unsigned VertexStride() { return vertexStride; }
 
 	void Bind(unsigned Slot = 0) const; //Binds vertex/index data to be drawn. This is automatically called by Draw()
-	void Draw(unsigned Slot = 0) const; //Draws the mesh using default values. Does not set any shaders, input states, etc
+	void Draw(unsigned Slot = 0) const; //Draws only the basic mesh without any materials or skinning
 
 protected:
 	ComPtr<ID3D11DeviceContext> devContext;
