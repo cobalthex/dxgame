@@ -45,6 +45,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Helpers.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\ISerializable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Renderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\Camera.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ConstantBuffer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Lighting.hpp" />
@@ -72,6 +73,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\util.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\Console.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\TelnetConsole.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.hpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -79,20 +82,20 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.hpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\SampleFpsTextRenderer.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.hpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\SampleFpsTextRenderer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\FpsRenderer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\FpsRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Lit.ps.hlsl">
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinned.ps.hlsl">
       <ShaderType>Pixel</ShaderType>
       <ShaderModel>4.0</ShaderModel>
       <FileType>Document</FileType>
       <EnableDebuggingInformation>true</EnableDebuggingInformation>
     </FxCompile>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Lit.vs.hlsl">
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinned.vs.hlsl">
       <ShaderType>Vertex</ShaderType>
       <FileType>Document</FileType>
       <ShaderModel>4.0</ShaderModel>

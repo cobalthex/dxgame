@@ -13,7 +13,7 @@ namespace Iqm
 		unsigned int fileSize;
 		unsigned int flags;
 		//file position offsets and counts
-		unsigned int numText, offsetText;
+		unsigned int numTexts, offsetTexts;
 		unsigned int numMeshes, offsetMeshes;
 		unsigned int numVertexArrays, numVertices, offsetVertexArrays;
 		unsigned int numTriangles, offsetTriangles, offsetAdjacency;
@@ -21,7 +21,7 @@ namespace Iqm
 		unsigned int numPoses, offsetPoses;
 		unsigned int numAnims, offsetAnims;
 		unsigned int numFrames, numFrameChannels, offsetFrames, offsetBounds;
-		unsigned int numComment, offsetComment;
+		unsigned int numComments, offsetComments;
 		unsigned int numExtensions, offsetExtensions;
 	};
 

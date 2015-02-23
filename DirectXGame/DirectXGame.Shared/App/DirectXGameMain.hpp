@@ -2,8 +2,8 @@
 
 #include "Common/StepTimer.hpp"
 #include "Common/DeviceResources.hpp"
-#include "Game/Sample3DSceneRenderer.hpp"
-#include "Graphics/Text/SampleFpsTextRenderer.hpp"
+#include "Game/TestScene.hpp"
+#include "Graphics/Text/FpsRenderer.hpp"
 
 // Renders Direct2D and 3D content on the screen.
 namespace DirectXGame
@@ -23,11 +23,10 @@ namespace DirectXGame
 
 	private:
 		// Cached pointer to device resources.
-		std::shared_ptr<DX::DeviceResources> deviceResources;
+		DX::DeviceResourcesPtr deviceResources;
 
-		// TODO: Replace with your own content renderers.
-		std::unique_ptr<Sample3DSceneRenderer> sceneRenderer;
-		std::unique_ptr<SampleFpsTextRenderer> fpsTextRenderer;
+		std::unique_ptr<TestScene> scene;
+		std::unique_ptr<FpsRenderer> fpsTextRenderer;
 
 		// Rendering loop timer
 		DX::StepTimer timer;

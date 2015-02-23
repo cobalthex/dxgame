@@ -22,7 +22,7 @@ public:
 
 
 	Model()
-		: meshes(), joints(), devContext(nullptr), vertices(nullptr), indices(nullptr), vertexCount(0), indexCount(0), topology(PrimitiveTopology::Unknown) { }
+		: meshes(), joints(), poses(), devContext(nullptr), vertices(nullptr), indices(nullptr), vertexCount(0), indexCount(0), topology(PrimitiveTopology::Unknown) { }
 	Model
 	(
 		const DX::DeviceResourcesPtr& DeviceResources,
@@ -30,12 +30,17 @@ public:
 		const std::vector<VertexType>& Vertices, 
 		const std::vector<unsigned>& Indices,
 		const std::vector<Mesh>& Meshes,
-		const std::vector<Joint>& Joints
+		const std::vector<Joint>& Joints,
+		const std::map<std::string, SkinnedSequence> Poses
 	);
 
 	std::vector<Mesh> meshes; //All of the meshes that make up this model
 	std::vector<Joint> joints; //All of the joints connecting the meshes in this model
-	std::vector<Pose> poses; //A collection of poses 
+	std::map<std::string, SkinnedSequence> poses; //A collection of animated poses
+	std::string pose; //the current pose (maps to poses)
+
+	inline bool BindPose(DirectXGame::ObjectConstantBufferDef& Buffer) { return BindPose(pose, Buffer); } //bind the current pose to a constant buffer (Returns false on error)
+	bool BindPose(const std::string& Pose, DirectXGame::ObjectConstantBufferDef& Buffer); //Bind a pose to a constant buffer (Returns false on error (pose not found))
 
 	typedef ComPtr<ID3D11Buffer> VertexBuffer;
 	typedef ComPtr<ID3D11Buffer> IndexBuffer;
@@ -60,6 +65,8 @@ protected:
 	size_t vertexCount;
 	size_t indexCount;
 	PrimitiveTopology topology;
+
+	std::vector<Matrix> jointMats, invJointMats; //temporary matrix storage for joints, defaults to size min(MAX_JOINTS, numJoints)
 
 	static const unsigned vertexStride; //The stride of each vertex. Used for rendering
 };

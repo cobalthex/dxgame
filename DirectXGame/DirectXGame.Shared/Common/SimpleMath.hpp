@@ -374,6 +374,8 @@ namespace DirectX
 			Matrix(CXMMATRIX M) { XMStoreFloat4x4(this, M); }
 
 			operator XMMATRIX() const { return XMLoadFloat4x4(this); }
+			operator XMFLOAT4X3() const { XMFLOAT4X3 m; XMStoreFloat4x3(&m, *this); return m; }
+			operator XMFLOAT4X3A() const { XMFLOAT4X3A m; XMStoreFloat4x3A(&m, *this); return m; }
 
 			// Comparision operators
 			bool operator == (const Matrix& M) const;

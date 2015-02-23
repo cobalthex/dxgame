@@ -6,14 +6,19 @@
 
 using namespace DirectX::SimpleMath;
 
+#define MAX_JOINTS 64 //The maximum allowed number of joints per shader
+
 namespace DirectXGame
 {
+
 	//A constant buffer with basic information specific to a single object
 	struct ObjectConstantBufferDef : public ConstantBufferDef
 	{
 		Matrix world;
 		Matrix inverseTransposeWorld;
 		Matrix worldViewProjection;
+
+		DirectX::XMFLOAT4X3A joints[MAX_JOINTS];
 
 		//Calculate the inverse transpose world and world view projection matrices
 		inline void Calc(const Matrix& View, const Matrix& Projection)

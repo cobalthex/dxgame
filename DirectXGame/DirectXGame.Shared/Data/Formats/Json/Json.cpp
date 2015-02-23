@@ -294,7 +294,7 @@ void Value::Write(std::ostream& Stream) const
 
 		auto& prop = *(Object*)value;
 
-		int i = 0, n = prop.size();
+		size_t i = 0, n = prop.size();
 		for (auto& p : prop)
 		{
 			i++;
@@ -321,8 +321,8 @@ void Value::Write(std::ostream& Stream) const
 
 		auto& vec = *(Array*)value;
 
-		int n = vec.size(), nm1 = n - 1;
-		for (int i = 0; i < n; i++)
+		size_t n = vec.size(), nm1 = n - 1;
+		for (size_t i = 0; i < n; i++)
 		{
 			//write value
 			vec[i].Write(Stream);

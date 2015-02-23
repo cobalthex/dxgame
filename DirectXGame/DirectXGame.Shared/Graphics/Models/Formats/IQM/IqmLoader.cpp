@@ -33,8 +33,8 @@ struct IqmTemp
 	Iqm::Bounds* bounds = nullptr;
 	//Matrix* frames = nullptr; //animation frames
 
-	::Pose* genPoses; //A collection of generated poses from the Iqm poses
-	::Joint* genJoints; //A collection of joints in the mesh
+	::Pose* genPoses; //A collection of generated poses from the Iqm poses (all of these poses will be assigned to the model)
+	::Joint* genJoints; //A collection of joints in the mesh (all of these joints will be assigned to the model)
 
 	//Matrix* baseFrames = nullptr;
 	//Matrix* inverseBaseFrames = nullptr;
@@ -99,13 +99,15 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 
 	//Create model from generated data
 
-	std::vector<::Mesh> meshes;
-	std::vector<::Joint> joints;
+	std::vector<::Mesh> meshes; meshes.reserve(tmp.header.numMeshes);
 	std::vector<::Model::VertexType> vertices;
 	std::vector<unsigned> indices;
 	for (unsigned i = 0; i < tmp.header.numMeshes; i++)
 	{
 		auto& m = tmp.meshes[i];
+
+		indices.reserve(indices.size() + m.numTriangles * 3);
+		vertices.reserve(vertices.size() + m.numVertices);
 
 		//indices
 		for (unsigned j = 0; j < m.numTriangles; j++)
@@ -149,7 +151,7 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 		//material
 		std::string texFile = "Content/" + std::string(tmp.texts + m.material);
 		Material mat;
-		mat.texture = Cache.CreateTexture2D(texFile, DeviceResources, texFile);
+		//mat.texture = Cache.CreateTexture2D(texFile, DeviceResources, texFile);
 		mat.emissive = ::Color(0, 0, 0, 1);
 		mat.ambient = ::Color(1, 1, 1, 1);
 		mat.diffuse = ::Color(1, 1, 1, 1);
@@ -159,9 +161,32 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 		meshes.emplace_back(m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat);
 	}
 
+	std::map<std::string, ::SkinnedSequence> sequences;
 
+	//create animations
+	for (unsigned i = 0; i < tmp.header.numAnims; i++)
+	{
+		auto& a = tmp.anims[i];
 
-	mdl = Model(DeviceResources, PrimitiveTopology::List, vertices, indices, meshes, joints);
+		std::vector<::Pose> poses;
+		poses.assign(tmp.genPoses + a.firstFrame, tmp.genPoses + a.firstFrame + a.numFrames);
+
+		::SkinnedSequence s (poses, tmp.header.numJoints);
+		s.Keyframes().reserve(a.numFrames);
+
+		unsigned millis = (unsigned)(1000 / a.frameRate);
+
+		//create frames
+		for (unsigned i = 0; i < a.numFrames; i++)
+			s.Append(Keyframe(TimePoint(TimeType(i * millis))));
+
+		std::string pname = std::string(tmp.texts + a.name);
+		sequences[pname] = s;
+	}
+
+	mdl = Model(DeviceResources, PrimitiveTopology::List, vertices, indices, meshes, std::vector<::Joint>(tmp.genJoints, tmp.genJoints + tmp.header.numJoints), sequences);
+	if (tmp.header.numAnims > 0)
+		mdl.pose = std::string(tmp.texts + tmp.anims[0].name);
 
 	CleanupTemp(tmp);
 	return true;
@@ -249,8 +274,8 @@ bool LoadMeshes(IqmTemp& Temp)
 	if (Temp.header.offsetAdjacency > 0)
 		Temp.adjacencies = (Iqm::Adjacency*)&Temp.buffer[Temp.header.offsetAdjacency];
 
-	Temp.texts = Temp.header.offsetText > 0 ? (char*)&Temp.buffer[Temp.header.offsetText] : "";
-	Temp.comments = Temp.header.offsetComment > 0 ? (char*)&Temp.buffer[Temp.header.offsetComment] : "";
+	Temp.texts = Temp.header.offsetTexts > 0 ? (char*)&Temp.buffer[Temp.header.offsetTexts] : "";
+	Temp.comments = Temp.header.offsetComments > 0 ? (char*)&Temp.buffer[Temp.header.offsetComments] : "";
 
 	//load joints
 	
@@ -262,12 +287,13 @@ bool LoadMeshes(IqmTemp& Temp)
 		auto& j = Temp.joints[i];
 
 		Temp.genJoints[i].index = i;
-		Temp.genJoints[i].parent = j.parent < 0 ? nullptr : &Temp.genJoints[j.parent];
+		Temp.genJoints[i].parent = j.parent;
 		Temp.genJoints[i].name = std::string(Temp.texts + j.name);
 		Temp.genJoints[i].rotation = Quaternion(j.rotate);
 		Temp.genJoints[i].rotation.Normalize();
 		Temp.genJoints[i].scale = Vector3(j.scale);
 		Temp.genJoints[i].translation = Vector3(j.translate);
+
 		/*
 		Temp.baseFrames[i] = Matrix((Vector3)q, Vector3(j.translate), Vector3(j.scale));
 		Temp.inverseBaseFrames[i] = Temp.baseFrames[i]; Temp.inverseBaseFrames[i].Invert();
@@ -285,7 +311,6 @@ bool LoadMeshes(IqmTemp& Temp)
 }
 bool LoadAnimations(IqmTemp& Temp)
 {
-
 	LilSwap((unsigned*)&Temp.buffer[Temp.header.offsetPoses], Temp.header.numPoses * sizeof(Iqm::Pose) / sizeof(unsigned));
 	LilSwap((unsigned*)&Temp.buffer[Temp.header.offsetAnims], Temp.header.numAnims * sizeof(Iqm::Anim) / sizeof(unsigned));
 	LilSwap((unsigned*)&Temp.buffer[Temp.header.offsetFrames], Temp.header.numFrames * Temp.header.numFrameChannels);
@@ -295,9 +320,11 @@ bool LoadAnimations(IqmTemp& Temp)
 	//Temp.frames = new Matrix[Temp.header.numFrames * Temp.header.numPoses];
 	unsigned short* frameData = (unsigned short*)&Temp.buffer[Temp.header.offsetFrames];
 
+	Temp.genPoses = new ::Pose[Temp.header.numPoses];
+
 	for (int i = 0; i < (int)Temp.header.numFrames; i++)
 	{
-		::Pose pose;
+		auto& pose = Temp.genPoses[i];
 		pose.translations = new Vector3[Temp.header.numPoses];
 		pose.scales = new Vector3[Temp.header.numPoses];
 		pose.rotations= new Quaternion[Temp.header.numPoses];

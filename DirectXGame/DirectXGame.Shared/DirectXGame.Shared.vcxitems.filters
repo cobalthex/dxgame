@@ -30,9 +30,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\util.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\SampleFpsTextRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.hpp" />
@@ -43,6 +41,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\ChaseCamera.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Skinning.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\FpsRenderer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Renderer.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\Console.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\TelnetConsole.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -55,18 +58,18 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\SampleFpsTextRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Sample3DSceneRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Skinning.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\FpsRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Lit.ps.hlsl" />
-    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Lit.vs.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinned.ps.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinned.vs.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />

@@ -16,8 +16,11 @@ enum class Easing
 //Note: all starts are absolute to the timeline/sequence to which they belong
 struct Keyframe
 {
-	TimePoint start = TimePoint(); //start relative to the timeline
-	Easing easing = Easing::Linear; //the easing to use (defaults to linear)
+	Keyframe() : start(), easing(Easing::Linear) { }
+	Keyframe(const TimePoint& Start, Easing Easing = Easing::Linear) : start(Start), easing(Easing) { }
+
+	TimePoint start; //start relative to the timeline
+	Easing easing; //the easing to use (defaults to linear)
 
 	bool operator < (const Keyframe& Other) { return start < Other.start; } //Does this keyframe go first?
 	bool operator > (const Keyframe& Other) { return start > Other.start; } //Does this keyframe go last?
