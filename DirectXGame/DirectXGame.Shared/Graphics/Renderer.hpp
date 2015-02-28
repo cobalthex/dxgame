@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common/StepTimer.hpp"
-#include "Common/DeviceResources.hpp"
+#include "Graphics/DeviceResources.hpp"
 
 //An abstract class that implements the basic functions of a rendered component
 class Renderer

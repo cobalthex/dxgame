@@ -32,8 +32,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Lighting.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\AlignedStorage.hpp" />
@@ -46,6 +44,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Renderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\Console.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\TelnetConsole.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\ModelMesh.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\DWriteFontCollectionLoader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)App\Game.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -59,17 +61,19 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Skinning.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\FpsRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)App\Game.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinned.ps.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinned.vs.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColor.vs.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColor.ps.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />
@@ -84,5 +88,13 @@
     <Image Include="$(MSBuildThisFileDirectory)Content\sword.png" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Body.dds" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Head.dds" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Ground.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\license.txt" />
+    <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\readme.txt" />
   </ItemGroup>
 </Project>

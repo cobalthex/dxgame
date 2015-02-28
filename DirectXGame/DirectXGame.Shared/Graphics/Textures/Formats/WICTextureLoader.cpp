@@ -1,36 +1,36 @@
 //--------------------------------------------------------------------------------------
-// File: WICTextureLoader.cpp
+//File: WICTextureLoader.cpp
 //
-// Function for loading a WIC image and creating a Direct3D 11 runtime texture for it
-// (auto-generating mipmaps if possible)
+//Function for loading a WIC image and creating a Direct3D 11 runtime texture for it
+//(auto-generating mipmaps if possible)
 //
-// Note: Assumes application has already called CoInitializeEx
+//Note: Assumes application has already called CoInitializeEx
 //
-// Warning: CreateWICTexture* functions are not thread-safe if given a d3dContext instance for
-//          auto-gen mipmap support.
+//Warning: CreateWICTexture* functions are not thread-safe if given a d3dContext instance for
+//         auto-gen mipmap support.
 //
-// Note these functions are useful for images created as simple 2D textures. For
-// more complex resources, DDSTextureLoader is an excellent light-weight runtime loader.
-// For a full-featured DDS file reader, writer, and texture processing pipeline see
-// the 'Texconv' sample and the 'DirectXTex' library.
+//Note these functions are useful for images created as simple 2D textures. For
+//more complex resources, DDSTextureLoader is an excellent light-weight runtime loader.
+//For a full-featured DDS file reader, writer, and texture processing pipeline see
+//the 'Texconv' sample and the 'DirectXTex' library.
 //
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
+//THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+//ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+//THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//PARTICULAR PURPOSE.
 //
-// Copyright (c) Microsoft Corporation. All rights reserved.
+//Copyright (c) Microsoft Corporation. All rights reserved.
 //
-// http://go.microsoft.com/fwlink/?LinkId=248926
-// http://go.microsoft.com/fwlink/?LinkId=248929
+//http://go.microsoft.com/fwlink/?LinkId=248926
+//http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
-// We could load multi-frame images (TIFF/GIF) into a texture array.
-// For now, we just load the first frame (note: DirectXTex supports multi-frame images)
+//We could load multi-frame images (TIFF/GIF) into a texture array.
+//For now, we just load the first frame (note: DirectXTex supports multi-frame images)
 
 #include "Pch.hpp"
 
-// VS 2010's stdint.h conflicts with intsafe.h
+//VS 2010's stdint.h conflicts with intsafe.h
 #pragma warning(push)
 #pragma warning(disable : 4005)
 #include <wincodec.h>
@@ -43,7 +43,7 @@
 using namespace DirectX;
 
 //-------------------------------------------------------------------------------------
-// WIC Pixel Format Translation Data
+//WIC Pixel Format Translation Data
 //-------------------------------------------------------------------------------------
 struct WICTranslate
 {
@@ -59,10 +59,10 @@ static WICTranslate g_WICFormats[] =
     { GUID_WICPixelFormat64bppRGBA,             DXGI_FORMAT_R16G16B16A16_UNORM },
 
     { GUID_WICPixelFormat32bppRGBA,             DXGI_FORMAT_R8G8B8A8_UNORM },
-    { GUID_WICPixelFormat32bppBGRA,             DXGI_FORMAT_B8G8R8A8_UNORM }, // DXGI 1.1
-    { GUID_WICPixelFormat32bppBGR,              DXGI_FORMAT_B8G8R8X8_UNORM }, // DXGI 1.1
+    { GUID_WICPixelFormat32bppBGRA,             DXGI_FORMAT_B8G8R8A8_UNORM }, //DXGI 1.1
+    { GUID_WICPixelFormat32bppBGR,              DXGI_FORMAT_B8G8R8X8_UNORM }, //DXGI 1.1
 
-    { GUID_WICPixelFormat32bppRGBA1010102XR,    DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM }, // DXGI 1.1
+    { GUID_WICPixelFormat32bppRGBA1010102XR,    DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM }, //DXGI 1.1
     { GUID_WICPixelFormat32bppRGBA1010102,      DXGI_FORMAT_R10G10B10A2_UNORM },
 
     { GUID_WICPixelFormat16bppBGRA5551,         DXGI_FORMAT_B5G5R5A1_UNORM },
@@ -77,7 +77,7 @@ static WICTranslate g_WICFormats[] =
 };
 
 //-------------------------------------------------------------------------------------
-// WIC Pixel Format nearest conversion table
+//WIC Pixel Format nearest conversion table
 //-------------------------------------------------------------------------------------
 
 struct WICConvert
@@ -88,62 +88,62 @@ struct WICConvert
 
 static WICConvert g_WICConvert[] = 
 {
-    // Note target GUID in this conversion table must be one of those directly supported formats (above).
+    //Note target GUID in this conversion table must be one of those directly supported formats (above).
 
-    { GUID_WICPixelFormatBlackWhite,            GUID_WICPixelFormat8bppGray }, // DXGI_FORMAT_R8_UNORM
+    { GUID_WICPixelFormatBlackWhite,            GUID_WICPixelFormat8bppGray }, //DXGI_FORMAT_R8_UNORM
 
-    { GUID_WICPixelFormat1bppIndexed,           GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM 
-    { GUID_WICPixelFormat2bppIndexed,           GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM 
-    { GUID_WICPixelFormat4bppIndexed,           GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM 
-    { GUID_WICPixelFormat8bppIndexed,           GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM 
+    { GUID_WICPixelFormat1bppIndexed,           GUID_WICPixelFormat32bppRGBA }, //DXGI_FORMAT_R8G8B8A8_UNORM 
+    { GUID_WICPixelFormat2bppIndexed,           GUID_WICPixelFormat32bppRGBA }, //DXGI_FORMAT_R8G8B8A8_UNORM 
+    { GUID_WICPixelFormat4bppIndexed,           GUID_WICPixelFormat32bppRGBA }, //DXGI_FORMAT_R8G8B8A8_UNORM 
+    { GUID_WICPixelFormat8bppIndexed,           GUID_WICPixelFormat32bppRGBA }, //DXGI_FORMAT_R8G8B8A8_UNORM 
 
-    { GUID_WICPixelFormat2bppGray,              GUID_WICPixelFormat8bppGray }, // DXGI_FORMAT_R8_UNORM 
-    { GUID_WICPixelFormat4bppGray,              GUID_WICPixelFormat8bppGray }, // DXGI_FORMAT_R8_UNORM 
+    { GUID_WICPixelFormat2bppGray,              GUID_WICPixelFormat8bppGray }, //DXGI_FORMAT_R8_UNORM 
+    { GUID_WICPixelFormat4bppGray,              GUID_WICPixelFormat8bppGray }, //DXGI_FORMAT_R8_UNORM 
 
-    { GUID_WICPixelFormat16bppGrayFixedPoint,   GUID_WICPixelFormat16bppGrayHalf }, // DXGI_FORMAT_R16_FLOAT 
-    { GUID_WICPixelFormat32bppGrayFixedPoint,   GUID_WICPixelFormat32bppGrayFloat }, // DXGI_FORMAT_R32_FLOAT 
+    { GUID_WICPixelFormat16bppGrayFixedPoint,   GUID_WICPixelFormat16bppGrayHalf }, //DXGI_FORMAT_R16_FLOAT 
+    { GUID_WICPixelFormat32bppGrayFixedPoint,   GUID_WICPixelFormat32bppGrayFloat }, //DXGI_FORMAT_R32_FLOAT 
 
-    { GUID_WICPixelFormat16bppBGR555,           GUID_WICPixelFormat16bppBGRA5551 }, // DXGI_FORMAT_B5G5R5A1_UNORM
+    { GUID_WICPixelFormat16bppBGR555,           GUID_WICPixelFormat16bppBGRA5551 }, //DXGI_FORMAT_B5G5R5A1_UNORM
 
-    { GUID_WICPixelFormat32bppBGR101010,        GUID_WICPixelFormat32bppRGBA1010102 }, // DXGI_FORMAT_R10G10B10A2_UNORM
+    { GUID_WICPixelFormat32bppBGR101010,        GUID_WICPixelFormat32bppRGBA1010102 }, //DXGI_FORMAT_R10G10B10A2_UNORM
 
-    { GUID_WICPixelFormat24bppBGR,              GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM 
-    { GUID_WICPixelFormat24bppRGB,              GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM 
-    { GUID_WICPixelFormat32bppPBGRA,            GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM 
-    { GUID_WICPixelFormat32bppPRGBA,            GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM 
+    { GUID_WICPixelFormat24bppBGR,              GUID_WICPixelFormat32bppRGBA }, //DXGI_FORMAT_R8G8B8A8_UNORM 
+    { GUID_WICPixelFormat24bppRGB,              GUID_WICPixelFormat32bppRGBA }, //DXGI_FORMAT_R8G8B8A8_UNORM 
+    { GUID_WICPixelFormat32bppPBGRA,            GUID_WICPixelFormat32bppRGBA }, //DXGI_FORMAT_R8G8B8A8_UNORM 
+    { GUID_WICPixelFormat32bppPRGBA,            GUID_WICPixelFormat32bppRGBA }, //DXGI_FORMAT_R8G8B8A8_UNORM 
 
-    { GUID_WICPixelFormat48bppRGB,              GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
-    { GUID_WICPixelFormat48bppBGR,              GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
-    { GUID_WICPixelFormat64bppBGRA,             GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
-    { GUID_WICPixelFormat64bppPRGBA,            GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
-    { GUID_WICPixelFormat64bppPBGRA,            GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
+    { GUID_WICPixelFormat48bppRGB,              GUID_WICPixelFormat64bppRGBA }, //DXGI_FORMAT_R16G16B16A16_UNORM
+    { GUID_WICPixelFormat48bppBGR,              GUID_WICPixelFormat64bppRGBA }, //DXGI_FORMAT_R16G16B16A16_UNORM
+    { GUID_WICPixelFormat64bppBGRA,             GUID_WICPixelFormat64bppRGBA }, //DXGI_FORMAT_R16G16B16A16_UNORM
+    { GUID_WICPixelFormat64bppPRGBA,            GUID_WICPixelFormat64bppRGBA }, //DXGI_FORMAT_R16G16B16A16_UNORM
+    { GUID_WICPixelFormat64bppPBGRA,            GUID_WICPixelFormat64bppRGBA }, //DXGI_FORMAT_R16G16B16A16_UNORM
 
-    { GUID_WICPixelFormat48bppRGBFixedPoint,    GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
-    { GUID_WICPixelFormat48bppBGRFixedPoint,    GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
-    { GUID_WICPixelFormat64bppRGBAFixedPoint,   GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
-    { GUID_WICPixelFormat64bppBGRAFixedPoint,   GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
-    { GUID_WICPixelFormat64bppRGBFixedPoint,    GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
-    { GUID_WICPixelFormat64bppRGBHalf,          GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
-    { GUID_WICPixelFormat48bppRGBHalf,          GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
+    { GUID_WICPixelFormat48bppRGBFixedPoint,    GUID_WICPixelFormat64bppRGBAHalf }, //DXGI_FORMAT_R16G16B16A16_FLOAT 
+    { GUID_WICPixelFormat48bppBGRFixedPoint,    GUID_WICPixelFormat64bppRGBAHalf }, //DXGI_FORMAT_R16G16B16A16_FLOAT 
+    { GUID_WICPixelFormat64bppRGBAFixedPoint,   GUID_WICPixelFormat64bppRGBAHalf }, //DXGI_FORMAT_R16G16B16A16_FLOAT 
+    { GUID_WICPixelFormat64bppBGRAFixedPoint,   GUID_WICPixelFormat64bppRGBAHalf }, //DXGI_FORMAT_R16G16B16A16_FLOAT 
+    { GUID_WICPixelFormat64bppRGBFixedPoint,    GUID_WICPixelFormat64bppRGBAHalf }, //DXGI_FORMAT_R16G16B16A16_FLOAT 
+    { GUID_WICPixelFormat64bppRGBHalf,          GUID_WICPixelFormat64bppRGBAHalf }, //DXGI_FORMAT_R16G16B16A16_FLOAT 
+    { GUID_WICPixelFormat48bppRGBHalf,          GUID_WICPixelFormat64bppRGBAHalf }, //DXGI_FORMAT_R16G16B16A16_FLOAT 
 
-    { GUID_WICPixelFormat128bppPRGBAFloat,      GUID_WICPixelFormat128bppRGBAFloat }, // DXGI_FORMAT_R32G32B32A32_FLOAT 
-    { GUID_WICPixelFormat128bppRGBFloat,        GUID_WICPixelFormat128bppRGBAFloat }, // DXGI_FORMAT_R32G32B32A32_FLOAT 
-    { GUID_WICPixelFormat128bppRGBAFixedPoint,  GUID_WICPixelFormat128bppRGBAFloat }, // DXGI_FORMAT_R32G32B32A32_FLOAT 
-    { GUID_WICPixelFormat128bppRGBFixedPoint,   GUID_WICPixelFormat128bppRGBAFloat }, // DXGI_FORMAT_R32G32B32A32_FLOAT 
-    { GUID_WICPixelFormat32bppRGBE,             GUID_WICPixelFormat128bppRGBAFloat }, // DXGI_FORMAT_R32G32B32A32_FLOAT 
+    { GUID_WICPixelFormat128bppPRGBAFloat,      GUID_WICPixelFormat128bppRGBAFloat }, //DXGI_FORMAT_R32G32B32A32_FLOAT 
+    { GUID_WICPixelFormat128bppRGBFloat,        GUID_WICPixelFormat128bppRGBAFloat }, //DXGI_FORMAT_R32G32B32A32_FLOAT 
+    { GUID_WICPixelFormat128bppRGBAFixedPoint,  GUID_WICPixelFormat128bppRGBAFloat }, //DXGI_FORMAT_R32G32B32A32_FLOAT 
+    { GUID_WICPixelFormat128bppRGBFixedPoint,   GUID_WICPixelFormat128bppRGBAFloat }, //DXGI_FORMAT_R32G32B32A32_FLOAT 
+    { GUID_WICPixelFormat32bppRGBE,             GUID_WICPixelFormat128bppRGBAFloat }, //DXGI_FORMAT_R32G32B32A32_FLOAT 
 
-    { GUID_WICPixelFormat32bppCMYK,             GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM 
-    { GUID_WICPixelFormat64bppCMYK,             GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
-    { GUID_WICPixelFormat40bppCMYKAlpha,        GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
-    { GUID_WICPixelFormat80bppCMYKAlpha,        GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
+    { GUID_WICPixelFormat32bppCMYK,             GUID_WICPixelFormat32bppRGBA }, //DXGI_FORMAT_R8G8B8A8_UNORM 
+    { GUID_WICPixelFormat64bppCMYK,             GUID_WICPixelFormat64bppRGBA }, //DXGI_FORMAT_R16G16B16A16_UNORM
+    { GUID_WICPixelFormat40bppCMYKAlpha,        GUID_WICPixelFormat64bppRGBA }, //DXGI_FORMAT_R16G16B16A16_UNORM
+    { GUID_WICPixelFormat80bppCMYKAlpha,        GUID_WICPixelFormat64bppRGBA }, //DXGI_FORMAT_R16G16B16A16_UNORM
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
-    { GUID_WICPixelFormat32bppRGB,              GUID_WICPixelFormat32bppRGBA }, // DXGI_FORMAT_R8G8B8A8_UNORM
-    { GUID_WICPixelFormat64bppRGB,              GUID_WICPixelFormat64bppRGBA }, // DXGI_FORMAT_R16G16B16A16_UNORM
-    { GUID_WICPixelFormat64bppPRGBAHalf,        GUID_WICPixelFormat64bppRGBAHalf }, // DXGI_FORMAT_R16G16B16A16_FLOAT 
+    { GUID_WICPixelFormat32bppRGB,              GUID_WICPixelFormat32bppRGBA }, //DXGI_FORMAT_R8G8B8A8_UNORM
+    { GUID_WICPixelFormat64bppRGB,              GUID_WICPixelFormat64bppRGBA }, //DXGI_FORMAT_R16G16B16A16_UNORM
+    { GUID_WICPixelFormat64bppPRGBAHalf,        GUID_WICPixelFormat64bppRGBAHalf }, //DXGI_FORMAT_R16G16B16A16_FLOAT 
 #endif
 
-    // We don't support n-channel formats
+    //We don't support n-channel formats
 };
 
 static bool g_WIC2 = false;
@@ -175,7 +175,7 @@ IWICImagingFactory* _GetWIC()
 
     if ( SUCCEEDED(hr) )
     {
-        // WIC2 is available on Windows 8 and Windows 7 SP1 with KB 2670838 installed
+        //WIC2 is available on Windows 8 and Windows 7 SP1 with KB 2670838 installed
         g_WIC2 = true;
     }
     else
@@ -213,7 +213,7 @@ IWICImagingFactory* _GetWIC()
     return s_Factory;
 }
 
-} // namespace DirectX
+} //namespace DirectX
 
 
 //---------------------------------------------------------------------------------
@@ -324,9 +324,9 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
 
     if ( !maxsize )
     {
-        // This is a bit conservative because the hardware could support larger textures than
-        // the Feature Level defined minimums, but doing it this way is much easier and more
-        // performant for WIC than the 'fail and retry' model used by DDSTextureLoader
+        //This is a bit conservative because the hardware could support larger textures than
+        //the Feature Level defined minimums, but doing it this way is much easier and more
+        //performant for WIC than the 'fail and retry' model used by DDSTextureLoader
 
         switch( d3dDevice->GetFeatureLevel() )
         {
@@ -374,7 +374,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         theight = height;
     }
 
-    // Determine format
+    //Determine format
     WICPixelFormatGUID pixelFormat;
     hr = frame->GetPixelFormat( &pixelFormat );
     if ( FAILED(hr) )
@@ -430,12 +430,12 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
     if ( (format == DXGI_FORMAT_R32G32B32_FLOAT) && d3dContext != 0 && textureView != 0 )
     {
-        // Special case test for optional device support for autogen mipchains for R32G32B32_FLOAT 
+        //Special case test for optional device support for autogen mipchains for R32G32B32_FLOAT 
         UINT fmtSupport = 0;
         hr = d3dDevice->CheckFormatSupport( DXGI_FORMAT_R32G32B32_FLOAT, &fmtSupport );
         if ( FAILED(hr) || !( fmtSupport & D3D11_FORMAT_SUPPORT_MIP_AUTOGEN ) )
         {
-            // Use R32G32B32A32_FLOAT instead which is required for Feature Level 10.0 and up
+            //Use R32G32B32A32_FLOAT instead which is required for Feature Level 10.0 and up
             memcpy( &convertGUID, &GUID_WICPixelFormat128bppRGBAFloat, sizeof(WICPixelFormatGUID) );
             format = DXGI_FORMAT_R32G32B32A32_FLOAT;
             bpp = 128;
@@ -446,7 +446,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
     if ( !bpp )
         return E_FAIL;
 
-    // Handle sRGB formats
+    //Handle sRGB formats
     if ( forceSRGB )
     {
         format = MakeSRGB( format );
@@ -459,7 +459,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
             GUID containerFormat;
             if ( SUCCEEDED( metareader->GetContainerFormat( &containerFormat ) ) )
             {
-                // Check for sRGB colorspace metadata
+                //Check for sRGB colorspace metadata
                 bool sRGB = false;
 
                 PROPVARIANT value;
@@ -467,7 +467,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
 
                 if ( memcmp( &containerFormat, &GUID_ContainerFormatPng, sizeof(GUID) ) == 0 )
                 {
-                    // Check for sRGB chunk
+                    //Check for sRGB chunk
                     if ( SUCCEEDED( metareader->GetMetadataByName( L"/sRGB/RenderingIntent", &value ) ) && value.vt == VT_UI1 )
                     {
                         sRGB = true;
@@ -503,19 +503,19 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         }
     }
 
-    // Verify our target format is supported by the current device
-    // (handles WDDM 1.0 or WDDM 1.1 device driver cases as well as DirectX 11.0 Runtime without 16bpp format support)
+    //Verify our target format is supported by the current device
+    //(handles WDDM 1.0 or WDDM 1.1 device driver cases as well as DirectX 11.0 Runtime without 16bpp format support)
     UINT support = 0;
     hr = d3dDevice->CheckFormatSupport( format, &support );
     if ( FAILED(hr) || !(support & D3D11_FORMAT_SUPPORT_TEXTURE2D) )
     {
-        // Fallback to RGBA 32-bit format which is supported by all devices
+        //Fallback to RGBA 32-bit format which is supported by all devices
         memcpy( &convertGUID, &GUID_WICPixelFormat32bppRGBA, sizeof(WICPixelFormatGUID) );
         format = DXGI_FORMAT_R8G8B8A8_UNORM;
         bpp = 32;
     }
 
-    // Allocate temporary memory for image
+    //Allocate temporary memory for image
     size_t rowPitch = ( twidth * bpp + 7 ) / 8;
     size_t imageSize = rowPitch * theight;
 
@@ -523,19 +523,19 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
     if (!temp)
         return E_OUTOFMEMORY;
 
-    // Load image data
+    //Load image data
     if ( memcmp( &convertGUID, &pixelFormat, sizeof(GUID) ) == 0
          && twidth == width
          && theight == height )
     {
-        // No format conversion or resize needed
+        //No format conversion or resize needed
         hr = frame->CopyPixels( 0, static_cast<UINT>( rowPitch ), static_cast<UINT>( imageSize ), temp.get() );  
         if ( FAILED(hr) )
             return hr;
     }
     else if ( twidth != width || theight != height )
     {
-        // Resize
+        //Resize
         IWICImagingFactory* pWIC = _GetWIC();
         if ( !pWIC )
             return E_NOINTERFACE;
@@ -556,7 +556,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
 
         if ( memcmp( &convertGUID, &pfScaler, sizeof(GUID) ) == 0 )
         {
-            // No format conversion needed
+            //No format conversion needed
             hr = scaler->CopyPixels( 0, static_cast<UINT>( rowPitch ), static_cast<UINT>( imageSize ), temp.get() );  
             if ( FAILED(hr) )
                 return hr;
@@ -586,7 +586,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
     }
     else
     {
-        // Format conversion but no resize
+        //Format conversion but no resize
         IWICImagingFactory* pWIC = _GetWIC();
         if ( !pWIC )
             return E_NOINTERFACE;
@@ -612,9 +612,9 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
             return hr;
     }
 
-    // See if format is supported for auto-gen mipmaps (varies by feature level)
+    //See if format is supported for auto-gen mipmaps (varies by feature level)
     bool autogen = false;
-    if ( d3dContext != 0 && textureView != 0 ) // Must have context and shader-view to auto generate mipmaps
+    if ( d3dContext != 0 && textureView != 0 ) //Must have context and shader-view to auto generate mipmaps
     {
         UINT fmtSupport = 0;
         hr = d3dDevice->CheckFormatSupport( format, &fmtSupport );
@@ -628,7 +628,7 @@ static HRESULT CreateTextureFromWIC( _In_ ID3D11Device* d3dDevice,
         }
     }
 
-    // Create texture
+    //Create texture
     D3D11_TEXTURE2D_DESC desc;
     desc.Width = twidth;
     desc.Height = theight;
@@ -788,7 +788,7 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
     if ( !pWIC )
         return E_NOINTERFACE;
 
-    // Create input stream for memory
+    //Create input stream for memory
     ComPtr<IWICStream> stream;
     HRESULT hr = pWIC->CreateStream( stream.GetAddressOf() );
     if ( FAILED(hr) )
@@ -798,7 +798,7 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
     if ( FAILED(hr) )
         return hr;
 
-    // Initialize WIC
+    //Initialize WIC
     ComPtr<IWICBitmapDecoder> decoder;
     hr = pWIC->CreateDecoderFromStream( stream.Get(), 0, WICDecodeMetadataCacheOnDemand, decoder.GetAddressOf() );
     if ( FAILED(hr) )
@@ -875,7 +875,7 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
     if ( !pWIC )
         return E_NOINTERFACE;
 
-    // Create input stream for memory
+    //Create input stream for memory
     ComPtr<IWICStream> stream;
     HRESULT hr = pWIC->CreateStream( stream.GetAddressOf() );
     if ( FAILED(hr) )
@@ -885,7 +885,7 @@ HRESULT DirectX::CreateWICTextureFromMemoryEx( ID3D11Device* d3dDevice,
     if ( FAILED(hr) )
         return hr;
 
-    // Initialize WIC
+    //Initialize WIC
     ComPtr<IWICBitmapDecoder> decoder;
     hr = pWIC->CreateDecoderFromStream( stream.Get(), 0, WICDecodeMetadataCacheOnDemand, decoder.GetAddressOf() );
     if ( FAILED(hr) )
@@ -978,7 +978,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
     if ( !pWIC )
         return E_NOINTERFACE;
 
-    // Initialize WIC
+    //Initialize WIC
     ComPtr<IWICBitmapDecoder> decoder;
     HRESULT hr = pWIC->CreateDecoderFromFilename( fileName, 0, GENERIC_READ, WICDecodeMetadataCacheOnDemand, decoder.GetAddressOf() );
     if ( FAILED(hr) )
@@ -1092,7 +1092,7 @@ HRESULT DirectX::CreateWICTextureFromFileEx( ID3D11Device* d3dDevice,
     if ( !pWIC )
         return E_NOINTERFACE;
 
-    // Initialize WIC
+    //Initialize WIC
     ComPtr<IWICBitmapDecoder> decoder;
     HRESULT hr = pWIC->CreateDecoderFromFilename( fileName, 0, GENERIC_READ, WICDecodeMetadataCacheOnDemand, decoder.GetAddressOf() );
     if ( FAILED(hr) )

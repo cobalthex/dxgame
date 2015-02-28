@@ -21,7 +21,7 @@ Texture2D::Texture2D(const DX::DeviceResourcesPtr& DeviceResources, const std::w
 	if (EndsWith(File, L".dds")) //load with DDS loader
 	{
 		ID3D11Resource* tex;
-		DX::ThrowIfFailed
+		App::ThrowIfFailed
 		(
 			CreateDDSTextureFromFileEx
 			(
@@ -42,7 +42,7 @@ Texture2D::Texture2D(const DX::DeviceResourcesPtr& DeviceResources, const std::w
 	}
 
 	//else //use WIC (Does not, by default, support TGA)
-	//	DX::ThrowIfFailed(CreateWICTextureFromFile(DeviceResources->GetD3DDevice(), File.data(), &tex, &srv));
+	//	App::ThrowIfFailed(CreateWICTextureFromFile(DeviceResources->GetD3DDevice(), File.data(), &tex, &srv));
 
 	else //use STB_Image
 	{
@@ -95,8 +95,8 @@ Texture2D::Texture2D(const DX::DeviceResourcesPtr& DeviceResources, unsigned Wid
 	desc.CPUAccessFlags = (AllowWrites ? D3D11_CPU_ACCESS_WRITE : 0);
 	desc.MiscFlags = 0;
 
-	DX::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateTexture2D(&desc, nullptr, &tex));
-	DX::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateShaderResourceView(tex, nullptr, &srv));
+	App::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateTexture2D(&desc, nullptr, &tex));
+	App::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateShaderResourceView(tex, nullptr, &srv));
 	tex->Release();
 }
 
@@ -121,8 +121,8 @@ void Texture2D::LoadFromData(uint8_t* Data, unsigned Width, unsigned Height, boo
 	sub.SysMemPitch = Width * sizeof(uint32_t);
 	sub.SysMemSlicePitch = 0;
 
-	DX::ThrowIfFailed(deviceResources->GetD3DDevice()->CreateTexture2D(&desc, &sub, &tex));
-	DX::ThrowIfFailed(deviceResources->GetD3DDevice()->CreateShaderResourceView(tex, nullptr, &srv));
+	App::ThrowIfFailed(deviceResources->GetD3DDevice()->CreateTexture2D(&desc, &sub, &tex));
+	App::ThrowIfFailed(deviceResources->GetD3DDevice()->CreateShaderResourceView(tex, nullptr, &srv));
 
 	tex->GetDesc(&desc);
 	tex->Release();

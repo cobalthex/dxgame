@@ -1,14 +1,14 @@
 //-------------------------------------------------------------------------------------
-// SimpleMath.hpp -- Simplified C++ Math wrapper for DirectXMath
+//SimpleMath.hpp -- Simplified C++ Math wrapper for DirectXMath
 //
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
-//  
-// Copyright (c) Microsoft Corporation. All rights reserved.
+//THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+//ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+//THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//PARTICULAR PURPOSE.
+// 
+//Copyright (c) Microsoft Corporation. All rights reserved.
 //
-// http://go.microsoft.com/fwlink/?LinkId=248929
+//http://go.microsoft.com/fwlink/?LinkId=248929
 //-------------------------------------------------------------------------------------
 
 #pragma once
@@ -27,7 +27,7 @@ namespace DirectX
 		struct Plane;
 
 		//------------------------------------------------------------------------------
-		// 2D vector
+		//2D vector
 		struct Vector2 : public XMFLOAT2
 		{
 			Vector2() : XMFLOAT2(0.f, 0.f) {}
@@ -38,11 +38,11 @@ namespace DirectX
 
 			operator XMVECTOR() const { return XMLoadFloat2(this); }
 
-			// Comparision operators
+			//Comparision operators
 			bool operator == (const Vector2& V) const;
 			bool operator != (const Vector2& V) const;
 
-			// Assignment operators
+			//Assignment operators
 			Vector2& operator= (const Vector2& V) { x = V.x; y = V.y; return *this; }
 			Vector2& operator+= (const Vector2& V);
 			Vector2& operator-= (const Vector2& V);
@@ -50,11 +50,13 @@ namespace DirectX
 			Vector2& operator*= (float S);
 			Vector2& operator/= (float S);
 
-			// Urnary operators
+			inline Vector2 YX() const { return Vector2(y, x); }
+
+			//Urnary operators
 			Vector2 operator+ () const { return *this; }
 			Vector2 operator- () const { return Vector2(-x, -y); }
 
-			// Vector operations
+			//Vector operations
 			bool InBounds(const Vector2& Bounds) const;
 
 			float Length() const;
@@ -70,7 +72,7 @@ namespace DirectX
 			void Clamp(const Vector2& vmin, const Vector2& vmax);
 			void Clamp(const Vector2& vmin, const Vector2& vmax, Vector2& result) const;
 
-			// Static functions
+			//Static functions
 			static float Distance(const Vector2& v1, const Vector2& v2);
 			static float DistanceSquared(const Vector2& v1, const Vector2& v2);
 
@@ -115,14 +117,14 @@ namespace DirectX
 			static Vector2 TransformNormal(const Vector2& v, const Matrix& m);
 			static void TransformNormal(_In_reads_(count) const Vector2* varray, size_t count, const Matrix& m, _Out_writes_(count) Vector2* resultArray);
 
-			// Constants
+			//Constants
 			static const Vector2 Zero;
 			static const Vector2 One;
 			static const Vector2 UnitX;
 			static const Vector2 UnitY;
 		};
 
-		// Binary operators
+		//Binary operators
 		Vector2 operator+ (const Vector2& V1, const Vector2& V2);
 		Vector2 operator- (const Vector2& V1, const Vector2& V2);
 		Vector2 operator* (const Vector2& V1, const Vector2& V2);
@@ -131,7 +133,7 @@ namespace DirectX
 		Vector2 operator* (float S, const Vector2& V);
 
 		//------------------------------------------------------------------------------
-		// 3D vector
+		//3D vector
 		struct Vector3 : public XMFLOAT3
 		{
 			Vector3() : XMFLOAT3(0.f, 0.f, 0.f) {}
@@ -142,11 +144,11 @@ namespace DirectX
 
 			operator XMVECTOR() const { return XMLoadFloat3(this); }
 
-			// Comparision operators
+			//Comparision operators
 			bool operator == (const Vector3& V) const;
 			bool operator != (const Vector3& V) const;
 
-			// Assignment operators
+			//Assignment operators
 			Vector3& operator= (const Vector3& V) { x = V.x; y = V.y; z = V.z; return *this; }
 			Vector3& operator+= (const Vector3& V);
 			Vector3& operator-= (const Vector3& V);
@@ -154,11 +156,18 @@ namespace DirectX
 			Vector3& operator*= (float S);
 			Vector3& operator/= (float S);
 
-			// Urnary operators
+			//Order flipping
+			inline Vector3 XZY() const { return Vector3(x, z, y); }
+			inline Vector3 YXZ() const { return Vector3(y, x, z); }
+			inline Vector3 YZX() const { return Vector3(y, z, x); }
+			inline Vector3 ZXY() const { return Vector3(z, x, y); }
+			inline Vector3 ZYX() const { return Vector3(z, y, x); }
+
+			//Urnary operators
 			Vector3 operator+ () const { return *this; }
 			Vector3 operator- () const;
 
-			// Vector operations
+			//Vector operations
 			bool InBounds(const Vector3& Bounds) const;
 
 			float Length() const;
@@ -174,7 +183,7 @@ namespace DirectX
 			void Clamp(const Vector3& vmin, const Vector3& vmax);
 			void Clamp(const Vector3& vmin, const Vector3& vmax, Vector3& result) const;
 
-			// Static functions
+			//Static functions
 			static float Distance(const Vector3& v1, const Vector3& v2);
 			static float DistanceSquared(const Vector3& v1, const Vector3& v2);
 
@@ -219,7 +228,7 @@ namespace DirectX
 			static Vector3 TransformNormal(const Vector3& v, const Matrix& m);
 			static void TransformNormal(_In_reads_(count) const Vector3* varray, size_t count, const Matrix& m, _Out_writes_(count) Vector3* resultArray);
 
-			// Constants
+			//Constants
 			static const Vector3 Zero;
 			static const Vector3 One;
 			static const Vector3 UnitX;
@@ -233,7 +242,7 @@ namespace DirectX
 			static const Vector3 Backward;
 		};
 
-		// Binary operators
+		//Binary operators
 		Vector3 operator+ (const Vector3& V1, const Vector3& V2);
 		Vector3 operator- (const Vector3& V1, const Vector3& V2);
 		Vector3 operator* (const Vector3& V1, const Vector3& V2);
@@ -242,7 +251,7 @@ namespace DirectX
 		Vector3 operator* (float S, const Vector3& V);
 
 		//------------------------------------------------------------------------------
-		// 4D vector
+		//4D vector
 		struct Vector4 : public XMFLOAT4
 		{
 			Vector4() : XMFLOAT4(0.f, 0.f, 0.f, 0.f) {}
@@ -253,11 +262,11 @@ namespace DirectX
 
 			operator XMVECTOR() const { return XMLoadFloat4(this); }
 
-			// Comparision operators
+			//Comparision operators
 			bool operator == (const Vector4& V) const;
 			bool operator != (const Vector4& V) const;
 
-			// Assignment operators
+			//Assignment operators
 			Vector4& operator= (const Vector4& V) { x = V.x; y = V.y; z = V.z; w = V.w; return *this; }
 			Vector4& operator+= (const Vector4& V);
 			Vector4& operator-= (const Vector4& V);
@@ -265,11 +274,11 @@ namespace DirectX
 			Vector4& operator*= (float S);
 			Vector4& operator/= (float S);
 
-			// Urnary operators
+			//Urnary operators
 			Vector4 operator+ () const { return *this; }
 			Vector4 operator- () const;
 
-			// Vector operations
+			//Vector operations
 			bool InBounds(const Vector4& Bounds) const;
 
 			float Length() const;
@@ -285,7 +294,7 @@ namespace DirectX
 			void Clamp(const Vector4& vmin, const Vector4& vmax);
 			void Clamp(const Vector4& vmin, const Vector4& vmax, Vector4& result) const;
 
-			// Static functions
+			//Static functions
 			static float Distance(const Vector4& v1, const Vector4& v2);
 			static float DistanceSquared(const Vector4& v1, const Vector4& v2);
 
@@ -329,7 +338,7 @@ namespace DirectX
 			static Vector4 Transform(const Vector4& v, const Matrix& m);
 			static void Transform(_In_reads_(count) const Vector4* varray, size_t count, const Matrix& m, _Out_writes_(count) Vector4* resultArray);
 
-			// Constants
+			//Constants
 			static const Vector4 Zero;
 			static const Vector4 One;
 			static const Vector4 UnitX;
@@ -338,7 +347,7 @@ namespace DirectX
 			static const Vector4 UnitW;
 		};
 
-		// Binary operators
+		//Binary operators
 		Vector4 operator+ (const Vector4& V1, const Vector4& V2);
 		Vector4 operator- (const Vector4& V1, const Vector4& V2);
 		Vector4 operator* (const Vector4& V1, const Vector4& V2);
@@ -347,7 +356,7 @@ namespace DirectX
 		Vector4 operator* (float S, const Vector4& V);
 
 		//------------------------------------------------------------------------------
-		// 4x4 Matrix (assumes right-handed cooordinates)
+		//4x4 Matrix (assumes right-handed cooordinates)
 		struct Matrix : public XMFLOAT4X4
 		{
 			Matrix() : XMFLOAT4X4(1.f, 0, 0, 0,
@@ -377,11 +386,11 @@ namespace DirectX
 			operator XMFLOAT4X3() const { XMFLOAT4X3 m; XMStoreFloat4x3(&m, *this); return m; }
 			operator XMFLOAT4X3A() const { XMFLOAT4X3A m; XMStoreFloat4x3A(&m, *this); return m; }
 
-			// Comparision operators
+			//Comparision operators
 			bool operator == (const Matrix& M) const;
 			bool operator != (const Matrix& M) const;
 
-			// Assignment operators
+			//Assignment operators
 			Matrix& operator= (const Matrix& M) { memcpy_s(this, sizeof(float) * 16, &M, sizeof(float) * 16); return *this; }
 			Matrix& operator+= (const Matrix& M);
 			Matrix& operator-= (const Matrix& M);
@@ -390,13 +399,13 @@ namespace DirectX
 			Matrix& operator/= (float S);
 
 			Matrix& operator/= (const Matrix& M);
-			// Element-wise divide
+			//Element-wise divide
 
-			// Urnary operators
+			//Urnary operators
 			Matrix operator+ () const { return *this; }
 			Matrix operator- () const;
 
-			// Properties
+			//Properties
 			Vector3 Up() const { return Vector3(_21, _22, _23); }
 			void Up(const Vector3& v) { _21 = v.x; _22 = v.y; _23 = v.z; }
 
@@ -418,7 +427,7 @@ namespace DirectX
 			Vector3 Translation() const { return Vector3(_41, _42, _43); }
 			void Translation(const Vector3& v) { _41 = v.x; _42 = v.y; _43 = v.z; }
 
-			// Matrix operations
+			//Matrix operations
 			bool Decompose(Vector3& scale, Quaternion& rotation, Vector3& translation);
 
 			Matrix Transpose() const;
@@ -429,7 +438,7 @@ namespace DirectX
 
 			float Determinant() const;
 
-			// Static functions
+			//Static functions
 			static Matrix CreateBillboard(const Vector3& object, const Vector3& cameraPosition, const Vector3& cameraUp, _In_opt_ const Vector3* cameraForward = nullptr);
 
 			static Matrix CreateConstrainedBillboard(const Vector3& object, const Vector3& cameraPosition, const Vector3& rotateAxis,
@@ -471,23 +480,23 @@ namespace DirectX
 			static void Transform(const Matrix& M, const Quaternion& rotation, Matrix& result);
 			static Matrix Transform(const Matrix& M, const Quaternion& rotation);
 
-			// Constants
+			//Constants
 			static const Matrix Identity;
 		};
 
-		// Binary operators
+		//Binary operators
 		Matrix operator+ (const Matrix& M1, const Matrix& M2);
 		Matrix operator- (const Matrix& M1, const Matrix& M2);
 		Matrix operator* (const Matrix& M1, const Matrix& M2);
 		Matrix operator* (const Matrix& M, float S);
 		Matrix operator/ (const Matrix& M, float S);
 		Matrix operator/ (const Matrix& M1, const Matrix& M2);
-		// Element-wise divide
+		//Element-wise divide
 		Matrix operator* (float S, const Matrix& M);
 
 
 		//-----------------------------------------------------------------------------
-		// Plane
+		//Plane
 		struct Plane : public XMFLOAT4
 		{
 			Plane() : XMFLOAT4(0.f, 1.f, 0.f, 0.f) {}
@@ -501,21 +510,21 @@ namespace DirectX
 
 			operator XMVECTOR() const { return XMLoadFloat4(this); }
 
-			// Comparision operators
+			//Comparision operators
 			bool operator == (const Plane& p) const;
 			bool operator != (const Plane& p) const;
 
-			// Assignment operators
+			//Assignment operators
 			Plane& operator= (const Plane& p) { x = p.x; y = p.y; z = p.z; w = p.w; return *this; }
 
-			// Properties
+			//Properties
 			Vector3 Normal() const { return Vector3(x, y, z); }
 			void Normal(const Vector3& normal) { x = normal.x; y = normal.y; z = normal.z; }
 
 			float D() const { return w; }
 			void D(float d) { w = d; }
 
-			// Plane operations
+			//Plane operations
 			void Normalize();
 			void Normalize(Plane& result) const;
 
@@ -523,17 +532,17 @@ namespace DirectX
 			float DotCoordinate(const Vector3& position) const;
 			float DotNormal(const Vector3& normal) const;
 
-			// Static functions
+			//Static functions
 			static void Transform(const Plane& plane, const Matrix& M, Plane& result);
 			static Plane Transform(const Plane& plane, const Matrix& M);
 
 			static void Transform(const Plane& plane, const Quaternion& rotation, Plane& result);
 			static Plane Transform(const Plane& plane, const Quaternion& rotation);
-			// Input quaternion must be the inverse transpose of the transformation
+			//Input quaternion must be the inverse transpose of the transformation
 		};
 
 		//------------------------------------------------------------------------------
-		// Quaternion
+		//Quaternion
 		struct Quaternion : public XMFLOAT4
 		{
 			Quaternion() : XMFLOAT4(0, 0, 0, 1.f) {}
@@ -545,11 +554,11 @@ namespace DirectX
 
 			operator XMVECTOR() const { return XMLoadFloat4(this); }
 
-			// Comparision operators
+			//Comparision operators
 			bool operator == (const Quaternion& q) const;
 			bool operator != (const Quaternion& q) const;
 
-			// Assignment operators
+			//Assignment operators
 			Quaternion& operator= (const Quaternion& q) { x = q.x; y = q.y; z = q.z; w = q.w; return *this; }
 			Quaternion& operator+= (const Quaternion& q);
 			Quaternion& operator-= (const Quaternion& q);
@@ -557,11 +566,11 @@ namespace DirectX
 			Quaternion& operator*= (float S);
 			Quaternion& operator/= (const Quaternion& q);
 
-			// Urnary operators
+			//Urnary operators
 			Quaternion operator+ () const { return *this; }
 			Quaternion operator- () const;
 
-			// Quaternion operations
+			//Quaternion operations
 			float Length() const;
 			float LengthSquared() const;
 
@@ -575,7 +584,7 @@ namespace DirectX
 
 			float Dot(const Quaternion& Q) const;
 
-			// Static functions
+			//Static functions
 			static Quaternion CreateFromAxisAngle(const Vector3& axis, float angle);
 			static Quaternion CreateFromYawPitchRoll(float yaw, float pitch, float roll);
 			static Quaternion CreateFromRotationMatrix(const Matrix& M);
@@ -589,11 +598,11 @@ namespace DirectX
 			static void Concatenate(const Quaternion& q1, const Quaternion& q2, Quaternion& result);
 			static Quaternion Concatenate(const Quaternion& q1, const Quaternion& q2);
 
-			// Constants
+			//Constants
 			static const Quaternion Identity;
 		};
 
-		// Binary operators
+		//Binary operators
 		Quaternion operator+ (const Quaternion& Q1, const Quaternion& Q2);
 		Quaternion operator- (const Quaternion& Q1, const Quaternion& Q2);
 		Quaternion operator* (const Quaternion& Q1, const Quaternion& Q2);
@@ -602,7 +611,7 @@ namespace DirectX
 		Quaternion operator* (float S, const Quaternion& Q);
 
 		//------------------------------------------------------------------------------
-		// Color
+		//Color
 		struct Color : public XMFLOAT4
 		{
 			Color() : XMFLOAT4(0, 0, 0, 1.f) {}
@@ -614,19 +623,19 @@ namespace DirectX
 			Color(FXMVECTOR V) { XMStoreFloat4(this, V); }
 
 			explicit Color(const DirectX::PackedVector::XMCOLOR& Packed);
-			// BGRA Direct3D 9 D3DCOLOR packed color
+			//BGRA Direct3D 9 D3DCOLOR packed color
 
 			explicit Color(const DirectX::PackedVector::XMUBYTEN4& Packed);
-			// RGBA XNA Game Studio packed color
+			//RGBA XNA Game Studio packed color
 
 			operator XMVECTOR() const { return XMLoadFloat4(this); }
 			operator const float*() const { return reinterpret_cast<const float*>(this); }
 
-			// Comparision operators
+			//Comparision operators
 			bool operator == (const Color& c) const;
 			bool operator != (const Color& c) const;
 
-			// Assignment operators
+			//Assignment operators
 			Color& operator= (const Color& c) { x = c.x; y = c.y; z = c.z; w = c.w; return *this; }
 			Color& operator+= (const Color& c);
 			Color& operator-= (const Color& c);
@@ -634,11 +643,11 @@ namespace DirectX
 			Color& operator*= (float S);
 			Color& operator/= (const Color& c);
 
-			// Urnary operators
+			//Urnary operators
 			Color operator+ () const { return *this; }
 			Color operator- () const;
 
-			// Properties
+			//Properties
 			float R() const { return x; }
 			void R(float r) { x = r; }
 
@@ -651,7 +660,7 @@ namespace DirectX
 			float A() const { return w; }
 			void A(float a) { w = a; }
 
-			// Color operations
+			//Color operations
 			DirectX::PackedVector::XMCOLOR BGRA() const;
 			DirectX::PackedVector::XMUBYTEN4 RGBA() const;
 
@@ -673,7 +682,7 @@ namespace DirectX
 			void AdjustContrast(float contrast);
 			void AdjustContrast(float contrast, Color& result) const;
 
-			// Static functions
+			//Static functions
 			static void Modulate(const Color& c1, const Color& c2, Color& result);
 			static Color Modulate(const Color& c1, const Color& c2);
 
@@ -681,7 +690,7 @@ namespace DirectX
 			static Color Lerp(const Color& c1, const Color& c2, float t);
 		};
 
-		// Binary operators
+		//Binary operators
 		Color operator+ (const Color& C1, const Color& C2);
 		Color operator- (const Color& C1, const Color& C2);
 		Color operator* (const Color& C1, const Color& C2);
@@ -690,7 +699,7 @@ namespace DirectX
 		Color operator* (float S, const Color& C);
 
 		//------------------------------------------------------------------------------
-		// Ray
+		//Ray
 		class Ray
 		{
 		public:
@@ -700,11 +709,11 @@ namespace DirectX
 			Ray() : position(0, 0, 0), direction(0, 0, 1) {}
 			Ray(const Vector3& pos, const Vector3& dir) : position(pos), direction(dir) {}
 
-			// Comparision operators
+			//Comparision operators
 			bool operator == (const Ray& r) const;
 			bool operator != (const Ray& r) const;
 
-			// Ray operations
+			//Ray operations
 			bool Intersects(const BoundingSphere& sphere, _Out_ float& Dist) const;
 			bool Intersects(const BoundingBox& box, _Out_ float& Dist) const;
 			bool Intersects(const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, _Out_ float& Dist) const;
@@ -713,12 +722,12 @@ namespace DirectX
 
 #include "SimpleMath.inl"
 
-	}; // namespace SimpleMath
+	}; //namespace SimpleMath
 
-}; // namespace DirectX
+}; //namespace DirectX
 
 //------------------------------------------------------------------------------
-// Support for SimpleMath and Standard C++ Library containers
+//Support for SimpleMath and Standard C++ Library containers
 namespace std
 {
 
@@ -825,4 +834,4 @@ namespace std
 		}
 	};
 
-} // namespace std
+} //namespace std

@@ -45,6 +45,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Helpers.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\ISerializable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\ModelMesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Renderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\Camera.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ConstantBuffer.hpp" />
@@ -58,8 +59,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\ChaseCamera.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.hpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)App\DirectXGameMain.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)App\Game.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)App\Game.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\iqm.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDS.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.hpp" />
@@ -71,6 +72,7 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\DWriteFontCollectionLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\util.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\Console.hpp" />
@@ -79,8 +81,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.hpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\FpsRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
@@ -101,6 +103,13 @@
       <ShaderModel>4.0</ShaderModel>
       <EnableDebuggingInformation>true</EnableDebuggingInformation>
     </FxCompile>
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColor.ps.hlsl">
+      <ShaderType>Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColor.vs.hlsl">
+      <ShaderType>Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
@@ -116,6 +125,9 @@
     <Image Include="$(MSBuildThisFileDirectory)Content\Body.dds">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Content\Ground.dds">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
     <Image Include="$(MSBuildThisFileDirectory)Content\Head.dds">
       <DeploymentContent>true</DeploymentContent>
     </Image>
@@ -128,5 +140,18 @@
     <None Include="$(MSBuildThisFileDirectory)Content\test.iqm">
       <DeploymentContent>true</DeploymentContent>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf">
+      <DeploymentContent>true</DeploymentContent>
+    </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\license.txt">
+      <DeploymentContent>true</DeploymentContent>
+    </Text>
+    <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\readme.txt">
+      <DeploymentContent>true</DeploymentContent>
+    </Text>
   </ItemGroup>
 </Project>

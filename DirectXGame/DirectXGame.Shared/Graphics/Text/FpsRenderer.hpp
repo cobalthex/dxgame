@@ -5,7 +5,7 @@
 
 namespace DirectXGame
 {
-	// Renders the current FPS value in the bottom right corner of the screen using Direct2D and DirectWrite.
+	//Renders the current FPS value in the bottom right corner of the screen using Direct2D and DirectWrite
 	class FpsRenderer : public Renderer
 	{
 	public:
@@ -16,7 +16,7 @@ namespace DirectXGame
 		void Render();
 
 	protected:
-		// Resources related to text rendering.
+		//Resources related to text rendering
 		std::wstring                    text;
 		DWRITE_TEXT_METRICS	            textMetrics;
 		ComPtr<ID2D1SolidColorBrush>    whiteBrush;

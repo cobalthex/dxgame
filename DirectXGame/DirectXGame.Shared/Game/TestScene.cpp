@@ -8,7 +8,7 @@ using namespace DirectXGame;
 using namespace DirectX;
 using namespace Windows::Foundation;
 
-// Loads vertex and pixel shaders from files and instantiates the cube geometry.
+//Loads vertex and pixel shaders from files and instantiates the cube geometry.
 TestScene::TestScene(const std::shared_ptr<DX::DeviceResources>& DeviceResources) :
 loadingComplete(false),
 degreesPerSecond(45),
@@ -19,20 +19,21 @@ Renderer(DeviceResources)
 	CreateWindowSizeDependentResources();
 }
 
-// Initializes view parameters when the window size changes.
+//Initializes view parameters when the window size changes.
 void TestScene::CreateWindowSizeDependentResources()
 {
 	Size outputSize = deviceResources->GetOutputSize();
 	float aspectRatio = outputSize.Width / outputSize.Height;
 	float fovAngleY = 70.0f * XM_PI / 180.0f;
 
-	// This is a simple example of change that can be made when the app is in
-	// portrait or snapped view.
+	//This is a simple example of change that can be made when the app is in
+	//portrait or snapped view.
 	if (aspectRatio < 1.0f)
 		fovAngleY *= 2.0f;
 
+	pcCbuffer = ConstantBuffer<WVPConstantBufferDef>(deviceResources);
 	objectCBuffer = ConstantBuffer<ObjectConstantBufferDef>(deviceResources);
-
+	
 	materialCBuffer = ConstantBuffer<MaterialConstantBufferDef>(deviceResources);
 
 	D3D11_SAMPLER_DESC sampDesc;
@@ -54,7 +55,7 @@ void TestScene::CreateWindowSizeDependentResources()
 	cam.nearPlaneDistance = 0.01f;
 	cam.farPlaneDistance = 1000;
 
-	cam.position = { 0, 8, 8 };
+	cam.position = { 0, 10, 10 };
 	cam.lookAt = { 0, 3, 0 };
 
 	cam.CalcMatrices();
@@ -75,41 +76,49 @@ void TestScene::CreateWindowSizeDependentResources()
 	lightingCBuffer.data.eyePosition = Vector4(cam.position);
 	lightingCBuffer.data.globalAmbience = Color(0, 0, 0, 0);
 	lightingCBuffer.Update();
+
+	D3D11_RASTERIZER_DESC rastDesc;
+	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
+	rastDesc.FillMode = D3D11_FILL_WIREFRAME;
+	rastDesc.CullMode = D3D11_CULL_NONE;
+	rastDesc.AntialiasedLineEnable = true;
+	rastDesc.MultisampleEnable = true;
+	App::ThrowIfFailed(deviceResources->GetD3DDevice()->CreateRasterizerState(&rastDesc, &wireRasterizer));
 }
 
 void TestScene::CreateDeviceDependentResources()
 {
-	// Load shaders asynchronously.
-	auto loadVSTask = DX::ReadDataAsync(L"LitSkinned.vs.cso");
-	auto loadPSTask = DX::ReadDataAsync(L"LitSkinned.ps.cso");
+	//Load shaders asynchronously.
+	auto loadVSTask = App::ReadDataAsync(L"LitSkinned.vs.cso");
+	auto loadPSTask = App::ReadDataAsync(L"LitSkinned.ps.cso");
 
-	// After the vertex shader file is loaded, create the shader and input layout.
+	//After the vertex shader file is loaded, create the shader and input layout.
 	auto createVSTask = loadVSTask.then([this](const std::vector<byte>& fileData)
 	{
-		DX::ThrowIfFailed(
+		App::ThrowIfFailed(
 			deviceResources->GetD3DDevice()->CreateVertexShader(
 			fileData.data(),
 			fileData.size(),
 			nullptr,
 			&vertexShader
 			)
-			);
+		);
 
-		DX::ThrowIfFailed(
+		App::ThrowIfFailed(
 			deviceResources->GetD3DDevice()->CreateInputLayout(
-			DirectXGame::VertexSkinned::ElementDesc,
-			DirectXGame::VertexSkinned::ElementCount,
+			VertexTypes::VertexSkinned::ElementDesc,
+			VertexTypes::VertexSkinned::ElementCount,
 			fileData.data(),
 			fileData.size(),
 			&inputLayout
 			)
-			);
+		);
 	});
 
-	// After the pixel shader file is loaded, create the shader and constant buffer.
+	//After the pixel shader file is loaded, create the shader and constant buffer.
 	auto createPSTask = loadPSTask.then([this](const std::vector<byte>& fileData)
 	{
-		DX::ThrowIfFailed(
+		App::ThrowIfFailed(
 			deviceResources->GetD3DDevice()->CreatePixelShader(
 			&fileData[0],
 			fileData.size(),
@@ -119,11 +128,51 @@ void TestScene::CreateDeviceDependentResources()
 			);
 	});
 
-	// Once both shaders are loaded, create the mesh.
-	auto loadModelTask = (createPSTask && createVSTask).then([this]()
+	//Load shaders asynchronously.
+	loadVSTask = App::ReadDataAsync(L"PositionColor.vs.cso");
+	loadPSTask = App::ReadDataAsync(L"PositionColor.ps.cso");
+
+	//After the vertex shader file is loaded, create the shader and input layout.
+	createVSTask = loadVSTask.then([this](const std::vector<byte>& fileData)
+	{
+		App::ThrowIfFailed(
+			deviceResources->GetD3DDevice()->CreateVertexShader(
+			fileData.data(),
+			fileData.size(),
+			nullptr,
+			&pcVertexShader
+			)
+		);
+
+		App::ThrowIfFailed(
+			deviceResources->GetD3DDevice()->CreateInputLayout(
+			VertexTypes::VertexPositionColor::ElementDesc,
+			VertexTypes::VertexPositionColor::ElementCount,
+			fileData.data(),
+			fileData.size(),
+			&pcInputLayout
+			)
+		);
+	});
+
+	//After the pixel shader file is loaded, create the shader and constant buffer.
+	createPSTask = loadPSTask.then([this](const std::vector<byte>& fileData)
+	{
+		App::ThrowIfFailed(
+			deviceResources->GetD3DDevice()->CreatePixelShader(
+			&fileData[0],
+			fileData.size(),
+			nullptr,
+			&pcPixelShader
+			)
+		);
+	});
+
+	//Once both shaders are loaded, create the mesh.
+	auto loadModelTask = Concurrency::create_task([this]()
 	{
 		Iqm::Load(deviceResources, ccache, "Content/test.iqm", iqm);
-
+		iqmSkel = Mesh::Create(deviceResources, iqm.CreateSkeletalMesh());
 	}).then([this]()
 	{
 		loadingComplete = true;
@@ -133,17 +182,22 @@ void TestScene::CreateDeviceDependentResources()
 void TestScene::ReleaseDeviceDependentResources()
 {
 	loadingComplete = false;
+	
 	vertexShader.Reset();
 	inputLayout.Reset();
 	pixelShader.Reset();
+
+	pcVertexShader.Reset();
+	pcInputLayout.Reset();
+	pcPixelShader.Reset();
 }
 
-// Called once per frame, rotates the cube and calculates the model and view matrices.
+//Called once per frame, rotates the cube and calculates the model and view matrices.
 void TestScene::Update(const DX::StepTimer& Timer)
 {
 	if (!tracking)
 	{
-		// Convert degrees to radians, then convert seconds to rotation angle
+		//Convert degrees to radians, then convert seconds to rotation angle
 		float radiansPerSecond = XMConvertToRadians(degreesPerSecond);
 		double totalRotation = Timer.GetTotalSeconds() * radiansPerSecond;
 		float radians = static_cast<float>(fmod(totalRotation, XM_2PI));
@@ -152,11 +206,11 @@ void TestScene::Update(const DX::StepTimer& Timer)
 	}
 }
 
-// Rotate the 3D cube model a set amount of radians.
+//Rotate the 3D cube model a set amount of radians.
 void TestScene::Rotate(float Radians)
 {
-	// Prepare to pass the updated model matrix to the shader
-	objectCBuffer.data.world = Matrix::CreateRotationY(Radians).Transpose();
+	//Prepare to pass the updated model matrix to the shader
+	objectCBuffer.data.world = Matrix::CreateRotationY(Radians);//.Transpose();
 	objectCBuffer.data.Calc(cam.View(), cam.Projection());
 }
 
@@ -165,7 +219,7 @@ void TestScene::StartTracking()
 	tracking = true;
 }
 
-// When tracking, the 3D cube can be rotated around its Y axis by tracking pointer position relative to the output screen width.
+//When tracking, the 3D cube can be rotated around its Y axis by tracking pointer position relative to the output screen width.
 void TestScene::TrackingUpdate(float PositionX)
 {
 	if (tracking)
@@ -180,35 +234,33 @@ void TestScene::StopTracking()
 	tracking = false;
 }
 
-// Renders one frame using the vertex and pixel shaders.
+//Renders one frame using the vertex and pixel shaders.
 void TestScene::Render()
 {
-	// Loading is asynchronous. Only draw geometry after it's loaded.
 	if (!loadingComplete)
 		return;
 
 	auto context = deviceResources->GetD3DDeviceContext();
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+	
+	//context->RSSetState(wireRasterizer.Get());
+	//context->RSSetState(nullptr);
 	context->IASetInputLayout(inputLayout.Get());
 
-	// Attach our vertex shader.
 	context->VSSetShader(vertexShader.Get(), nullptr, 0);
 
-	iqm.BindPose(objectCBuffer.data);
+	iqm.Skin(objectCBuffer.data);
 	objectCBuffer.Update();
 	objectCBuffer.BindVertex(0);
 
-	// Attach our pixel shader.
 	context->PSSetShader(pixelShader.Get(), nullptr, 0);
 	context->PSSetSamplers(0, 1, sampler.GetAddressOf());
 
 	lightingCBuffer.BindPixel(1);
-
 	materialCBuffer.BindPixel(0);
+
 	iqm.Bind();
-	const auto& cxt = deviceResources->GetD3DDeviceContext();
 	for (auto& mesh : iqm.meshes)
 	{
 		materialCBuffer.data.FillFromMaterial(mesh.material);
@@ -216,7 +268,20 @@ void TestScene::Render()
 
 		if (mesh.material.texture != nullptr)
 			mesh.material.texture->Apply();
-		cxt->DrawIndexed((unsigned)mesh.IndexCount(), (unsigned)mesh.StartIndex(), 0);
+		context->DrawIndexed((unsigned)mesh.IndexCount(), (unsigned)mesh.StartIndex(), 0);
 	}
-	//iqm.Draw();
+	
+	//Draw skeleton
+	context->RSSetState(wireRasterizer.Get());
+
+	context->IASetInputLayout(pcInputLayout.Get());
+
+	pcCbuffer.data.wvp = objectCBuffer.data.worldViewProjection;
+	pcCbuffer.Update();
+	pcCbuffer.BindVertex(0);
+
+	context->VSSetShader(pcVertexShader.Get(), nullptr, 0);
+	context->PSSetShader(pcPixelShader.Get(), nullptr, 0);
+
+	iqmSkel.Draw();
 }

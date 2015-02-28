@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Pch.hpp"
-#include "Common/DeviceResources.hpp"
+#include "Graphics/DeviceResources.hpp"
 #include "Texture.hpp"
 
 class Texture2D : public Texture

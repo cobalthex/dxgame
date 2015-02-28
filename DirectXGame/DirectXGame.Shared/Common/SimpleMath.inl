@@ -1,14 +1,14 @@
 //-------------------------------------------------------------------------------------
-// SimpleMath.inl -- Simplified C++ Math wrapper for DirectXMath
+//SimpleMath.inl -- Simplified C++ Math wrapper for DirectXMath
 //
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
-//  
-// Copyright (c) Microsoft Corporation. All rights reserved.
+//THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+//ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+//THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//PARTICULAR PURPOSE.
+// 
+//Copyright (c) Microsoft Corporation. All rights reserved.
 //
-// http://go.microsoft.com/fwlink/?LinkId=248929
+//http://go.microsoft.com/fwlink/?LinkId=248929
 //-------------------------------------------------------------------------------------
 
 #pragma once
@@ -20,7 +20,7 @@
 ****************************************************************************/
 
 //------------------------------------------------------------------------------
-// Comparision operators
+//Comparision operators
 //------------------------------------------------------------------------------
 
 inline bool Vector2::operator == (const Vector2& V) const
@@ -40,7 +40,7 @@ inline bool Vector2::operator != (const Vector2& V) const
 }
 
 //------------------------------------------------------------------------------
-// Assignment operators
+//Assignment operators
 //------------------------------------------------------------------------------
 
 inline Vector2& Vector2::operator+= (const Vector2& V)
@@ -93,7 +93,7 @@ inline Vector2& Vector2::operator/= (float S)
 }
 
 //------------------------------------------------------------------------------
-// Binary operators
+//Binary operators
 //------------------------------------------------------------------------------
 
 inline Vector2 operator+ (const Vector2& V1, const Vector2& V2)
@@ -161,7 +161,7 @@ inline Vector2 operator* (float S, const Vector2& V)
 }
 
 //------------------------------------------------------------------------------
-// Vector operations
+//Vector operations
 //------------------------------------------------------------------------------
 
 inline bool Vector2::InBounds(const Vector2& Bounds) const
@@ -255,7 +255,7 @@ inline void Vector2::Clamp(const Vector2& vmin, const Vector2& vmax, Vector2& re
 }
 
 //------------------------------------------------------------------------------
-// Static functions
+//Static functions
 //------------------------------------------------------------------------------
 
 inline float Vector2::Distance(const Vector2& v1, const Vector2& v2)
@@ -344,7 +344,7 @@ inline Vector2 Vector2::Lerp(const Vector2& v1, const Vector2& v2, float t)
 inline void Vector2::SmoothStep(const Vector2& v1, const Vector2& v2, float t, Vector2& result)
 {
 	using namespace DirectX;
-	t = (t > 1.0f) ? 1.0f : ((t < 0.0f) ? 0.0f : t);  // Clamp value to 0 to 1
+	t = (t > 1.0f) ? 1.0f : ((t < 0.0f) ? 0.0f : t);  //Clamp value to 0 to 1
 	t = t*t*(3.f - 2.f*t);
 	XMVECTOR x1 = XMLoadFloat2(&v1);
 	XMVECTOR x2 = XMLoadFloat2(&v2);
@@ -355,7 +355,7 @@ inline void Vector2::SmoothStep(const Vector2& v1, const Vector2& v2, float t, V
 inline Vector2 Vector2::SmoothStep(const Vector2& v1, const Vector2& v2, float t)
 {
 	using namespace DirectX;
-	t = (t > 1.0f) ? 1.0f : ((t < 0.0f) ? 0.0f : t);  // Clamp value to 0 to 1
+	t = (t > 1.0f) ? 1.0f : ((t < 0.0f) ? 0.0f : t);  //Clamp value to 0 to 1
 	t = t*t*(3.f - 2.f*t);
 	XMVECTOR x1 = XMLoadFloat2(&v1);
 	XMVECTOR x2 = XMLoadFloat2(&v2);
@@ -585,7 +585,7 @@ inline void Vector2::TransformNormal(const Vector2* varray, size_t count, const 
 ****************************************************************************/
 
 //------------------------------------------------------------------------------
-// Comparision operators
+//Comparision operators
 //------------------------------------------------------------------------------
 
 inline bool Vector3::operator == (const Vector3& V) const
@@ -605,7 +605,7 @@ inline bool Vector3::operator != (const Vector3& V) const
 }
 
 //------------------------------------------------------------------------------
-// Assignment operators
+//Assignment operators
 //------------------------------------------------------------------------------
 
 inline Vector3& Vector3::operator+= (const Vector3& V)
@@ -658,7 +658,7 @@ inline Vector3& Vector3::operator/= (float S)
 }
 
 //------------------------------------------------------------------------------
-// Urnary operators
+//Urnary operators
 //------------------------------------------------------------------------------
 
 inline Vector3 Vector3::operator- () const
@@ -672,7 +672,7 @@ inline Vector3 Vector3::operator- () const
 }
 
 //------------------------------------------------------------------------------
-// Binary operators
+//Binary operators
 //------------------------------------------------------------------------------
 
 inline Vector3 operator+ (const Vector3& V1, const Vector3& V2)
@@ -740,7 +740,7 @@ inline Vector3 operator* (float S, const Vector3& V)
 }
 
 //------------------------------------------------------------------------------
-// Vector operations
+//Vector operations
 //------------------------------------------------------------------------------
 
 inline bool Vector3::InBounds(const Vector3& Bounds) const
@@ -834,7 +834,7 @@ inline void Vector3::Clamp(const Vector3& vmin, const Vector3& vmax, Vector3& re
 }
 
 //------------------------------------------------------------------------------
-// Static functions
+//Static functions
 //------------------------------------------------------------------------------
 
 inline float Vector3::Distance(const Vector3& v1, const Vector3& v2)
@@ -923,7 +923,7 @@ inline Vector3 Vector3::Lerp(const Vector3& v1, const Vector3& v2, float t)
 inline void Vector3::SmoothStep(const Vector3& v1, const Vector3& v2, float t, Vector3& result)
 {
 	using namespace DirectX;
-	t = (t > 1.0f) ? 1.0f : ((t < 0.0f) ? 0.0f : t);  // Clamp value to 0 to 1
+	t = (t > 1.0f) ? 1.0f : ((t < 0.0f) ? 0.0f : t);  //Clamp value to 0 to 1
 	t = t*t*(3.f - 2.f*t);
 	XMVECTOR x1 = XMLoadFloat3(&v1);
 	XMVECTOR x2 = XMLoadFloat3(&v2);
@@ -934,7 +934,7 @@ inline void Vector3::SmoothStep(const Vector3& v1, const Vector3& v2, float t, V
 inline Vector3 Vector3::SmoothStep(const Vector3& v1, const Vector3& v2, float t)
 {
 	using namespace DirectX;
-	t = (t > 1.0f) ? 1.0f : ((t < 0.0f) ? 0.0f : t);  // Clamp value to 0 to 1
+	t = (t > 1.0f) ? 1.0f : ((t < 0.0f) ? 0.0f : t);  //Clamp value to 0 to 1
 	t = t*t*(3.f - 2.f*t);
 	XMVECTOR x1 = XMLoadFloat3(&v1);
 	XMVECTOR x2 = XMLoadFloat3(&v2);
@@ -1164,7 +1164,7 @@ inline void Vector3::TransformNormal(const Vector3* varray, size_t count, const 
 ****************************************************************************/
 
 //------------------------------------------------------------------------------
-// Comparision operators
+//Comparision operators
 //------------------------------------------------------------------------------
 
 inline bool Vector4::operator == (const Vector4& V) const
@@ -1184,7 +1184,7 @@ inline bool Vector4::operator != (const Vector4& V) const
 }
 
 //------------------------------------------------------------------------------
-// Assignment operators
+//Assignment operators
 //------------------------------------------------------------------------------
 
 inline Vector4& Vector4::operator+= (const Vector4& V)
@@ -1237,7 +1237,7 @@ inline Vector4& Vector4::operator/= (float S)
 }
 
 //------------------------------------------------------------------------------
-// Urnary operators
+//Urnary operators
 //------------------------------------------------------------------------------
 
 inline Vector4 Vector4::operator- () const
@@ -1251,7 +1251,7 @@ inline Vector4 Vector4::operator- () const
 }
 
 //------------------------------------------------------------------------------
-// Binary operators
+//Binary operators
 //------------------------------------------------------------------------------
 
 inline Vector4 operator+ (const Vector4& V1, const Vector4& V2)
@@ -1319,7 +1319,7 @@ inline Vector4 operator* (float S, const Vector4& V)
 }
 
 //------------------------------------------------------------------------------
-// Vector operations
+//Vector operations
 //------------------------------------------------------------------------------
 
 inline bool Vector4::InBounds(const Vector4& Bounds) const
@@ -1415,7 +1415,7 @@ inline void Vector4::Clamp(const Vector4& vmin, const Vector4& vmax, Vector4& re
 }
 
 //------------------------------------------------------------------------------
-// Static functions
+//Static functions
 //------------------------------------------------------------------------------
 
 inline float Vector4::Distance(const Vector4& v1, const Vector4& v2)
@@ -1504,7 +1504,7 @@ inline Vector4 Vector4::Lerp(const Vector4& v1, const Vector4& v2, float t)
 inline void Vector4::SmoothStep(const Vector4& v1, const Vector4& v2, float t, Vector4& result)
 {
 	using namespace DirectX;
-	t = (t > 1.0f) ? 1.0f : ((t < 0.0f) ? 0.0f : t);  // Clamp value to 0 to 1
+	t = (t > 1.0f) ? 1.0f : ((t < 0.0f) ? 0.0f : t);  //Clamp value to 0 to 1
 	t = t*t*(3.f - 2.f*t);
 	XMVECTOR x1 = XMLoadFloat4(&v1);
 	XMVECTOR x2 = XMLoadFloat4(&v2);
@@ -1515,7 +1515,7 @@ inline void Vector4::SmoothStep(const Vector4& v1, const Vector4& v2, float t, V
 inline Vector4 Vector4::SmoothStep(const Vector4& v1, const Vector4& v2, float t)
 {
 	using namespace DirectX;
-	t = (t > 1.0f) ? 1.0f : ((t < 0.0f) ? 0.0f : t);  // Clamp value to 0 to 1
+	t = (t > 1.0f) ? 1.0f : ((t < 0.0f) ? 0.0f : t);  //Clamp value to 0 to 1
 	t = t*t*(3.f - 2.f*t);
 	XMVECTOR x1 = XMLoadFloat4(&v1);
 	XMVECTOR x2 = XMLoadFloat4(&v2);
@@ -1647,7 +1647,7 @@ inline void Vector4::Transform(const Vector2& v, const Quaternion& quat, Vector4
 	XMVECTOR v1 = XMLoadFloat2(&v);
 	XMVECTOR q = XMLoadFloat4(&quat);
 	XMVECTOR X = XMVector3Rotate(v1, q);
-	X = XMVectorSelect(g_XMIdentityR3, X, g_XMSelect1110); // result.w = 1.f
+	X = XMVectorSelect(g_XMIdentityR3, X, g_XMSelect1110); //result.w = 1.f
 	XMStoreFloat4(&result, X);
 }
 
@@ -1657,7 +1657,7 @@ inline Vector4 Vector4::Transform(const Vector2& v, const Quaternion& quat)
 	XMVECTOR v1 = XMLoadFloat2(&v);
 	XMVECTOR q = XMLoadFloat4(&quat);
 	XMVECTOR X = XMVector3Rotate(v1, q);
-	X = XMVectorSelect(g_XMIdentityR3, X, g_XMSelect1110); // result.w = 1.f
+	X = XMVectorSelect(g_XMIdentityR3, X, g_XMSelect1110); //result.w = 1.f
 
 	Vector4 result;
 	XMStoreFloat4(&result, X);
@@ -1670,7 +1670,7 @@ inline void Vector4::Transform(const Vector3& v, const Quaternion& quat, Vector4
 	XMVECTOR v1 = XMLoadFloat3(&v);
 	XMVECTOR q = XMLoadFloat4(&quat);
 	XMVECTOR X = XMVector3Rotate(v1, q);
-	X = XMVectorSelect(g_XMIdentityR3, X, g_XMSelect1110); // result.w = 1.f
+	X = XMVectorSelect(g_XMIdentityR3, X, g_XMSelect1110); //result.w = 1.f
 	XMStoreFloat4(&result, X);
 }
 
@@ -1680,7 +1680,7 @@ inline Vector4 Vector4::Transform(const Vector3& v, const Quaternion& quat)
 	XMVECTOR v1 = XMLoadFloat3(&v);
 	XMVECTOR q = XMLoadFloat4(&quat);
 	XMVECTOR X = XMVector3Rotate(v1, q);
-	X = XMVectorSelect(g_XMIdentityR3, X, g_XMSelect1110); // result.w = 1.f
+	X = XMVectorSelect(g_XMIdentityR3, X, g_XMSelect1110); //result.w = 1.f
 
 	Vector4 result;
 	XMStoreFloat4(&result, X);
@@ -1693,7 +1693,7 @@ inline void Vector4::Transform(const Vector4& v, const Quaternion& quat, Vector4
 	XMVECTOR v1 = XMLoadFloat4(&v);
 	XMVECTOR q = XMLoadFloat4(&quat);
 	XMVECTOR X = XMVector3Rotate(v1, q);
-	X = XMVectorSelect(v1, X, g_XMSelect1110); // result.w = v.w
+	X = XMVectorSelect(v1, X, g_XMSelect1110); //result.w = v.w
 	XMStoreFloat4(&result, X);
 }
 
@@ -1703,7 +1703,7 @@ inline Vector4 Vector4::Transform(const Vector4& v, const Quaternion& quat)
 	XMVECTOR v1 = XMLoadFloat4(&v);
 	XMVECTOR q = XMLoadFloat4(&quat);
 	XMVECTOR X = XMVector3Rotate(v1, q);
-	X = XMVectorSelect(v1, X, g_XMSelect1110); // result.w = v.w
+	X = XMVectorSelect(v1, X, g_XMSelect1110); //result.w = v.w
 
 	Vector4 result;
 	XMStoreFloat4(&result, X);
@@ -1747,7 +1747,7 @@ inline void Vector4::Transform(const Vector4* varray, size_t count, const Matrix
 ****************************************************************************/
 
 //------------------------------------------------------------------------------
-// Comparision operators
+//Comparision operators
 //------------------------------------------------------------------------------
 
 inline bool Matrix::operator == (const Matrix& M) const
@@ -1789,7 +1789,7 @@ inline bool Matrix::operator != (const Matrix& M) const
 }
 
 //------------------------------------------------------------------------------
-// Assignment operators
+//Assignment operators
 //------------------------------------------------------------------------------
 
 inline Matrix& Matrix::operator+= (const Matrix& M)
@@ -1921,7 +1921,7 @@ inline Matrix& Matrix::operator/= (const Matrix& M)
 }
 
 //------------------------------------------------------------------------------
-// Urnary operators
+//Urnary operators
 //------------------------------------------------------------------------------
 
 inline Matrix Matrix::operator- () const
@@ -1946,7 +1946,7 @@ inline Matrix Matrix::operator- () const
 }
 
 //------------------------------------------------------------------------------
-// Binary operators
+//Binary operators
 //------------------------------------------------------------------------------
 
 inline Matrix operator+ (const Matrix& M1, const Matrix& M2)
@@ -2108,7 +2108,7 @@ inline Matrix operator* (float S, const Matrix& M)
 }
 
 //------------------------------------------------------------------------------
-// Matrix operations
+//Matrix operations
 //------------------------------------------------------------------------------
 
 inline bool Matrix::Decompose(Vector3& scale, Quaternion& rotation, Vector3& translation)
@@ -2169,7 +2169,7 @@ inline float Matrix::Determinant() const
 }
 
 //------------------------------------------------------------------------------
-// Static functions
+//Static functions
 //------------------------------------------------------------------------------
 
 _Use_decl_annotations_
@@ -2219,7 +2219,7 @@ const Vector3* cameraForward, const Vector3* objectForward)
 {
 	using namespace DirectX;
 
-	static const XMVECTORF32 s_minAngle = { 0.99825467075f, 0.99825467075f, 0.99825467075f, 0.99825467075f }; // 1.0 - XMConvertToRadians( 0.1f );
+	static const XMVECTORF32 s_minAngle = { 0.99825467075f, 0.99825467075f, 0.99825467075f, 0.99825467075f }; //1.0 - XMConvertToRadians( 0.1f );
 
 	XMVECTOR O = XMLoadFloat3(&object);
 	XMVECTOR C = XMLoadFloat3(&cameraPosition);
@@ -2566,7 +2566,7 @@ inline Plane::Plane(const Vector3& point, const Vector3& normal)
 }
 
 //------------------------------------------------------------------------------
-// Comparision operators
+//Comparision operators
 //------------------------------------------------------------------------------
 
 inline bool Plane::operator == (const Plane& p) const
@@ -2586,7 +2586,7 @@ inline bool Plane::operator != (const Plane& p) const
 }
 
 //------------------------------------------------------------------------------
-// Plane operations
+//Plane operations
 //------------------------------------------------------------------------------
 
 inline void Plane::Normalize()
@@ -2628,7 +2628,7 @@ inline float Plane::DotNormal(const Vector3& normal) const
 }
 
 //------------------------------------------------------------------------------
-// Static functions
+//Static functions
 //------------------------------------------------------------------------------
 
 inline void Plane::Transform(const Plane& plane, const Matrix& M, Plane& result)
@@ -2656,7 +2656,7 @@ inline void Plane::Transform(const Plane& plane, const Quaternion& rotation, Pla
 	XMVECTOR p = XMLoadFloat4(&plane);
 	XMVECTOR q = XMLoadFloat4(&rotation);
 	XMVECTOR X = XMVector3Rotate(p, q);
-	X = XMVectorSelect(p, X, g_XMSelect1110); // result.d = plane.d
+	X = XMVectorSelect(p, X, g_XMSelect1110); //result.d = plane.d
 	XMStoreFloat4(&result, X);
 }
 
@@ -2666,7 +2666,7 @@ inline Plane Plane::Transform(const Plane& plane, const Quaternion& rotation)
 	XMVECTOR p = XMLoadFloat4(&plane);
 	XMVECTOR q = XMLoadFloat4(&rotation);
 	XMVECTOR X = XMVector3Rotate(p, q);
-	X = XMVectorSelect(p, X, g_XMSelect1110); // result.d = plane.d
+	X = XMVectorSelect(p, X, g_XMSelect1110); //result.d = plane.d
 
 	Plane result;
 	XMStoreFloat4(&result, X);
@@ -2681,7 +2681,7 @@ inline Plane Plane::Transform(const Plane& plane, const Quaternion& rotation)
 ****************************************************************************/
 
 //------------------------------------------------------------------------------
-// Comparision operators
+//Comparision operators
 //------------------------------------------------------------------------------
 
 inline bool Quaternion::operator == (const Quaternion& q) const
@@ -2701,7 +2701,7 @@ inline bool Quaternion::operator != (const Quaternion& q) const
 }
 
 //------------------------------------------------------------------------------
-// Assignment operators
+//Assignment operators
 //------------------------------------------------------------------------------
 
 inline Quaternion& Quaternion::operator+= (const Quaternion& q)
@@ -2750,7 +2750,7 @@ inline Quaternion& Quaternion::operator/= (const Quaternion& q)
 }
 
 //------------------------------------------------------------------------------
-// Urnary operators
+//Urnary operators
 //------------------------------------------------------------------------------
 
 inline Quaternion Quaternion::operator- () const
@@ -2764,7 +2764,7 @@ inline Quaternion Quaternion::operator- () const
 }
 
 //------------------------------------------------------------------------------
-// Binary operators
+//Binary operators
 //------------------------------------------------------------------------------
 
 inline Quaternion operator+ (const Quaternion& Q1, const Quaternion& Q2)
@@ -2833,7 +2833,7 @@ inline Quaternion operator* (float S, const Quaternion& Q)
 }
 
 //------------------------------------------------------------------------------
-// Quaternion operations
+//Quaternion operations
 //------------------------------------------------------------------------------
 
 inline float Quaternion::Length() const
@@ -2894,7 +2894,7 @@ inline float Quaternion::Dot(const Quaternion& q) const
 }
 
 //------------------------------------------------------------------------------
-// Static functions
+//Static functions
 //------------------------------------------------------------------------------
 
 inline Quaternion Quaternion::CreateFromAxisAngle(const Vector3& axis, float angle)
@@ -3035,7 +3035,7 @@ inline Color::Color(const DirectX::PackedVector::XMUBYTEN4& Packed)
 }
 
 //------------------------------------------------------------------------------
-// Comparision operators
+//Comparision operators
 //------------------------------------------------------------------------------
 inline bool Color::operator == (const Color& c) const
 {
@@ -3054,7 +3054,7 @@ inline bool Color::operator != (const Color& c) const
 }
 
 //------------------------------------------------------------------------------
-// Assignment operators
+//Assignment operators
 //------------------------------------------------------------------------------
 
 inline Color& Color::operator+= (const Color& c)
@@ -3102,7 +3102,7 @@ inline Color& Color::operator/= (const Color& c)
 }
 
 //------------------------------------------------------------------------------
-// Urnary operators
+//Urnary operators
 //------------------------------------------------------------------------------
 
 inline Color Color::operator- () const
@@ -3115,7 +3115,7 @@ inline Color Color::operator- () const
 }
 
 //------------------------------------------------------------------------------
-// Binary operators
+//Binary operators
 //------------------------------------------------------------------------------
 
 inline Color operator+ (const Color& C1, const Color& C2)
@@ -3177,7 +3177,7 @@ inline Color operator* (float S, const Color& C)
 }
 
 //------------------------------------------------------------------------------
-// Color operations
+//Color operations
 //------------------------------------------------------------------------------
 
 inline DirectX::PackedVector::XMCOLOR Color::BGRA() const
@@ -3283,7 +3283,7 @@ inline void Color::AdjustContrast(float contrast, Color& result) const
 }
 
 //------------------------------------------------------------------------------
-// Static functions
+//Static functions
 //------------------------------------------------------------------------------
 
 inline void Color::Modulate(const Color& c1, const Color& c2, Color& result)
@@ -3332,7 +3332,7 @@ inline Color Color::Lerp(const Color& c1, const Color& c2, float t)
 ****************************************************************************/
 
 //-----------------------------------------------------------------------------
-// Comparision operators
+//Comparision operators
 //------------------------------------------------------------------------------
 inline bool Ray::operator == (const Ray& r) const
 {
@@ -3355,7 +3355,7 @@ inline bool Ray::operator != (const Ray& r) const
 }
 
 //-----------------------------------------------------------------------------
-// Ray operators
+//Ray operators
 //------------------------------------------------------------------------------
 
 inline bool Ray::Intersects(const BoundingSphere& sphere, _Out_ float& Dist) const
@@ -3389,7 +3389,7 @@ inline bool Ray::Intersects(const Plane& plane, _Out_ float& Dist) const
 	}
 	else
 	{
-		// t = -(dot(n,origin) + D) / dot(n,dir)
+		//t = -(dot(n,origin) + D) / dot(n,dir)
 		XMVECTOR pos = XMLoadFloat3(&position);
 		XMVECTOR v = XMPlaneDotNormal(p, pos);
 		v = XMVectorAdd(v, XMVectorSplatW(p));

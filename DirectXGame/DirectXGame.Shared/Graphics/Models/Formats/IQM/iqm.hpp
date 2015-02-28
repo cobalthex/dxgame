@@ -35,13 +35,13 @@ namespace Iqm
 
 	enum VertexArrayTypes
 	{
-		IQM_POSITION = 0,		// float, 3
-		IQM_TEXCOORD = 1,		// float, 2
-		IQM_NORMAL = 2,			// float, 3
-		IQM_TANGENT = 3,		// float, 4
-		IQM_BLENDINDEXES = 4,	// ubyte, 4
-		IQM_BLENDWEIGHTS = 5,	// ubyte, 4
-		IQM_COLOR = 6,			// ubyte, 4
+		IQM_POSITION = 0,		//float, 3
+		IQM_TEXCOORD = 1,		//float, 2
+		IQM_NORMAL = 2,			//float, 3
+		IQM_TANGENT = 3,		//float, 4
+		IQM_BLENDINDEXES = 4,	//ubyte, 4
+		IQM_BLENDWEIGHTS = 5,	//ubyte, 4
+		IQM_COLOR = 6,			//ubyte, 4
 		IQM_CUSTOM = 0x10
 	};
 
@@ -145,6 +145,6 @@ namespace Iqm
 	{
 		unsigned int name;
 		unsigned int numData, offsetData;
-		unsigned int offsetExtensions; // pointer to next extension
+		unsigned int offsetExtensions; //pointer to next extension
 	};
 }

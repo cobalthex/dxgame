@@ -1,18 +1,18 @@
 ﻿#pragma once
 
 #include "Pch.hpp"
-#include "Common\DeviceResources.hpp"
-#include "DirectXGameMain.hpp"
+#include "Graphics/DeviceResources.hpp"
+#include "Game.hpp"
 
 namespace DirectXGame
 {
-	// Main entry point for our app. Connects the app with the Windows shell and handles application lifecycle events.
+	//Main entry point for our app. Connects the app with the Windows shell and handles application lifecycle events.
 	ref class App sealed : public Windows::ApplicationModel::Core::IFrameworkView
 	{
 	public:
 		App();
 
-		// IFrameworkView Methods.
+		//IFrameworkView Methods.
 		virtual void Initialize(Windows::ApplicationModel::Core::CoreApplicationView^ ApplicationView);
 		virtual void SetWindow(Windows::UI::Core::CoreWindow^ Window);
 		virtual void Load(Platform::String^ EntryPoint);
@@ -20,19 +20,19 @@ namespace DirectXGame
 		virtual void Uninitialize();
 
 protected:
-		// Application lifecycle event handlers.
+		//Application lifecycle event handlers.
 		void OnActivated(Windows::ApplicationModel::Core::CoreApplicationView^ ApplicationView, Windows::ApplicationModel::Activation::IActivatedEventArgs^ Args);
 		void OnSuspending(Platform::Object^ Sender, Windows::ApplicationModel::SuspendingEventArgs^ Args);
 		void OnResuming(Platform::Object^ Sender, Platform::Object^ Args);
 
-		// Window event handlers.
+		//Window event handlers.
 #if !(WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
 		void OnWindowSizeChanged(Windows::UI::Core::CoreWindow^ Sender, Windows::UI::Core::WindowSizeChangedEventArgs^ Args);
 #endif
 		void OnVisibilityChanged(Windows::UI::Core::CoreWindow^ Sender, Windows::UI::Core::VisibilityChangedEventArgs^ Args);
 		void OnWindowClosed(Windows::UI::Core::CoreWindow^ Sender, Windows::UI::Core::CoreWindowEventArgs^ Args);
 
-		// DisplayInformation event handlers.
+		//DisplayInformation event handlers.
 #if !(WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
 		void OnDpiChanged(Windows::Graphics::Display::DisplayInformation^ Sender, Platform::Object^ Args);
 		void OnOrientationChanged(Windows::Graphics::Display::DisplayInformation^ Sender, Platform::Object^ Args);
@@ -41,7 +41,7 @@ protected:
 
 	private:
 		std::shared_ptr<DX::DeviceResources> deviceResources;
-		std::unique_ptr<DirectXGameMain> main;
+		std::unique_ptr<Game> main;
 		bool windowClosed;
 		bool windowVisible;
 	};

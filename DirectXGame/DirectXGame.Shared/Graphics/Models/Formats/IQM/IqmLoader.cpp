@@ -52,9 +52,8 @@ void CleanupTemp(IqmTemp& Temp)
 {
 	delete[] Temp.buffer;
 
-	/*delete[] Temp.baseFrames;
-	delete[] Temp.inverseBaseFrames;
-	delete[] Temp.frames;*/
+	delete[] Temp.genPoses;
+	delete[] Temp.genJoints;
 }
 
 bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cache, const std::string& Filename, __out ::Model& mdl)
@@ -83,7 +82,7 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 		return false;
 	
 	if (tmp.header.fileSize > (16 << 20))
-		return false; // sanity check... don't load files bigger than 16 MB
+		return false; //sanity check... don't load files bigger than 16 MB
 
 	tmp.buffer = new uchar[tmp.header.fileSize];
 	
@@ -99,7 +98,7 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 
 	//Create model from generated data
 
-	std::vector<::Mesh> meshes; meshes.reserve(tmp.header.numMeshes);
+	std::vector<::ModelMesh> meshes; meshes.reserve(tmp.header.numMeshes);
 	std::vector<::Model::VertexType> vertices;
 	std::vector<unsigned> indices;
 	for (unsigned i = 0; i < tmp.header.numMeshes; i++)
@@ -131,7 +130,9 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 			auto& _i = tmp.blendIndices[m.firstVertex + j];
 			auto& _w = tmp.blendWeights[m.firstVertex + j];
 
-			v.position = Vector3(_v.y, _v.z, _v.x); //correct orientation
+			//correct orientation would be yzx for DX
+
+			v.position = Vector3(_v.x, _v.y, _v.z);
 			if (tmp.normals != nullptr)
 				v.normal = Vector3(_n.x, _n.y, _n.z);
 			if (tmp.tangents != nullptr)
@@ -139,11 +140,11 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 			if (tmp.texCoords != nullptr)
 				v.texCoord = Vector2(_t.u, _t.v);
 			if (tmp.colors != nullptr)
-				v.color = DirectXGame::PackVector(_c.r, _c.g, _c.b, 1);
+				v.color = DX::PackVector(_c.r, _c.g, _c.b, 1);
 			if (tmp.blendIndices != nullptr)
 				v.indices = DirectX::XMUINT4(_i.a, _i.b, _i.c, _i.d);
 			if (tmp.blendWeights != nullptr)
-				v.weights = DirectXGame::PackVector(_w.a, _w.b, _w.c, _w.d);
+				v.weights = DX::PackVector(_w.a, _w.b, _w.c, _w.d);
 
 			vertices.push_back(v);
 		}
@@ -171,10 +172,12 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 		std::vector<::Pose> poses;
 		poses.assign(tmp.genPoses + a.firstFrame, tmp.genPoses + a.firstFrame + a.numFrames);
 
-		::SkinnedSequence s (poses, tmp.header.numJoints);
+		::SkinnedSequence s (poses, tmp.header.numPoses);
 		s.Keyframes().reserve(a.numFrames);
 
-		unsigned millis = (unsigned)(1000 / a.frameRate);
+		unsigned millis = 16; //~60fps
+		if (a.frameRate > 0)
+			millis = (unsigned)(1000 / a.frameRate);
 
 		//create frames
 		for (unsigned i = 0; i < a.numFrames; i++)
@@ -184,7 +187,7 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 		sequences[pname] = s;
 	}
 
-	mdl = Model(DeviceResources, PrimitiveTopology::List, vertices, indices, meshes, std::vector<::Joint>(tmp.genJoints, tmp.genJoints + tmp.header.numJoints), sequences);
+	mdl = Model(DeviceResources, vertices, indices, PrimitiveTopology::List, meshes, std::vector<::Joint>(tmp.genJoints, tmp.genJoints + tmp.header.numJoints), sequences);
 	if (tmp.header.numAnims > 0)
 		mdl.pose = std::string(tmp.texts + tmp.anims[0].name);
 
@@ -279,8 +282,6 @@ bool LoadMeshes(IqmTemp& Temp)
 
 	//load joints
 	
-	//Temp.baseFrames = new Matrix[Temp.header.numJoints];
-	//Temp.inverseBaseFrames = new Matrix[Temp.header.numJoints];
 	Temp.genJoints = new Joint[Temp.header.numJoints];
 	for (unsigned i = 0; i < Temp.header.numJoints; i++)
 	{
@@ -289,21 +290,17 @@ bool LoadMeshes(IqmTemp& Temp)
 		Temp.genJoints[i].index = i;
 		Temp.genJoints[i].parent = j.parent;
 		Temp.genJoints[i].name = std::string(Temp.texts + j.name);
-		Temp.genJoints[i].rotation = Quaternion(j.rotate);
-		Temp.genJoints[i].rotation.Normalize();
-		Temp.genJoints[i].scale = Vector3(j.scale);
-		Temp.genJoints[i].translation = Vector3(j.translate);
-
-		/*
-		Temp.baseFrames[i] = Matrix((Vector3)q, Vector3(j.translate), Vector3(j.scale));
-		Temp.inverseBaseFrames[i] = Temp.baseFrames[i]; Temp.inverseBaseFrames[i].Invert();
+		auto q = Quaternion(j.rotate); q.Normalize();
+		Temp.genJoints[i].transform = Matrix::CreateFromQuaternion(q);
+		Temp.genJoints[i].transform *= Matrix::CreateScale(Vector3(j.scale));
+		Temp.genJoints[i].transform *= Matrix::CreateTranslation(Vector3(j.translate));
+		Temp.genJoints[i].inverseTransform = Temp.genJoints[i].transform.Invert();
 
 		if (j.parent >= 0)
 		{
-			Temp.baseFrames[i] = Temp.baseFrames[j.parent] * Temp.baseFrames[i];
-			Temp.inverseBaseFrames[i] *= Temp.inverseBaseFrames[j.parent];
+			Temp.genJoints[i].transform *= Temp.genJoints[j.parent].transform;
+			Temp.genJoints[i].inverseTransform = Temp.genJoints[j.parent].transform * Temp.genJoints[i].inverseTransform;
 		}
-		*/
 	}
 	
 
@@ -320,14 +317,12 @@ bool LoadAnimations(IqmTemp& Temp)
 	//Temp.frames = new Matrix[Temp.header.numFrames * Temp.header.numPoses];
 	unsigned short* frameData = (unsigned short*)&Temp.buffer[Temp.header.offsetFrames];
 
-	Temp.genPoses = new ::Pose[Temp.header.numPoses];
+	Temp.genPoses = new ::Pose[Temp.header.numFrames * Temp.header.numPoses];
 
 	for (int i = 0; i < (int)Temp.header.numFrames; i++)
 	{
-		auto& pose = Temp.genPoses[i];
-		pose.translations = new Vector3[Temp.header.numPoses];
-		pose.scales = new Vector3[Temp.header.numPoses];
-		pose.rotations= new Quaternion[Temp.header.numPoses];
+		auto& pose = Temp.genPoses[i * Temp.header.numPoses];
+		pose = Pose(Temp.header.numPoses);
 
 		for (int j = 0; j < (int)Temp.header.numPoses; j++)
 		{
@@ -341,20 +336,19 @@ bool LoadAnimations(IqmTemp& Temp)
 			pose.rotations[j].y = p.channelOffset[4]; if (p.mask & 0x10) pose.rotations[j].y += *frameData++ * p.channelScale[4];
 			pose.rotations[j].z = p.channelOffset[5]; if (p.mask & 0x20) pose.rotations[j].z += *frameData++ * p.channelScale[5];
 			pose.rotations[j].w = p.channelOffset[6]; if (p.mask & 0x40) pose.rotations[j].w += *frameData++ * p.channelScale[6];
+			pose.rotations[j].Normalize();
 			
 			pose.scales[j].x = p.channelOffset[7]; if (p.mask & 0x080) pose.scales[j].x += *frameData++ * p.channelScale[7];
 			pose.scales[j].y = p.channelOffset[8]; if (p.mask & 0x100) pose.scales[j].y += *frameData++ * p.channelScale[8];
 			pose.scales[j].z = p.channelOffset[9]; if (p.mask & 0x200) pose.scales[j].z += *frameData++ * p.channelScale[9];
 
-			pose.rotations[j].Normalize();
-
 			/*
-			// Concatenate each pose with the inverse base pose to avoid doing this at animation time.
-			// If the joint has a parent, then it needs to be pre-concatenated with its parent's base pose.
-			// Thus it all negates at animation time like so: 
-			//   (parentPose * parentInverseBasePose) * (parentBasePose * childPose * childInverseBasePose) =>
-			//   parentPose * (parentInverseBasePose * parentBasePose) * childPose * childInverseBasePose =>
-			//   parentPose * childPose * childInverseBasePose
+			//Concatenate each pose with the inverse base pose to avoid doing this at animation time.
+			//If the joint has a parent, then it needs to be pre-concatenated with its parent's base pose.
+			//Thus it all negates at animation time like so: 
+			//  (parentPose * parentInverseBasePose) * (parentBasePose * childPose * childInverseBasePose) =>
+			//  parentPose * (parentInverseBasePose * parentBasePose) * childPose * childInverseBasePose =>
+			//  parentPose * childPose * childInverseBasePose
 			rotate.Normalize();
 			Matrix m ((Vector3)rotate, translate, scale);
 

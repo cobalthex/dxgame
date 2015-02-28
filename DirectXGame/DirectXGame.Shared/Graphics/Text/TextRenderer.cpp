@@ -1,21 +1,23 @@
 #include "Pch.hpp"
 #include "TextRenderer.hpp"
+#include <strsafe.h>
+#include <Winbase.h>
 
 using namespace DirectXGame;
 
-// Initializes D2D resources used for text rendering.
+//Initializes D2D resources used for text rendering
 TextRenderer::TextRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources)
 	: deviceResources(deviceResources)
 {
-	DX::ThrowIfFailed(deviceResources->GetD2DFactory()->CreateDrawingStateBlock(&state));
+	App::ThrowIfFailed(deviceResources->GetD2DFactory()->CreateDrawingStateBlock(&state));
 }
 
-// Renders a frame to the screen.
+//Renders a frame to the screen
 void TextRenderer::Render(const std::wstring& Text, const TextLayoutParams& Params, const D2DBrush& Brush, const D2D1::Matrix3x2F& Position, const D2D_POINT_2F& Origin)
 {
 	//create layout
 	DWTextLayout layout;
-	DX::ThrowIfFailed
+	App::ThrowIfFailed
 	(
 		deviceResources->GetDWriteFactory()->CreateTextLayout
 		(
@@ -42,11 +44,11 @@ void TextRenderer::Render(const DWTextLayout& Layout, const D2DBrush& Brush, con
 	context->SetTransform(Position * deviceResources->GetOrientationTransform2D());
 	context->DrawTextLayout(Origin, Layout.Get(), Brush.Get());
 
-	// Ignore D2DERR_RECREATE_TARGET here. This error indicates that the device
-	// is lost. It will be handled during the next call to Present.
+	//Ignore D2DERR_RECREATE_TARGET here This error indicates that the device
+	//is lost. It will be handled during the next call to Present
 	HRESULT hr = context->EndDraw();
 	if (hr != D2DERR_RECREATE_TARGET)
-		DX::ThrowIfFailed(hr);
+		App::ThrowIfFailed(hr);
 
 	context->RestoreDrawingState(state.Get());
 }

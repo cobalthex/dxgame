@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Pch.hpp"
-#include "Common/DeviceResources.hpp"
+#include "Graphics/DeviceResources.hpp"
 #include "Common/PlatformHelpers.hpp"
 
 namespace DirectXGame
@@ -17,7 +17,7 @@ namespace DirectXGame
 		float			maxHeight;	//the max height of the text region (in pixels)
 		DWTextFormat	textFormat;	//The format (style: font, size, etc) of the text to draw
 
-		//A direct way to create a text format. Throws on error
+		//A direct way to create a text format Throws on error
 		static inline DWTextFormat CreateTextFormat
 		(
 			const std::shared_ptr<DX::DeviceResources>& DeviceResources,
@@ -32,8 +32,8 @@ namespace DirectXGame
 		)
 		{
 			DWTextFormat format;
-			// Create device independent resources
-			DX::ThrowIfFailed
+			//Create device independent resources
+			App::ThrowIfFailed
 			(
 				DeviceResources->GetDWriteFactory()->CreateTextFormat
 				(
@@ -47,13 +47,13 @@ namespace DirectXGame
 					&format
 				)
 			);
-			DX::ThrowIfFailed(format->SetParagraphAlignment(DefaultAlignment));
+			App::ThrowIfFailed(format->SetParagraphAlignment(DefaultAlignment));
 
 			return format;
 		}
 	};
 
-	// Renders text using Direct2D and DirectWrite.
+	//Renders text using Direct2D and DirectWrite
 	class TextRenderer
 	{
 	public:
@@ -61,9 +61,9 @@ namespace DirectXGame
 
 		void Render(const std::wstring& Text, const TextLayoutParams& Params, const D2DBrush& Brush, const D2D1::Matrix3x2F& Position, const D2D_POINT_2F& Origin = D2D1::Point2F());
 		void Render(const DWTextLayout& Layout, const D2DBrush& Brush, const D2D1::Matrix3x2F& Position, const D2D_POINT_2F& Origin = D2D1::Point2F());
-
+		
 	private:
-		// Cached pointer to device resources.
+		//Cached pointer to device resources
 		std::shared_ptr<DX::DeviceResources> deviceResources;
 		Microsoft::WRL::ComPtr<ID2D1DrawingStateBlock> state;
 	};

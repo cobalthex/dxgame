@@ -6,14 +6,14 @@
 using namespace DirectX::SimpleMath;
 
 //A single joint in a skeleton of a mesh
+//Contains a pre-calculated matrix based on the rotation, scale, and translation
 struct Joint
 {
 public:
 	std::string name; //an identifyable name of this joint
 
-	Quaternion rotation;
-	Vector3 translation;
-	Vector3 scale;
+	Matrix transform; //thre pre-calculated transform of this joint
+	Matrix inverseTransform; //the pre-calculated inverse-transform of this joint; = inv(transform)
 
 	size_t index; //the index of this jointin the model's collection
 	ptrdiff_t parent; //The parent index, negative if none
@@ -22,11 +22,34 @@ public:
 //Contains all of the transforms of a skeleton in one frame of a pose
 struct Pose
 {
+	Pose() { }
+	Pose(size_t Count) : rotations(new Quaternion[Count]), translations(new Vector3[Count]), scales(new Vector3[Count]), count(Count) { }
+	~Pose()
+	{
+		if (rotations != nullptr)
+			delete[] rotations;
+		if (translations != nullptr)
+			delete[] translations;
+		if (scales != nullptr)
+			delete[] scales;
+	}
+	Pose(const Pose& Copy)
+		: Pose(Copy.count)
+	{
+		std::copy(Copy.rotations, Copy.rotations + count, rotations);
+		std::copy(Copy.translations, Copy.translations + count, translations);
+		std::copy(Copy.scales, Copy.scales + count, scales);
+	}
+	Pose& operator = (const Pose& Copy);
+
 	Quaternion* rotations = nullptr;
 	Vector3* translations = nullptr;
 	Vector3* scales = nullptr;
 
-	Pose() { }
+	inline size_t Count() const { return count; }
+
+protected:
+	size_t count = 0;
 };
 
 //The animation of a single pose
@@ -34,21 +57,12 @@ class SkinnedSequence : public Sequence
 {
 public:
 	SkinnedSequence() : poses(), pose(), numJoints(0), Sequence() { }
-	SkinnedSequence(const std::vector<Pose>& Poses, size_t NumJoints) : poses(Poses), pose(Poses.front()), numJoints(NumJoints) { }
-	inline SkinnedSequence& operator = (const SkinnedSequence& Sequence)
+	SkinnedSequence(const std::vector<Pose>& Poses, size_t NumJoints) : poses(Poses), pose(), numJoints(NumJoints)
 	{
-		if (&Sequence == this)
-			return *this;
-
-		Sequence::operator =(Sequence);
-
-		poses = Sequence.poses;
-		pose = Sequence.pose;
-
-		numJoints = Sequence.numJoints;
-	
-		return *this;
+		if (poses.size() > 0)
+			pose = poses.front();
 	}
+	SkinnedSequence& operator = (const SkinnedSequence& Sequence);
 
 	std::vector<Pose> poses; //all of the poses in this sequence, one for each keyframe
 	Pose pose; //the active pose

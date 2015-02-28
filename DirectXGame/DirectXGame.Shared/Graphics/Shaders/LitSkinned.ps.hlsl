@@ -1,4 +1,4 @@
-// Per-pixel color data passed through the pixel shader.
+//Per-pixel color data passed through the pixel shader
 
 #include "Lighting.hlsli"
 
@@ -14,7 +14,7 @@ struct PixelShaderInput
 	float2 texCoord : TEXCOORD;
 };
 
-// A pass-through function for the (interpolated) color data.
+//A pass-through function for the (interpolated) color data
 float4 main(PixelShaderInput input) : SV_TARGET
 {
 	LightCalc lit = ComputeLighting(input.worldPosition, normalize(input.normal));

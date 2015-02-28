@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Pch.hpp"
-#include "Common/DeviceResources.hpp"
+#include "Graphics/DeviceResources.hpp"
 
 #define CBUFFER_ALIGN __declspec(align(16))
 
-//The basis for a constant buffer definition that is submitted to the GPU. Default aligned at 16 bytes
+//The basis for a constant buffer definition that is submitted to the GPU Default aligned at 16 bytes
 CBUFFER_ALIGN struct ConstantBufferDef { };
 
-//A single constant buffer. It contains a pointer to the created constant buffer. (Default slot is the default bind slot for Apply, can be overriden)
+//A single constant buffer. It contains a pointer to the created constant buffer (Default slot is the default bind slot for Apply, can be overriden)
 template <class BufferType>
 class ConstantBuffer
 {
@@ -22,7 +22,7 @@ public:
 		sub.pSysMem = &InitialData;
 		sub.SysMemPitch = 0;
 		sub.SysMemSlicePitch = 0;
-		DX::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateBuffer(&constantBufferDesc, &sub, &constantBuffer));
+		App::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateBuffer(&constantBufferDesc, &sub, &constantBuffer));
 
 		static_assert((sizeof(BufferType) % 16) == 0, "Constant Buffer must be 16-byte aligned");
 	}

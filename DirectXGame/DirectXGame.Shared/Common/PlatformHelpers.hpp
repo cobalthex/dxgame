@@ -2,11 +2,17 @@
 
 #include <ppltasks.h>	// For create_task
 
-namespace DX
+namespace App
 {
 	struct HandleCloserFunc { void operator()(HANDLE H) { if (H) CloseHandle(H); } }; //Close a handle with the () operator
 	typedef std::unique_ptr<void, HandleCloserFunc> ScopedHandle; //A handle that automatically closes itself when it goes out of scope
 	inline HANDLE SafeHandle(HANDLE H) { return (H == INVALID_HANDLE_VALUE) ? 0 : H; } //Make sure that this handle is valid
+
+	//Get this application's working directory
+	inline std::wstring GetWorkingDirectory()
+	{
+		return std::wstring(Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Begin());
+	}
 
 	//Throw an exception based on the HRESULT if the operation failed
 	inline void ThrowIfFailed(HRESULT Hr)
@@ -26,10 +32,10 @@ namespace DX
 
 		auto folder = Windows::ApplicationModel::Package::Current->InstalledLocation;
 
-		return create_task(folder->GetFileAsync(Platform::StringReference(Filename.c_str()))).then([] (StorageFile^ file) 
+		return create_task(folder->GetFileAsync(Platform::StringReference(Filename.c_str()))).then([](StorageFile^ file)
 		{
 			return FileIO::ReadBufferAsync(file);
-		}).then([] (Streams::IBuffer^ fileBuffer) -> std::vector<byte> 
+		}).then([](Streams::IBuffer^ fileBuffer) -> std::vector < byte >
 		{
 			std::vector<byte> returnBuffer;
 			returnBuffer.resize(fileBuffer->Length);
@@ -61,7 +67,10 @@ namespace DX
 		static const float dipsPerInch = 96.0f;
 		return floorf(Dips * Dpi / dipsPerInch + 0.5f); // Round to nearest integer.
 	}
+}
 
+namespace DX
+{
 #if defined(_DEBUG)
 	// Check for SDK Layer support.
 	inline bool SdkLayersAvailable()

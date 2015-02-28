@@ -1,28 +1,28 @@
 //--------------------------------------------------------------------------------------
-// File: WICTextureLoader.hpp
+//File: WICTextureLoader.hpp
 //
-// Function for loading a WIC image and creating a Direct3D 11 runtime texture for it
-// (auto-generating mipmaps if possible)
+//Function for loading a WIC image and creating a Direct3D 11 runtime texture for it
+//(auto-generating mipmaps if possible)
 //
-// Note: Assumes application has already called CoInitializeEx
+//Note: Assumes application has already called CoInitializeEx
 //
-// Warning: CreateWICTexture* functions are not thread-safe if given a d3dContext instance for
-//          auto-gen mipmap support.
+//Warning: CreateWICTexture* functions are not thread-safe if given a d3dContext instance for
+//         auto-gen mipmap support.
 //
-// Note these functions are useful for images created as simple 2D textures. For
-// more complex resources, DDSTextureLoader is an excellent light-weight runtime loader.
-// For a full-featured DDS file reader, writer, and texture processing pipeline see
-// the 'Texconv' sample and the 'DirectXTex' library.
+//Note these functions are useful for images created as simple 2D textures. For
+//more complex resources, DDSTextureLoader is an excellent light-weight runtime loader.
+//For a full-featured DDS file reader, writer, and texture processing pipeline see
+//the 'Texconv' sample and the 'DirectXTex' library.
 //
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
+//THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+//ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+//THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+//PARTICULAR PURPOSE.
 //
-// Copyright (c) Microsoft Corporation. All rights reserved.
+//Copyright (c) Microsoft Corporation. All rights reserved.
 //
-// http://go.microsoft.com/fwlink/?LinkId=248926
-// http://go.microsoft.com/fwlink/?LinkId=248929
+//http://go.microsoft.com/fwlink/?LinkId=248926
+//http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
 #pragma once
@@ -44,7 +44,7 @@
 
 namespace DirectX
 {
-    // Standard version
+    //Standard version
     HRESULT __cdecl CreateWICTextureFromMemory( _In_ ID3D11Device* d3dDevice,
                                                 _In_reads_bytes_(wicDataSize) const uint8_t* wicData,
                                                 _In_ size_t wicDataSize,
@@ -60,7 +60,7 @@ namespace DirectX
                                               _In_ size_t maxsize = 0
                                             );
 
-    // Standard version with optional auto-gen mipmap support
+    //Standard version with optional auto-gen mipmap support
     #if defined(_XBOX_ONE) && defined(_TITLE)
     HRESULT __cdecl CreateWICTextureFromMemory( _In_ ID3D11DeviceX* d3dDevice,
                                                 _In_opt_ ID3D11DeviceContextX* d3dContext,
@@ -88,7 +88,7 @@ namespace DirectX
                                               _In_ size_t maxsize = 0
                                             );
 
-    // Extended version
+    //Extended version
     HRESULT __cdecl CreateWICTextureFromMemoryEx( _In_ ID3D11Device* d3dDevice,
                                                   _In_reads_bytes_(wicDataSize) const uint8_t* wicData,
                                                   _In_ size_t wicDataSize,
@@ -114,7 +114,7 @@ namespace DirectX
                                                 _Out_opt_ ID3D11ShaderResourceView** textureView
                                               );
 
-    // Extended version with optional auto-gen mipmap support
+    //Extended version with optional auto-gen mipmap support
     #if defined(_XBOX_ONE) && defined(_TITLE)
     HRESULT __cdecl CreateWICTextureFromMemoryEx( _In_ ID3D11DeviceX* d3dDevice,
                                                   _In_opt_ ID3D11DeviceContextX* d3dContext,

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Pch.hpp"
-#include "Common/DeviceResources.hpp"
+#include "Graphics/DeviceResources.hpp"
 
 //The basis for all textures, abstract
 class Texture

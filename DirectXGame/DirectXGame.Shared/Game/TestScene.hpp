@@ -39,6 +39,13 @@ namespace DirectXGame
 		ComPtr<ID3D11VertexShader>	vertexShader;
 		ComPtr<ID3D11PixelShader>	pixelShader;
 		ComPtr<ID3D11SamplerState>	sampler;
+		ComPtr<ID3D11RasterizerState> wireRasterizer;
+
+		//Position color shaders
+		ComPtr<ID3D11VertexShader>	pcVertexShader;
+		ComPtr<ID3D11PixelShader>	pcPixelShader;
+		ComPtr<ID3D11InputLayout>	pcInputLayout;
+		ConstantBuffer<WVPConstantBufferDef> pcCbuffer;
 
 		Camera cam;
 		
@@ -47,6 +54,7 @@ namespace DirectXGame
 		ConstantBuffer<MaterialConstantBufferDef> materialCBuffer;
 
 		Model iqm;
+		Mesh iqmSkel;
 		Texture2D* tex;
 
 		// Variables used with the rendering loop.

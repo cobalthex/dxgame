@@ -3,10 +3,10 @@ cbuffer WorldBuffer : register(b0)
 	matrix World;
 	matrix InverseTransposeWorld;
 	matrix WorldViewProjection;
-	float4x3 joints[64];
+	float4x3 joints[128];
 }
 
-// Per-vertex data used as input to the vertex shader.
+//Per-vertex data used as input to the vertex shader
 struct VertexShaderInput
 {
 	float3 position : POSITION;
@@ -18,7 +18,7 @@ struct VertexShaderInput
 	float4 blendWeights : BLENDWEIGHT;
 };
 
-// Per-pixel color data passed through the pixel shader.
+//Per-pixel color data passed through the pixel shader
 struct PixelShaderInput
 {
 	float4 position : SV_POSITION; //position in screen coordinates
@@ -37,7 +37,7 @@ float4x3 Skin(float4 Weights, uint4 Indices)
 	return result;
 }
 
-// Simple shader to do vertex processing on the GPU.
+//Simple shader to do vertex processing on the GPU
 PixelShaderInput main(VertexShaderInput input)
 {
 	PixelShaderInput output;
@@ -45,15 +45,15 @@ PixelShaderInput main(VertexShaderInput input)
 	float4x3 skin = Skin(input.blendWeights, input.blendIndices);
 
 	position.xyz = mul(position, skin);
-	input.normal.xyz = mul(input.normal, skin);
+	//input.normal.xyz = mul(input.normal, (float3x3)skin);
 
 
-	// Transform the vertex position into projected space.
+	//Transform the vertex position into projected space
 
 	output.worldPosition = mul(position, World);
 	output.position = mul(position, WorldViewProjection);
 
-	// Pass the color through without modification.
+	//Pass the color through without modification
 	output.color = input.color;
 	output.texCoord = input.texCoord;
 	output.normal = mul(input.normal, (float3x3)InverseTransposeWorld);

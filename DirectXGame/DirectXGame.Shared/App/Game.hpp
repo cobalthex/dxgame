@@ -1,34 +1,34 @@
 ﻿#pragma once
 
 #include "Common/StepTimer.hpp"
-#include "Common/DeviceResources.hpp"
+#include "Graphics/DeviceResources.hpp"
 #include "Game/TestScene.hpp"
 #include "Graphics/Text/FpsRenderer.hpp"
 
-// Renders Direct2D and 3D content on the screen.
+//Renders Direct2D and 3D content on the screen.
 namespace DirectXGame
 {
-	class DirectXGameMain : public DX::IDeviceNotify
+	class Game : public DX::IDeviceNotify
 	{
 	public:
-		DirectXGameMain(const std::shared_ptr<DX::DeviceResources>& DeviceResources);
-		~DirectXGameMain();
+		Game(const std::shared_ptr<DX::DeviceResources>& DeviceResources);
+		~Game();
 		void CreateWindowSizeDependentResources();
 		void Update();
 		bool Render();
 
-		// IDeviceNotify
+		//IDeviceNotify
 		virtual void OnDeviceLost();
 		virtual void OnDeviceRestored();
 
 	private:
-		// Cached pointer to device resources.
+		//Cached pointer to device resources.
 		DX::DeviceResourcesPtr deviceResources;
 
 		std::unique_ptr<TestScene> scene;
 		std::unique_ptr<FpsRenderer> fpsTextRenderer;
 
-		// Rendering loop timer
+		//Rendering loop timer
 		DX::StepTimer timer;
 	};
 }
