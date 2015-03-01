@@ -299,11 +299,10 @@ bool LoadMeshes(IqmTemp& Temp)
 		if (j.parent >= 0)
 		{
 			Temp.genJoints[i].transform *= Temp.genJoints[j.parent].transform;
-			Temp.genJoints[i].inverseTransform = Temp.genJoints[j.parent].transform * Temp.genJoints[i].inverseTransform;
+			Temp.genJoints[i].inverseTransform = Temp.genJoints[j.parent].inverseTransform * Temp.genJoints[i].inverseTransform;
 		}
 	}
 	
-
 	return true;
 }
 bool LoadAnimations(IqmTemp& Temp)

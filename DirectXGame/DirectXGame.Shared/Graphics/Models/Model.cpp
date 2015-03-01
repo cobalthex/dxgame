@@ -41,13 +41,13 @@ bool Model::Skin(const std::string& Pose, ObjectConstantBufferDef& Buffer)
 	{
 		Matrix matrix;
 		matrix *= Matrix::CreateFromQuaternion(pose.rotations[i]);
-		matrix *= Matrix::CreateTranslation(pose.translations[i]);
 		matrix *= Matrix::CreateScale(pose.scales[i]);
+		matrix *= Matrix::CreateTranslation(pose.translations[i]);
 		
 		if (joints[i].parent >= 0)
-			matrix = matrix * joints[i].transform * joints[i].inverseTransform;
+			matrix = matrix * joints[joints[i].parent].transform * joints[i].inverseTransform;
 		else
-			matrix = matrix * joints[i].inverseTransform;
+			matrix = joints[i].inverseTransform * matrix;
 
 		Buffer.joints[i] = matrix;
 	}
@@ -88,16 +88,13 @@ BasicMesh<VertexTypes::VertexPositionColor, unsigned> Model::CreateSkeletalMesh(
 
 		//parent joints
 		v.position = Vector3::Transform(Vector3(-radius, 0, 0), joints[j.parent].transform);
-		v.position = v.position.YZX();
 		vertices.push_back(v);
 
 		v.position = Vector3::Transform(Vector3(radius, 0, 0), joints[j.parent].transform);
-		v.position = v.position.YZX();
 		vertices.push_back(v);
 
 		//current joint
 		v.position = Vector3::Transform(Vector3::Zero, j.transform);
-		v.position = v.position.YZX();
 		vertices.push_back(v);
 
 		unsigned tris[] = { i, i + 1, i + 2, i + 2, i, i + 1 };

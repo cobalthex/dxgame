@@ -210,7 +210,8 @@ void TestScene::Update(const DX::StepTimer& Timer)
 void TestScene::Rotate(float Radians)
 {
 	//Prepare to pass the updated model matrix to the shader
-	objectCBuffer.data.world = Matrix::CreateRotationY(Radians);//.Transpose();
+	objectCBuffer.data.world = Matrix::CreateRotationY(Radians);
+	objectCBuffer.data.world *= Matrix::CreateRotationX(XM_PIDIV2);
 	objectCBuffer.data.Calc(cam.View(), cam.Projection());
 }
 
@@ -245,7 +246,7 @@ void TestScene::Render()
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	
 	//context->RSSetState(wireRasterizer.Get());
-	//context->RSSetState(nullptr);
+	context->RSSetState(nullptr);
 	context->IASetInputLayout(inputLayout.Get());
 
 	context->VSSetShader(vertexShader.Get(), nullptr, 0);
@@ -270,6 +271,8 @@ void TestScene::Render()
 			mesh.material.texture->Apply();
 		context->DrawIndexed((unsigned)mesh.IndexCount(), (unsigned)mesh.StartIndex(), 0);
 	}
+
+	context->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1, 0);
 	
 	//Draw skeleton
 	context->RSSetState(wireRasterizer.Get());
