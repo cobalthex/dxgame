@@ -173,7 +173,7 @@ void TestScene::CreateDeviceDependentResources()
 	auto loadModelTask = Concurrency::create_task([this]()
 	{
 		Iqm::Load(deviceResources, ccache, "Content/test.iqm", iqm);
-		iqmSkel = Mesh::Create(deviceResources, iqm.CreateSkeletalMesh());
+		iqmSkel = Mesh::Create(deviceResources, iqm.CreateSkeletalMesh(Color(0, 0, 1, 0)));
 	}).then([this]()
 	{
 		loadingComplete = true;
@@ -210,9 +210,11 @@ void TestScene::Update(const DX::StepTimer& Timer)
 //Rotate the 3D cube model a set amount of radians.
 void TestScene::Rotate(float Radians)
 {
-	//Prepare to pass the updated model matrix to the shader
-	objectCBuffer.data.world = Matrix::CreateRotationY(Radians);
-	objectCBuffer.data.world *= Matrix::CreateRotationX(XM_PIDIV2);
+	Matrix world =
+		Matrix::CreateRotationX(-XM_PIDIV2) *
+		Matrix::CreateRotationY(-Radians);
+
+	objectCBuffer.data.world = world.Transpose();
 	objectCBuffer.data.Calc(cam.View(), cam.Projection());
 }
 
@@ -252,7 +254,7 @@ void TestScene::Render()
 
 	context->VSSetShader(vertexShader.Get(), nullptr, 0);
 
-	iqm.Skin(objectCBuffer.data);
+	iqm.Skin(objectCBuffer.data.joints);
 	objectCBuffer.Update();
 	objectCBuffer.BindVertex(0);
 

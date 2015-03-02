@@ -16,47 +16,9 @@ Model::Model
 	devContext(DeviceResources->GetD3DDeviceContext()),
 	meshes(Meshes),
 	joints(Joints),
-	poses(Poses),
-	jointMats(),
-	invJointMats()
+	poses(Poses)
 {
 	CreateFrom(DeviceResources, Vertices, Indices, Topology);
-
-	auto nj = min(MAX_JOINTS, joints.size());
-	jointMats.resize(nj);
-	invJointMats.resize(nj);
-}
-
-void Model::Skin(const std::string& Pose, ObjectConstantBufferDef& Buffer)
-{
-	auto nj = min(MAX_JOINTS, joints.size());
-	std::vector<Matrix> poseMats(nj);
-
-	bool hasPose = (poses.find(Pose) != poses.end());
-
-	auto& pose = poses.at(Pose).pose; //the current pose, transforms set by animation
-
-	for (size_t i = 0; i < nj; i++)
-	{
-		auto parent = joints[i].parent;
-		
-		Matrix local;
-		if (hasPose)
-		{
-			local *= Matrix::CreateScale(pose.scales[i]);
-			local *= Matrix::CreateFromQuaternion(pose.rotations[i]);
-			local *= Matrix::CreateTranslation(pose.translations[i]);
-		}
-		else
-			local = joints[i].transform;
-
-		if (parent >= 0)
-			poseMats[i] = local * poseMats[parent];
-		else
-			poseMats[i] = local;
-	
-		Buffer.joints[i] = joints[i].inverseTransform * poseMats[i];
-	}
 }
 
 void Model::Draw(unsigned Slot) const
@@ -72,7 +34,39 @@ void Model::Draw(unsigned Slot) const
 	}
 }
 
-BasicMesh<VertexTypes::VertexPositionColor, unsigned> Model::CreateSkeletalMesh(const Color& VertexColor) const
+void Model::Skin(const std::string& Pose, Matrix* PoseArray, size_t MaxPoses) const
+{
+	auto nj = min(MaxPoses, joints.size());
+	std::vector<Matrix> poseMats(nj);
+
+	bool hasPose = (poses.find(Pose) != poses.end());
+
+	for (size_t i = 0; i < nj; i++)
+	{
+		auto parent = joints[i].parent;
+		
+		Matrix local;
+		if (hasPose)
+		{
+			auto p = &poses.at(Pose).pose; //the current pose, transforms set by animation
+
+			local *= Matrix::CreateScale(p->scales[i]);
+			local *= Matrix::CreateFromQuaternion(p->rotations[i]);
+			local *= Matrix::CreateTranslation(p->translations[i]);
+		}
+		else
+			local = joints[i].transform;
+
+		if (parent >= 0)
+			poseMats[i] = local * poseMats[parent];
+		else
+			poseMats[i] = local;
+	
+		PoseArray[i] = (joints[i].inverseTransform * poseMats[i]).Transpose();
+	}
+}
+
+BasicMesh<VertexTypes::VertexPositionColor, unsigned> Model::CreateSkeletalMesh(const std::string& Pose, const Color& VertexColor) const
 {
 	std::vector<VertexTypes::VertexPositionColor> vertices;
 	std::vector<unsigned> indices;
@@ -84,21 +78,42 @@ BasicMesh<VertexTypes::VertexPositionColor, unsigned> Model::CreateSkeletalMesh(
 
 	float radius = 0.05f;
 
+	bool hasPose = (poses.find(Pose) != poses.end());
+
 	unsigned i = 0;
 	for (auto& j : joints)
 	{
 		if (j.parent < 0)
 			continue;
 
+		Matrix local, parent;
+		if (hasPose)
+		{
+			auto p = &poses.at(Pose).pose; //the current pose, transforms set by animation
+
+			local *= Matrix::CreateScale(p->scales[j.index]);
+			local *= Matrix::CreateFromQuaternion(p->rotations[j.index]);
+			local *= Matrix::CreateTranslation(p->translations[j.index]);
+
+			parent *= Matrix::CreateScale(p->scales[j.parent]);
+			parent *= Matrix::CreateFromQuaternion(p->rotations[j.parent]);
+			parent *= Matrix::CreateTranslation(p->translations[j.parent]);
+		}
+		else
+		{
+			local = j.transform;
+			parent = joints[j.parent].transform;
+		}
+
 		//parent joints
-		v.position = Vector3::Transform(Vector3(-radius, 0, 0), joints[j.parent].transform);
+		v.position = Vector3::Transform(Vector3(-radius, 0, 0), parent);
 		vertices.push_back(v);
 
-		v.position = Vector3::Transform(Vector3(radius, 0, 0), joints[j.parent].transform);
+		v.position = Vector3::Transform(Vector3(radius, 0, 0), parent);
 		vertices.push_back(v);
 
 		//current joint
-		v.position = Vector3::Transform(Vector3::Zero, j.transform);
+		v.position = Vector3::Transform(Vector3::Zero, local);
 		vertices.push_back(v);
 
 		unsigned tris[] = { i, i + 1, i + 2, i + 2, i, i + 1 };

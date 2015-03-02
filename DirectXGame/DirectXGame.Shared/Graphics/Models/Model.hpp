@@ -31,16 +31,15 @@ public:
 	std::map<std::string, SkinnedSequence> poses; //A collection of animated poses
 	std::string pose; //the current pose (maps to poses)
 
-	inline void Skin(ObjectConstantBufferDef& Buffer) { Skin(pose, Buffer); } //bind the current pose to a constant buffer
-	void Skin(const std::string& Pose, ObjectConstantBufferDef& Buffer); //Bind a pose to a constant buffer (uses bind pose if doesn't exist)
+	inline void Skin(Matrix* PoseArray, size_t MaxPoses = MAX_JOINTS) const { Skin(pose, PoseArray, MaxPoses); } //bind the current pose to a constant buffer
+	void Skin(const std::string& Pose, Matrix* PoseArray, size_t MaxPoses = MAX_JOINTS) const; //Bind a pose to a constant buffer (uses bind pose if doesn't exist)
 
 	void Draw(unsigned Slot = 0) const; //Draws only the basic mesh without any materials or skinning
 
-	BasicMesh<VertexTypes::VertexPositionColor, unsigned> CreateSkeletalMesh(const Color& VertexColor = Color(255, 0, 0)) const; //create a mesh skeleton using the joints of this model. These meshes use the VertexPositionColor. Returns a triangle list vertex buffer
+	inline BasicMesh<VertexTypes::VertexPositionColor, unsigned> CreateSkeletalMesh(const Color& VertexColor = Color(255, 0, 0)) const { return CreateSkeletalMesh(pose, VertexColor); }
+	BasicMesh<VertexTypes::VertexPositionColor, unsigned> CreateSkeletalMesh(const std::string& Pose, const Color& VertexColor = Color(255, 0, 0)) const; //create a mesh skeleton using the joints of this model. These meshes use the VertexPositionColor. Returns a triangle list vertex buffer
 
 protected:
 	DX::DeviceResourcesPtr deviceResources;
 	ComPtr<ID3D11DeviceContext> devContext;
-
-	std::vector<Matrix> jointMats, invJointMats; //temporary matrix storage for joints, defaults to size min(MAX_JOINTS, numJoints)
 };

@@ -3,7 +3,7 @@ cbuffer WorldBuffer : register(b0)
 	matrix World;
 	matrix InverseTransposeWorld;
 	matrix WorldViewProjection;
-	float4x3 joints[128];
+	matrix joints[128];
 }
 
 //Per-vertex data used as input to the vertex shader
@@ -30,10 +30,10 @@ struct PixelShaderInput
 
 float4x3 Skin(float4 Weights, uint4 Indices)
 {
-	float4x3 result = Weights.x * joints[Indices.x];
-	result = result + Weights.y * joints[Indices.y];
-	result = result + Weights.z * joints[Indices.z];
-	result = result + Weights.w * joints[Indices.w];
+	float4x3 result = Weights.x * (float4x3)joints[Indices.x];
+	result = result + Weights.y * (float4x3)joints[Indices.y];
+	result = result + Weights.z * (float4x3)joints[Indices.z];
+	result = result + Weights.w * (float4x3)joints[Indices.w];
 	return result;
 }
 
@@ -43,10 +43,11 @@ PixelShaderInput main(VertexShaderInput input)
 	PixelShaderInput output;
 	float4 position = float4(input.position, 1.0f);
 	float4x3 skin = Skin(input.blendWeights, input.blendIndices);
+	//float3x3 skinInv = 
 
 	position.xyz = mul(position, skin);
-	//input.normal.xyz = mul(input.normal, (float3x3)skin);
-
+	input.normal.xyz = mul(input.normal.xyz, (float3x3)skin);
+	input.tangent.xyz = mul(input.tangent.xyz, (float3x3)skin);
 
 	//Transform the vertex position into projected space
 
