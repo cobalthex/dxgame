@@ -10,13 +10,13 @@ using namespace DirectX::SimpleMath;
 struct Joint
 {
 public:
-	std::string name; //an identifyable name of this joint
+	std::string name = ""; //an identifyable name of this joint
 
-	Matrix transform; //thre pre-calculated transform of this joint
-	Matrix inverseTransform; //the pre-calculated inverse-transform of this joint; = inv(transform)
+	Matrix transform = Matrix(); //thre pre-calculated transform of this joint
+	Matrix inverseTransform = Matrix(); //the pre-calculated inverse-transform of this joint; = inv(transform)
 
-	size_t index; //the index of this jointin the model's collection
-	ptrdiff_t parent; //The parent index, negative if none
+	size_t index = 0; //the index of this jointin the model's collection
+	ptrdiff_t parent = -1; //The parent index, negative if none
 };
 
 //Contains all of the transforms of a skeleton in one frame of a pose

@@ -140,11 +140,11 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 			if (tmp.texCoords != nullptr)
 				v.texCoord = Vector2(_t.u, _t.v);
 			if (tmp.colors != nullptr)
-				v.color = DX::PackVector(_c.r, _c.g, _c.b, 1);
+				v.color = DirectX::PackedVector::XMUBYTEN4(_c.r, _c.g, _c.b, 1);
 			if (tmp.blendIndices != nullptr)
-				v.indices = DirectX::XMUINT4(_i.a, _i.b, _i.c, _i.d);
-			if (tmp.blendWeights != nullptr)
-				v.weights = DX::PackVector(_w.a, _w.b, _w.c, _w.d);
+				v.indices = DirectX::PackedVector::XMUBYTE4(_i.a, _i.b, _i.c, _i.d);
+			if (tmp.blendWeights != nullptr) 
+				v.weights = DirectX::PackedVector::XMUBYTEN4(_w.a, _w.b, _w.c, _w.d);
 
 			vertices.push_back(v);
 		}
@@ -290,10 +290,13 @@ bool LoadMeshes(IqmTemp& Temp)
 		Temp.genJoints[i].index = i;
 		Temp.genJoints[i].parent = j.parent;
 		Temp.genJoints[i].name = std::string(Temp.texts + j.name);
+
 		auto q = Quaternion(j.rotate); q.Normalize();
-		Temp.genJoints[i].transform = Matrix::CreateFromQuaternion(q);
-		Temp.genJoints[i].transform *= Matrix::CreateScale(Vector3(j.scale));
-		Temp.genJoints[i].transform *= Matrix::CreateTranslation(Vector3(j.translate));
+		Matrix scale = Matrix::CreateScale(Vector3(j.scale));
+		Matrix rotation = Matrix::CreateFromQuaternion(q);
+		Matrix translation = Matrix::CreateTranslation(Vector3(j.translate));
+
+		Temp.genJoints[i].transform = (scale * rotation) * translation;
 		Temp.genJoints[i].inverseTransform = Temp.genJoints[i].transform.Invert();
 
 		if (j.parent >= 0)

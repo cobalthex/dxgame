@@ -27,32 +27,36 @@ Model::Model
 	invJointMats.resize(nj);
 }
 
-bool Model::Skin(const std::string& Pose, ObjectConstantBufferDef& Buffer)
+void Model::Skin(const std::string& Pose, ObjectConstantBufferDef& Buffer)
 {
-	if (poses.find(Pose) == poses.end())
-		return false;
-
-	//make sure enough space
 	auto nj = min(MAX_JOINTS, joints.size());
-	
+	std::vector<Matrix> poseMats(nj);
+
+	bool hasPose = (poses.find(Pose) != poses.end());
+
 	auto& pose = poses.at(Pose).pose; //the current pose, transforms set by animation
 
 	for (size_t i = 0; i < nj; i++)
 	{
-		Matrix matrix;
-		matrix *= Matrix::CreateFromQuaternion(pose.rotations[i]);
-		matrix *= Matrix::CreateScale(pose.scales[i]);
-		matrix *= Matrix::CreateTranslation(pose.translations[i]);
+		auto parent = joints[i].parent;
 		
-		if (joints[i].parent >= 0)
-			matrix = matrix * joints[joints[i].parent].transform * joints[i].inverseTransform;
+		Matrix local;
+		if (hasPose)
+		{
+			local *= Matrix::CreateScale(pose.scales[i]);
+			local *= Matrix::CreateFromQuaternion(pose.rotations[i]);
+			local *= Matrix::CreateTranslation(pose.translations[i]);
+		}
 		else
-			matrix = joints[i].inverseTransform * matrix;
+			local = joints[i].transform;
 
-		Buffer.joints[i] = matrix;
+		if (parent >= 0)
+			poseMats[i] = local * poseMats[parent];
+		else
+			poseMats[i] = local;
+	
+		Buffer.joints[i] = joints[i].inverseTransform * poseMats[i];
 	}
-
-	return true;
 }
 
 void Model::Draw(unsigned Slot) const

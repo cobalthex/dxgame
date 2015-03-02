@@ -31,8 +31,8 @@ public:
 	std::map<std::string, SkinnedSequence> poses; //A collection of animated poses
 	std::string pose; //the current pose (maps to poses)
 
-	inline bool Skin(ObjectConstantBufferDef& Buffer) { return Skin(pose, Buffer); } //bind the current pose to a constant buffer (Returns false on error)
-	bool Skin(const std::string& Pose, ObjectConstantBufferDef& Buffer); //Bind a pose to a constant buffer (Returns false on error (pose not found))
+	inline void Skin(ObjectConstantBufferDef& Buffer) { Skin(pose, Buffer); } //bind the current pose to a constant buffer
+	void Skin(const std::string& Pose, ObjectConstantBufferDef& Buffer); //Bind a pose to a constant buffer (uses bind pose if doesn't exist)
 
 	void Draw(unsigned Slot = 0) const; //Draws only the basic mesh without any materials or skinning
 

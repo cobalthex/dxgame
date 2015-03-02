@@ -33,7 +33,6 @@ void TestScene::CreateWindowSizeDependentResources()
 
 	pcCbuffer = ConstantBuffer<WVPConstantBufferDef>(deviceResources);
 	objectCBuffer = ConstantBuffer<ObjectConstantBufferDef>(deviceResources);
-	
 	materialCBuffer = ConstantBuffer<MaterialConstantBufferDef>(deviceResources);
 
 	D3D11_SAMPLER_DESC sampDesc;
@@ -66,7 +65,7 @@ void TestScene::CreateWindowSizeDependentResources()
 	li.constantAttenuation = 1;
 	li.linearAttenuation = 0.08f;
 	li.quadraticAttenuation = 0;
-	li.position = Vector4(1, 6, 3, 0);
+	li.position = Vector4(5, 16, 13, 0);
 	li.direction = -li.position;
 	li.isEnabled = true;
 	li.type = LightType::Point;
@@ -76,6 +75,8 @@ void TestScene::CreateWindowSizeDependentResources()
 	lightingCBuffer.data.eyePosition = Vector4(cam.position);
 	lightingCBuffer.data.globalAmbience = Color(0, 0, 0, 0);
 	lightingCBuffer.Update();
+
+	ZeroMemory(objectCBuffer.data.joints, ARRAYSIZE(objectCBuffer.data.joints));
 
 	D3D11_RASTERIZER_DESC rastDesc;
 	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
