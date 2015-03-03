@@ -305,27 +305,6 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 			)
 		);
 
-		//create a special multi-sampled surface
-		D3D11_TEXTURE2D_DESC offScreenSurfaceDesc;
-		ZeroMemory(&offScreenSurfaceDesc, sizeof(D3D11_TEXTURE2D_DESC));
-
-		offScreenSurfaceDesc.Format = swapChainDesc.Format;
-		offScreenSurfaceDesc.Width = swapChainDesc.Width;
-		offScreenSurfaceDesc.Height = swapChainDesc.Height;
-		offScreenSurfaceDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-		offScreenSurfaceDesc.MipLevels = 1;
-		offScreenSurfaceDesc.ArraySize = 1;
-		offScreenSurfaceDesc.SampleDesc.Count = sampleSize;
-		offScreenSurfaceDesc.SampleDesc.Quality = sampleQuality;
-
-		// Create a surface that's multisampled
-		App::ThrowIfFailed(
-			d3dDevice->CreateTexture2D(
-			&offScreenSurfaceDesc,
-			nullptr,
-			&offScreenSurface)
-		);
-
 		//Ensure that DXGI does not queue more than one frame at a time. This both reduces latency and
 		//ensures that the application will only render after each VSync, minimizing power consumption.
 		App::ThrowIfFailed(dxgiDevice->SetMaximumFrameLatency(1));
@@ -372,6 +351,27 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 	App::ThrowIfFailed(swapChain->SetRotation(displayRotation));
 
 	App::ThrowIfFailed(swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf())));
+
+	//create a special multi-sampled surface
+	D3D11_TEXTURE2D_DESC offScreenSurfaceDesc;
+	ZeroMemory(&offScreenSurfaceDesc, sizeof(D3D11_TEXTURE2D_DESC));
+
+	offScreenSurfaceDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	offScreenSurfaceDesc.Width = d3dRenderTargetSize.Width;
+	offScreenSurfaceDesc.Height = d3dRenderTargetSize.Height;
+	offScreenSurfaceDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+	offScreenSurfaceDesc.MipLevels = 1;
+	offScreenSurfaceDesc.ArraySize = 1;
+	offScreenSurfaceDesc.SampleDesc.Count = sampleSize;
+	offScreenSurfaceDesc.SampleDesc.Quality = sampleQuality;
+
+	// Create a surface that's multisampled
+	App::ThrowIfFailed(
+		d3dDevice->CreateTexture2D(
+		&offScreenSurfaceDesc,
+		nullptr,
+		&offScreenSurface)
+		);
 
 	CD3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc(D3D11_RTV_DIMENSION_TEXTURE2DMS);
 	App::ThrowIfFailed(

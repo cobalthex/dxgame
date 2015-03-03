@@ -80,46 +80,45 @@ BasicMesh<VertexTypes::VertexPositionColor, unsigned> Model::CreateSkeletalMesh(
 
 	bool hasPose = (poses.find(Pose) != poses.end());
 
-	unsigned i = 0;
-	for (auto& j : joints)
-	{
-		if (j.parent < 0)
-			continue;
+	auto transforms = new Matrix[joints.size()];
 
-		Matrix local, parent;
+	unsigned tri = 0;
+	for (unsigned i = 0; i < joints.size(); i++)
+	{
+		auto& j = joints[i];
+
 		if (hasPose)
 		{
 			auto p = &poses.at(Pose).pose; //the current pose, transforms set by animation
 
-			local *= Matrix::CreateScale(p->scales[j.index]);
-			local *= Matrix::CreateFromQuaternion(p->rotations[j.index]);
-			local *= Matrix::CreateTranslation(p->translations[j.index]);
+			transforms[i]  = Matrix::CreateScale(p->scales[j.index]);
+			transforms[i] *= Matrix::CreateFromQuaternion(p->rotations[j.index]);
+			transforms[i] *= Matrix::CreateTranslation(p->translations[j.index]);
 
-			parent *= Matrix::CreateScale(p->scales[j.parent]);
-			parent *= Matrix::CreateFromQuaternion(p->rotations[j.parent]);
-			parent *= Matrix::CreateTranslation(p->translations[j.parent]);
+			if (j.parent >= 0)
+				transforms[i] *= transforms[j.parent];
 		}
 		else
-		{
-			local = j.transform;
-			parent = joints[j.parent].transform;
-		}
+			transforms[i] = j.transform; //joints are already transformed by parent
+
 
 		//parent joints
-		v.position = Vector3::Transform(Vector3(-radius, 0, 0), parent);
+		v.position = Vector3::Transform(Vector3(-radius, 0, 0), transforms[j.parent]);
 		vertices.push_back(v);
 
-		v.position = Vector3::Transform(Vector3(radius, 0, 0), parent);
+		v.position = Vector3::Transform(Vector3(radius, 0, 0), transforms[j.parent]);
 		vertices.push_back(v);
 
 		//current joint
-		v.position = Vector3::Transform(Vector3::Zero, local);
+		v.position = Vector3::Transform(Vector3::Zero, transforms[i]);
 		vertices.push_back(v);
 
-		unsigned tris[] = { i, i + 1, i + 2, i + 2, i, i + 1 };
+		unsigned tris[] = { tri, tri + 1, tri + 2, tri + 2, tri, tri + 1 };
 		indices.insert(indices.end(), tris, tris + ARRAYSIZE(tris));
-		i += 3;
+		tri += 3;
 	}
+
+	delete[] transforms;
 
 	return BasicMesh<VertexTypes::VertexPositionColor, unsigned>(vertices, indices, PrimitiveTopology::List);
 }
