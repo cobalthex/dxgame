@@ -10,8 +10,6 @@ class Timeline : public Animation
 {
 public:
 
-	bool deleteOnDestroy = false; //delete all animations when this object is destroyed
-
 	Timeline(bool DeleteOnDestroy = true, bool IsLooping = false, const TimeSpan& LoopStart = TimeType::zero());
 	~Timeline();
 
@@ -38,6 +36,8 @@ public:
 	bool processEvents = true; //should this timeline process events (defaults to true, use no for manual management)
 
 	bool AtEnd() const override;
+
+	bool deleteOnDestroy = false; //delete all animations when this object is destroyed
 
 protected:
 	bool calledFinish = false;

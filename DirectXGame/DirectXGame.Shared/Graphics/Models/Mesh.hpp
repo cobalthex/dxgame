@@ -34,7 +34,7 @@ class Mesh
 public:
 	typedef unsigned IndexType;
 
-	Mesh() : deviceResources(nullptr), vertices(nullptr), vertexCount(0), vertexStride(0), indices(nullptr), indexCount(0), topology(PrimitiveTopology::Unknown) { }
+	Mesh() : devContext(nullptr), vertices(nullptr), vertexCount(0), vertexStride(0), indices(nullptr), indexCount(0), topology(PrimitiveTopology::Unknown), hasDynamicUsage(false) { }
 
 	inline const VertexBuffer& Vertices() const { return vertices; }
 	inline const IndexBuffer& Indices() const { return indices; }
@@ -42,20 +42,27 @@ public:
 	inline unsigned IndexCount() const { return indexCount; }
 	inline unsigned VertexStride() const { return vertexStride; }
 	inline PrimitiveTopology Topology() const { return topology; }
+	inline bool HasDynamicUsage() const { return hasDynamicUsage; } //Were the buffers for this created using D3D11_USAGE_DYNAMIC (allows for faster updating if necessary)
 
 	template <typename VertexType>
-	void CreateFrom(const DX::DeviceResourcesPtr& DeviceResources, const BasicMesh<VertexType, IndexType>& BasicMesh)
+	void CreateFrom(const DX::DeviceResourcesPtr& DeviceResources, const BasicMesh<VertexType, IndexType>& BasicMesh, bool DynamicUsage = false)
 	{
-		CreateFrom(DeviceResources, BasicMesh.vertices, BasicMesh.indices, BasicMesh.topology);
+		CreateFrom(DeviceResources, BasicMesh.vertices, BasicMesh.indices, BasicMesh.topology, DynamicUsage);
 	}
 
 	template <typename VertexType>
-	void CreateFrom(const DX::DeviceResourcesPtr& DeviceResources, const std::vector<VertexType>& Vertices, const std::vector<IndexType>& Indices, PrimitiveTopology Topology)
+	void CreateFrom(const DX::DeviceResourcesPtr& DeviceResources, const std::vector<VertexType>& Vertices, const std::vector<IndexType>& Indices, PrimitiveTopology Topology, bool DynamicUsage = false)
 	{
-		deviceResources = DeviceResources;
+		devContext = DeviceResources->GetD3DDeviceContext();
+		hasDynamicUsage = DynamicUsage;
 
 		//create vertex buffer
 		CD3D11_BUFFER_DESC vertexBufferDesc ((unsigned)Vertices.size() * sizeof(VertexType), D3D11_BIND_VERTEX_BUFFER);
+		if (DynamicUsage)
+		{
+			vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		}
 
 		D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
 		vertexBufferData.pSysMem = Vertices.data();
@@ -69,7 +76,12 @@ public:
 		topology = Topology;
 
 		//create index buffer
-		CD3D11_BUFFER_DESC indexBufferDesc((unsigned)Indices.size() * sizeof(IndexType), D3D11_BIND_INDEX_BUFFER);
+		CD3D11_BUFFER_DESC indexBufferDesc ((unsigned)Indices.size() * sizeof(IndexType), D3D11_BIND_INDEX_BUFFER);
+		if (DynamicUsage)
+		{
+			indexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			indexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		}
 
 		D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
 		indexBufferData.pSysMem = Indices.data();
@@ -80,15 +92,15 @@ public:
 		indexCount = (unsigned)Indices.size();
 	}
 	template <typename VertexType>
-	static Mesh Create(const DX::DeviceResourcesPtr& DeviceResources, const BasicMesh<VertexType, IndexType>& BasicMesh)
+	static Mesh Create(const DX::DeviceResourcesPtr& DeviceResources, const BasicMesh<VertexType, IndexType>& BasicMesh, bool DynamicUsage = false)
 	{
-		return Create(DeviceResources, BasicMesh.vertices, BasicMesh.indices, BasicMesh.topology);
+		return Create(DeviceResources, BasicMesh.vertices, BasicMesh.indices, BasicMesh.topology, DynamicUsage);
 	}
 	template <typename VertexType>
-	static Mesh Create(const DX::DeviceResourcesPtr& DeviceResources, const std::vector<VertexType>& Vertices, const std::vector<IndexType>& Indices, PrimitiveTopology Topology)
+	static Mesh Create(const DX::DeviceResourcesPtr& DeviceResources, const std::vector<VertexType>& Vertices, const std::vector<IndexType>& Indices, PrimitiveTopology Topology, bool DynamicUsage = false)
 	{
 		Mesh m;
-		m.CreateFrom(DeviceResources, Vertices, Indices, Topology);
+		m.CreateFrom(DeviceResources, Vertices, Indices, Topology, DynamicUsage);
 		return m;
 	}
 
@@ -98,21 +110,49 @@ public:
 		if (Slot >= 0)
 			Bind(Slot);
 
-		deviceResources->GetD3DDeviceContext()->DrawIndexed(indexCount, 0, 0);
+		devContext->DrawIndexed(indexCount, 0, 0);
 	}
 
 	//Apply the vertex and index buffers
 	inline virtual void Bind(unsigned Slot = 0) const
 	{
-		auto cxt = deviceResources->GetD3DDeviceContext();
-
 		static const UINT offset = 0; 
-		cxt->IASetVertexBuffers(Slot, 1, vertices.GetAddressOf(), &vertexStride, &offset);
-		cxt->IASetIndexBuffer(indices.Get(), DXGI_FORMAT_R32_UINT, 0);
+		devContext->IASetVertexBuffers(Slot, 1, vertices.GetAddressOf(), &vertexStride, &offset);
+		devContext->IASetIndexBuffer(indices.Get(), DXGI_FORMAT_R32_UINT, 0);
+	}
+
+	//Update the all of the mesh's vertices with new data
+	template <typename VertexType>
+	void UpdateVertices(const std::vector<VertexType>& Vertices)
+	{
+		if (hasDynamicUsage)
+		{
+			auto vt = vertices.Get();
+			D3D11_MAPPED_SUBRESOURCE map;
+			devContext->Map(vt, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+			CopyMemory(map.pData, Vertices.data(), Vertices.size() * sizeof(VertexType));
+			devContext->Unmap(vt, 0);
+		}
+		else
+			devContext->UpdateSubresource(vertices.Get(), 0, nullptr, Vertices.data(), Vertices.size() * sizeof(VertexType), 0);
+	}
+	//Update the all of the mesh's indices with new data
+	void UpdateIndices(const std::vector<IndexType>& Indices)
+	{
+		if (hasDynamicUsage)
+		{
+			auto ix = indices.Get();
+			D3D11_MAPPED_SUBRESOURCE map;
+			devContext->Map(ix, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+			CopyMemory(map.pData, Indices.data(), Indices.size() * sizeof(IndexType));
+			devContext->Unmap(ix, 0);
+		}
+		else
+			devContext->UpdateSubresource(indices.Get(), 0, nullptr, Indices.data(), Indices.size() * sizeof(IndexType), 0);
 	}
 
 protected:
-	DX::DeviceResourcesPtr deviceResources;
+	ComPtr<ID3D11DeviceContext> devContext;
 
 	VertexBuffer vertices;
 	unsigned vertexCount;
@@ -122,6 +162,8 @@ protected:
 
 	IndexBuffer indices;
 	unsigned indexCount;
+
+	bool hasDynamicUsage;
 };
 //A simple encapsulation around vertex, index, and instance buffers
 class InstancedMesh: public Mesh

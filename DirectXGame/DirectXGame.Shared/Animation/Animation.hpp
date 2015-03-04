@@ -34,9 +34,9 @@ public:
 			return d;*/
 
 		if (isLooping)
-			return TimeSpan(time.count() % d.count());
+			return TimeSpan(((size_t)(time.count() * speed) % d.count()));
 		
-		return time;
+		return TimeSpan((size_t)(time.count() * speed));
 	}
 
 	//has the animation finished playing (always false if looping)
@@ -50,6 +50,8 @@ public:
 
 	bool isLooping; //Is the animation looping (defaults to false)
 	TimeSpan loopStart; //where to start once looped (relative to the animation)
+
+	float speed = 1.f; //the speed multiplier of animations (1 for default)
 
 private:
 	bool isRunning = true; //is the timeline currently active

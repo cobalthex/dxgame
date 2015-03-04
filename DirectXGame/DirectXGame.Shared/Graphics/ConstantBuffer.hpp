@@ -9,6 +9,7 @@
 CBUFFER_ALIGN struct ConstantBufferDef { };
 
 //A single constant buffer. It contains a pointer to the created constant buffer (Default slot is the default bind slot for Apply, can be overriden)
+//Note: All constant buffers have dynamic usage and therefore require Map()
 template <class BufferType>
 class ConstantBuffer
 {
@@ -18,6 +19,9 @@ public:
 		: devContext(DeviceResources->GetD3DDeviceContext()), data(InitialData)
 	{
 		CD3D11_BUFFER_DESC constantBufferDesc (sizeof(BufferType), D3D11_BIND_CONSTANT_BUFFER);
+		constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
 		D3D11_SUBRESOURCE_DATA sub;
 		sub.pSysMem = &InitialData;
 		sub.SysMemPitch = 0;
@@ -32,7 +36,15 @@ public:
 
 	ComPtr<ID3D11Buffer> Buffer() const { return constantBuffer; } //get the underlying constant buffer pointer
 
-	inline virtual void Update() const { devContext->UpdateSubresource(constantBuffer.Get(), 0, NULL, &data, 0, 0); } //update the constant buffer on the GPU with the values stored in data
+	//update the constant buffer on the GPU with the values stored in data
+	inline virtual void Update() const
+	{
+		auto cb = constantBuffer.Get();
+		D3D11_MAPPED_SUBRESOURCE map;
+		devContext->Map(cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+		CopyMemory(map.pData, &data, sizeof(data));
+		devContext->Unmap(cb, 0);
+	}
 	inline void BindVertex(unsigned Slot) const { devContext->VSSetConstantBuffers(Slot, 1, constantBuffer.GetAddressOf()); } //Bind this constant buffer to a vertex shader
 	inline void BindPixel(unsigned Slot) const { devContext->PSSetConstantBuffers(Slot, 1, constantBuffer.GetAddressOf()); } //Bind this constant buffer to a pixel shader
 	inline void BindDomain(unsigned Slot) const { devContext->DSSetConstantBuffers(Slot, 1, constantBuffer.GetAddressOf()); } //Bind this constant buffer to a domain shader

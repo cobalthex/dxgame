@@ -65,7 +65,7 @@ public:
 	SkinnedSequence& operator = (const SkinnedSequence& Sequence);
 
 	std::vector<Pose> poses; //all of the poses in this sequence, one for each keyframe
-	Pose pose; //the active pose
+	Pose pose; //the current interpolated pose
 
 	virtual void Update(size_t CurrentFrame, size_t NextFrame, float FramePercent) override; //Updates the pose. Uses Slerp and Lerp
 };

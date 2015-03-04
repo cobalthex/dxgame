@@ -171,7 +171,7 @@ void TestScene::CreateDeviceDependentResources()
 	auto loadModelTask = Concurrency::create_task([this]()
 	{
 		Iqm::Load(deviceResources, ccache, "Content/test.iqm", iqm);
-		iqmSkel = Mesh::Create(deviceResources, iqm.CreateSkeletalMesh(Color(0, 0, 1, 0)));
+		iqmSkel = Mesh::Create(deviceResources, iqm.CreateSkeletalMesh(Color(1, 0.6f, 0, 0)), true);
 
 		timeline.Add(&iqm.poses[iqm.pose]);
 		timeline.isLooping = true;
@@ -253,7 +253,6 @@ void TestScene::Render()
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	
-	//context->RSSetState(wireRasterizer.Get());
 	context->RSSetState(nullptr);
 	context->IASetInputLayout(inputLayout.Get());
 
@@ -282,7 +281,8 @@ void TestScene::Render()
 
 	context->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1, 0);
 
-	iqmSkel = Mesh::Create(deviceResources, iqm.CreateSkeletalMesh(Color(0, 0, 1, 0)));
+	auto skel = iqm.CreateSkeletalMesh(Color(1, 0.6f, 0, 0));
+	iqmSkel.UpdateVertices(skel.vertices);
 	
 	//Draw skeleton
 	context->RSSetState(wireRasterizer.Get());
@@ -297,4 +297,5 @@ void TestScene::Render()
 	context->PSSetShader(pcPixelShader.Get(), nullptr, 0);
 
 	iqmSkel.Draw();
+	context->RSSetState(nullptr);
 }
