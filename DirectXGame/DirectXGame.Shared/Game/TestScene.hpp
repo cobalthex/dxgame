@@ -9,6 +9,7 @@
 #include "Graphics/Lighting.hpp"
 #include "Graphics/Scene/Camera.hpp"
 #include "Common/AlignedStorage.hpp"
+#include "Animation/Timeline.hpp"
 
 namespace DirectXGame
 {
@@ -56,6 +57,8 @@ namespace DirectXGame
 		Model iqm;
 		Mesh iqmSkel;
 		Texture2D* tex;
+
+		Timeline timeline;
 
 		// Variables used with the rendering loop.
 		bool	loadingComplete;

@@ -41,8 +41,6 @@ SkinnedSequence& SkinnedSequence::operator = (const SkinnedSequence& Sequence)
 	poses = Sequence.poses;
 	pose = Sequence.pose;
 
-	numJoints = Sequence.numJoints;
-
 	return *this;
 }
 
@@ -51,7 +49,7 @@ void SkinnedSequence::Update(size_t CurrentFrame, size_t NextFrame, float FrameP
 	auto& cpose = poses[CurrentFrame];
 	auto& npose = poses[NextFrame];
 
-	for (size_t i = 0; i < numJoints; i++)
+	for (size_t i = 0; i < cpose.Count(); i++)
 	{
 		pose.rotations[i] = Quaternion::Slerp(cpose.rotations[i], npose.rotations[i], FramePercent);
 		pose.translations[i] = Vector3::Lerp(cpose.translations[i], npose.translations[i], FramePercent);

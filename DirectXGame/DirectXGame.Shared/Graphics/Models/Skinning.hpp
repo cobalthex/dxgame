@@ -56,8 +56,8 @@ protected:
 class SkinnedSequence : public Sequence
 {
 public:
-	SkinnedSequence() : poses(), pose(), numJoints(0), Sequence() { }
-	SkinnedSequence(const std::vector<Pose>& Poses, size_t NumJoints) : poses(Poses), pose(), numJoints(NumJoints)
+	SkinnedSequence() : poses(), pose(), Sequence() { }
+	SkinnedSequence(const std::vector<Pose>& Poses) : poses(Poses), pose()
 	{
 		if (poses.size() > 0)
 			pose = poses.front();
@@ -67,10 +67,5 @@ public:
 	std::vector<Pose> poses; //all of the poses in this sequence, one for each keyframe
 	Pose pose; //the active pose
 
-	inline size_t NumJoints() const { return numJoints; }
-
 	virtual void Update(size_t CurrentFrame, size_t NextFrame, float FramePercent) override; //Updates the pose. Uses Slerp and Lerp
-
-private:
-	size_t numJoints; //The total number of joints in these pose
 };

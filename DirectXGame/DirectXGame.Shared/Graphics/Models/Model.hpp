@@ -5,6 +5,7 @@
 #include "Graphics/DeviceResources.hpp"
 #include "Graphics/ShaderStructures.hpp"
 #include "ModelMesh.hpp"
+#include "Mesh.hpp"
 
 //A basic model. Contains a group of meshes and a skeleton
 class Model : public Mesh
@@ -30,6 +31,8 @@ public:
 	std::vector<Joint> joints; //All of the joints connecting the meshes in this model
 	std::map<std::string, SkinnedSequence> poses; //A collection of animated poses
 	std::string pose; //the current pose (maps to poses)
+
+
 
 	inline void Skin(Matrix* PoseArray, size_t MaxPoses = MAX_JOINTS) const { Skin(pose, PoseArray, MaxPoses); } //bind the current pose to a constant buffer
 	void Skin(const std::string& Pose, Matrix* PoseArray, size_t MaxPoses = MAX_JOINTS) const; //Bind a pose to a constant buffer (uses bind pose if doesn't exist)

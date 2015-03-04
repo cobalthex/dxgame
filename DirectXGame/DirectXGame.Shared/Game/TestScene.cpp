@@ -65,7 +65,7 @@ void TestScene::CreateWindowSizeDependentResources()
 	li.constantAttenuation = 1;
 	li.linearAttenuation = 0.08f;
 	li.quadraticAttenuation = 0;
-	li.position = Vector4(5, 16, 13, 0);
+	li.position = Vector4(5, 6, 3, 0);
 	li.direction = -li.position;
 	li.isEnabled = true;
 	li.type = LightType::Point;
@@ -75,8 +75,6 @@ void TestScene::CreateWindowSizeDependentResources()
 	lightingCBuffer.data.eyePosition = Vector4(cam.position);
 	lightingCBuffer.data.globalAmbience = Color(0, 0, 0, 0);
 	lightingCBuffer.Update();
-
-	ZeroMemory(objectCBuffer.data.joints, ARRAYSIZE(objectCBuffer.data.joints));
 
 	D3D11_RASTERIZER_DESC rastDesc;
 	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -174,6 +172,10 @@ void TestScene::CreateDeviceDependentResources()
 	{
 		Iqm::Load(deviceResources, ccache, "Content/test.iqm", iqm);
 		iqmSkel = Mesh::Create(deviceResources, iqm.CreateSkeletalMesh(Color(0, 0, 1, 0)));
+
+		timeline.Add(&iqm.poses[iqm.pose]);
+		timeline.isLooping = true;
+		timeline.Start();
 	}).then([this]()
 	{
 		loadingComplete = true;
@@ -205,6 +207,8 @@ void TestScene::Update(const DX::StepTimer& Timer)
 
 		Rotate(radians);
 	}
+
+	timeline.Update();
 }
 
 //Rotate the 3D cube model a set amount of radians.
@@ -212,7 +216,8 @@ void TestScene::Rotate(float Radians)
 {
 	Matrix world =
 		Matrix::CreateRotationX(-XM_PIDIV2) *
-		Matrix::CreateRotationY(-Radians);
+		Matrix::CreateRotationY(-XM_PIDIV2);
+		//Matrix::CreateRotationY(-Radians);
 
 	objectCBuffer.data.world = world.Transpose();
 	objectCBuffer.data.Calc(cam.View(), cam.Projection());
@@ -276,6 +281,8 @@ void TestScene::Render()
 	}
 
 	context->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1, 0);
+
+	iqmSkel = Mesh::Create(deviceResources, iqm.CreateSkeletalMesh(Color(0, 0, 1, 0)));
 	
 	//Draw skeleton
 	context->RSSetState(wireRasterizer.Get());

@@ -17,10 +17,8 @@
 
 namespace DirectX
 {
-
 	namespace SimpleMath
 	{
-
 		struct Vector4;
 		struct Matrix;
 		struct Quaternion;

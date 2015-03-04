@@ -43,7 +43,6 @@ PixelShaderInput main(VertexShaderInput input)
 	PixelShaderInput output;
 	float4 position = float4(input.position, 1.0f);
 	float4x3 skin = Skin(input.blendWeights, input.blendIndices);
-	//float3x3 skinInv = 
 
 	position.xyz = mul(position, skin);
 	input.normal.xyz = mul(input.normal.xyz, (float3x3)skin);

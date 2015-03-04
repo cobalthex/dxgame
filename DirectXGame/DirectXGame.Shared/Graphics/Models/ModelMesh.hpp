@@ -1,7 +1,15 @@
 #pragma once
 
-#include "Mesh.hpp"
 #include "Material.hpp"
+
+//3D boundaries for models
+struct Bounds
+{
+	Vector3 boundingBoxMin;
+	Vector3 boundingBoxAxis;
+	float xyRadius;
+	float radius;
+};
 
 //A mesh that is part of a model. Contains information about its vertices, indices, and contains a material. Does not inherit from Mesh
 class ModelMesh

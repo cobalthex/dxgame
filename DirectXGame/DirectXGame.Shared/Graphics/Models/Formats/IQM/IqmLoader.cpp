@@ -152,7 +152,8 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 		//material
 		std::string texFile = "Content/" + std::string(tmp.texts + m.material);
 		Material mat;
-		//mat.texture = Cache.CreateTexture2D(texFile, DeviceResources, texFile);
+		mat.texture = Cache.CreateTexture2D(texFile, DeviceResources, texFile);
+		mat.useTexture = (mat.texture != nullptr);
 		mat.emissive = ::Color(0, 0, 0, 1);
 		mat.ambient = ::Color(1, 1, 1, 1);
 		mat.diffuse = ::Color(1, 1, 1, 1);
@@ -169,10 +170,9 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 	{
 		auto& a = tmp.anims[i];
 
-		std::vector<::Pose> poses;
-		poses.assign(tmp.genPoses + a.firstFrame, tmp.genPoses + a.firstFrame + a.numFrames);
+		std::vector<::Pose> poses (tmp.genPoses + a.firstFrame, tmp.genPoses + a.firstFrame + a.numFrames);
 
-		::SkinnedSequence s (poses, tmp.header.numPoses);
+		::SkinnedSequence s (poses);
 		s.Keyframes().reserve(a.numFrames);
 
 		unsigned millis = 16; //~60fps
@@ -319,16 +319,16 @@ bool LoadAnimations(IqmTemp& Temp)
 	//Temp.frames = new Matrix[Temp.header.numFrames * Temp.header.numPoses];
 	unsigned short* frameData = (unsigned short*)&Temp.buffer[Temp.header.offsetFrames];
 
-	Temp.genPoses = new ::Pose[Temp.header.numFrames * Temp.header.numPoses];
+	Temp.genPoses = new ::Pose[Temp.header.numFrames];
 
-	for (int i = 0; i < (int)Temp.header.numFrames; i++)
+	for (unsigned i = 0; i < Temp.header.numFrames; i++)
 	{
-		auto& pose = Temp.genPoses[i * Temp.header.numPoses];
+		auto& pose = Temp.genPoses[i];
 		pose = Pose(Temp.header.numPoses);
 
-		for (int j = 0; j < (int)Temp.header.numPoses; j++)
+		for (unsigned j = 0; j < Temp.header.numPoses; j++)
 		{
-			auto& p = Temp.poses[j];
+			auto p = Temp.poses[j];
 
 			pose.translations[j].x = p.channelOffset[0]; if (p.mask & 0x01) pose.translations[j].x += *frameData++ * p.channelScale[0];
 			pose.translations[j].y = p.channelOffset[1]; if (p.mask & 0x02) pose.translations[j].y += *frameData++ * p.channelScale[1];
@@ -343,22 +343,6 @@ bool LoadAnimations(IqmTemp& Temp)
 			pose.scales[j].x = p.channelOffset[7]; if (p.mask & 0x080) pose.scales[j].x += *frameData++ * p.channelScale[7];
 			pose.scales[j].y = p.channelOffset[8]; if (p.mask & 0x100) pose.scales[j].y += *frameData++ * p.channelScale[8];
 			pose.scales[j].z = p.channelOffset[9]; if (p.mask & 0x200) pose.scales[j].z += *frameData++ * p.channelScale[9];
-
-			/*
-			//Concatenate each pose with the inverse base pose to avoid doing this at animation time.
-			//If the joint has a parent, then it needs to be pre-concatenated with its parent's base pose.
-			//Thus it all negates at animation time like so: 
-			//  (parentPose * parentInverseBasePose) * (parentBasePose * childPose * childInverseBasePose) =>
-			//  parentPose * (parentInverseBasePose * parentBasePose) * childPose * childInverseBasePose =>
-			//  parentPose * childPose * childInverseBasePose
-			rotate.Normalize();
-			Matrix m ((Vector3)rotate, translate, scale);
-
-			if (p.parent >= 0)
-				Temp.frames[i * Temp.header.numPoses + j] = Temp.baseFrames[p.parent] * m * Temp.inverseBaseFrames[j];
-			else
-				Temp.frames[i * Temp.header.numPoses + j] = m * Temp.inverseBaseFrames[j];
-			*/
 		}
 	}
 

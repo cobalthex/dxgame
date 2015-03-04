@@ -357,8 +357,8 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 	ZeroMemory(&offScreenSurfaceDesc, sizeof(D3D11_TEXTURE2D_DESC));
 
 	offScreenSurfaceDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-	offScreenSurfaceDesc.Width = d3dRenderTargetSize.Width;
-	offScreenSurfaceDesc.Height = d3dRenderTargetSize.Height;
+	offScreenSurfaceDesc.Width = lround(d3dRenderTargetSize.Width);
+	offScreenSurfaceDesc.Height = lround(d3dRenderTargetSize.Height);
 	offScreenSurfaceDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
 	offScreenSurfaceDesc.MipLevels = 1;
 	offScreenSurfaceDesc.ArraySize = 1;
