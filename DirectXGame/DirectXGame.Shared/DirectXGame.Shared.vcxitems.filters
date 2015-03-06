@@ -48,6 +48,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\DWriteFontCollectionLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\Game.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\IContent.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -68,6 +70,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\Game.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinned.ps.hlsl" />

@@ -101,7 +101,7 @@ namespace Json
 
 	protected:
 		Types type;
-		char value[SizeofLargestType<std::nullptr_t, bool, fat, double, std::string, Object, Array>::size];
+		Variant<std::nullptr_t, bool, fat, double, std::string, Object, Array> value;
 
 		//Delete any old values and reset it to the default
 		void Reset();

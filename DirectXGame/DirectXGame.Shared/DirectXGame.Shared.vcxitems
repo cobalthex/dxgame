@@ -21,6 +21,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Skinning.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.cpp">
@@ -35,6 +36,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackCollection.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackId.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\ContentCache.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\IContent.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\PlatformHelpers.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Time.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Timeline.hpp" />
@@ -58,6 +60,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\ChaseCamera.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ShaderStructures.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\Game.hpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\Game.cpp" />

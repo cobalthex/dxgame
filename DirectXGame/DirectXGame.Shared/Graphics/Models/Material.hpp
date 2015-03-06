@@ -9,7 +9,7 @@
 class Material
 {
 public:
-	Texture2D* texture; //The color map for the material
+	std::shared_ptr<Texture2D> texture; //The color map for the material
 	bool useTexture = true;
 
 	DirectX::SimpleMath::Color emissive;
@@ -21,10 +21,10 @@ public:
 
 struct MaterialConstantBufferDef : public ConstantBufferDef
 {
-	DirectX::XMVECTOR emissive;
-	DirectX::XMVECTOR ambient;
-	DirectX::XMVECTOR diffuse;
-	DirectX::XMVECTOR specular;
+	DirectX::SimpleMath::Color emissive;
+	DirectX::SimpleMath::Color ambient;
+	DirectX::SimpleMath::Color diffuse;
+	DirectX::SimpleMath::Color specular;
 	float specularPower;
 	bool useTexture;
 

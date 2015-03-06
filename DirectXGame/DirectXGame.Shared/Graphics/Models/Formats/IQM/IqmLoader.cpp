@@ -152,7 +152,7 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 		//material
 		std::string texFile = "Content/" + std::string(tmp.texts + m.material);
 		Material mat;
-		mat.texture = Cache.CreateTexture2D(texFile, DeviceResources, texFile);
+		mat.texture = Cache.Add(texFile, std::make_shared<Texture2D>(DeviceResources, texFile));
 		mat.useTexture = (mat.texture != nullptr);
 		mat.emissive = ::Color(0, 0, 0, 1);
 		mat.ambient = ::Color(1, 1, 1, 1);

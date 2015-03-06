@@ -13,6 +13,7 @@
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <DirectXCollision.h>
+#include <D3D11Shader.h>
 #include <agile.h>
 #include <concrt.h>
 #include <collection.h>
