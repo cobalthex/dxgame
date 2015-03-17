@@ -2,9 +2,11 @@
 #include "util.hpp"
 #include "IqmLoader.hpp"
 #include "Common/SimpleMath.hpp"
-#include "Graphics/ShaderStructures.hpp" //contains vertex types
+#include "Graphics/Shaders/ShaderStructures.hpp"
 
 using namespace DirectX::SimpleMath;
+
+const float Iqm::DefaultFrameLength = (1000.f / 24.f);
 
 //Todo: maybe move to memory mapped files
 
@@ -56,7 +58,7 @@ void CleanupTemp(IqmTemp& Temp)
 	delete[] Temp.genJoints;
 }
 
-bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cache, const std::string& Filename, __out ::Model& mdl)
+bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, TextureCache& TexCache, const std::string& Filename, __out::Model& mdl)
 {
 	const char* fn = Filename.c_str();
 	FILE* f = nullptr;
@@ -152,7 +154,7 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 		//material
 		std::string texFile = "Content/" + std::string(tmp.texts + m.material);
 		Material mat;
-		mat.texture = Cache.Add(texFile, std::make_shared<Texture2D>(DeviceResources, texFile));
+		mat.texture = TexCache.Load(texFile);
 		mat.useTexture = (mat.texture != nullptr);
 		mat.emissive = ::Color(0, 0, 0, 1);
 		mat.ambient = ::Color(1, 1, 1, 1);
@@ -175,9 +177,7 @@ bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, ContentCache& Cach
 		::SkinnedSequence s (poses);
 		s.Keyframes().reserve(a.numFrames);
 
-		unsigned millis = 16; //~60fps
-		if (a.frameRate > 0)
-			millis = (unsigned)(1000 / a.frameRate);
+		unsigned millis = (unsigned)(1000 / (a.frameRate > 0 ? a.frameRate : DefaultFrameLength));
 
 		//create frames
 		for (unsigned i = 0; i < a.numFrames; i++)

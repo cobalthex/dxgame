@@ -2,10 +2,9 @@
 
 #include "Pch.hpp"
 #include "Graphics/DeviceResources.hpp"
-#include "Common/IContent.hpp"
 
 //The basis for all textures, abstract
-class Texture : public IContent
+class Texture
 {
 protected:
 	Texture() : deviceResources(nullptr), srv(nullptr) { }

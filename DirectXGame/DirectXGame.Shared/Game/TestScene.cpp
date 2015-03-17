@@ -1,6 +1,7 @@
 ﻿#include "Pch.hpp"
 #include "TestScene.hpp"
 #include "Common/PlatformHelpers.hpp"
+#include "Common/Helpers.hpp"
 #include "Graphics/Models/Formats/IQM/IqmLoader.hpp"
 
 using namespace DirectXGame;
@@ -10,10 +11,12 @@ using namespace Windows::Foundation;
 
 //Loads vertex and pixel shaders from files and instantiates the cube geometry.
 TestScene::TestScene(const std::shared_ptr<DX::DeviceResources>& DeviceResources) :
-loadingComplete(false),
-degreesPerSecond(45),
-tracking(false),
-Renderer(DeviceResources)
+	loadingComplete(false),
+	degreesPerSecond(45),
+	tracking(false),
+	Renderer(DeviceResources),
+	shCache(DeviceResources),
+	texCache(DeviceResources)
 {
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
@@ -31,7 +34,6 @@ void TestScene::CreateWindowSizeDependentResources()
 	if (aspectRatio < 1.0f)
 		fovAngleY *= 2.0f;
 
-	pcCbuffer = ConstantBuffer<WVPConstantBufferDef>(deviceResources);
 	objectCBuffer = ConstantBuffer<ObjectConstantBufferDef>(deviceResources);
 	materialCBuffer = ConstantBuffer<MaterialConstantBufferDef>(deviceResources);
 
@@ -82,95 +84,57 @@ void TestScene::CreateWindowSizeDependentResources()
 	rastDesc.CullMode = D3D11_CULL_NONE;
 	rastDesc.AntialiasedLineEnable = true;
 	rastDesc.MultisampleEnable = true;
-	App::ThrowIfFailed(deviceResources->GetD3DDevice()->CreateRasterizerState(&rastDesc, &wireRasterizer));
+	Sys::ThrowIfFailed(deviceResources->GetD3DDevice()->CreateRasterizerState(&rastDesc, &wireRasterizer));
 }
 
 void TestScene::CreateDeviceDependentResources()
 {
 	//Load shaders asynchronously.
-	auto loadVSTask = App::ReadDataAsync(L"LitSkinned.vs.cso");
-	auto loadPSTask = App::ReadDataAsync(L"LitSkinned.ps.cso");
+	auto loadVSTask = Sys::ReadFileAsync(L"LitSkinned.vs.cso");
+	auto loadPSTask = Sys::ReadFileAsync(L"LitSkinned.ps.cso");
 
 	//After the vertex shader file is loaded, create the shader and input layout.
-	auto createVSTask = loadVSTask.then([this](const std::vector<byte>& fileData)
+	auto createVSTask = loadVSTask.then([this](const std::vector<byte>& FileData)
 	{
-		App::ThrowIfFailed(
-			deviceResources->GetD3DDevice()->CreateVertexShader(
-			fileData.data(),
-			fileData.size(),
-			nullptr,
-			&vertexShader
-			)
-		);
+		vshader = VertexShader(deviceResources, FileData);
 
-		App::ThrowIfFailed(
+		Sys::ThrowIfFailed(
 			deviceResources->GetD3DDevice()->CreateInputLayout(
 			VertexTypes::VertexSkinned::ElementDesc,
 			VertexTypes::VertexSkinned::ElementCount,
-			fileData.data(),
-			fileData.size(),
+			FileData.data(),
+			FileData.size(),
 			&inputLayout
 			)
 		);
 	});
 
 	//After the pixel shader file is loaded, create the shader and constant buffer.
-	auto createPSTask = loadPSTask.then([this](const std::vector<byte>& fileData)
+	auto createPSTask = loadPSTask.then([this](const std::vector<byte>& FileData)
 	{
-		App::ThrowIfFailed(
-			deviceResources->GetD3DDevice()->CreatePixelShader(
-			&fileData[0],
-			fileData.size(),
-			nullptr,
-			&pixelShader
-			)
-			);
+		pshader = PixelShader(deviceResources, FileData);
 	});
 
 	//Load shaders asynchronously.
-	loadVSTask = App::ReadDataAsync(L"PositionColor.vs.cso");
-	loadPSTask = App::ReadDataAsync(L"PositionColor.ps.cso");
+	loadVSTask = Sys::ReadFileAsync(L"PositionColor.vs.cso");
+	loadPSTask = Sys::ReadFileAsync(L"PositionColor.ps.cso");
 
 	//After the vertex shader file is loaded, create the shader and input layout.
-	createVSTask = loadVSTask.then([this](const std::vector<byte>& fileData)
+	createVSTask = loadVSTask.then([this](const std::vector<byte>& FileData)
 	{
-		App::ThrowIfFailed(
-			deviceResources->GetD3DDevice()->CreateVertexShader(
-			fileData.data(),
-			fileData.size(),
-			nullptr,
-			&pcVertexShader
-			)
-		);
-
-		App::ThrowIfFailed(
-			deviceResources->GetD3DDevice()->CreateInputLayout(
-			VertexTypes::VertexPositionColor::ElementDesc,
-			VertexTypes::VertexPositionColor::ElementCount,
-			fileData.data(),
-			fileData.size(),
-			&pcInputLayout
-			)
-		);
+		
 	});
 
 	//After the pixel shader file is loaded, create the shader and constant buffer.
-	createPSTask = loadPSTask.then([this](const std::vector<byte>& fileData)
+	createPSTask = loadPSTask.then([this](const std::vector<byte>& FileData)
 	{
-		App::ThrowIfFailed(
-			deviceResources->GetD3DDevice()->CreatePixelShader(
-			&fileData[0],
-			fileData.size(),
-			nullptr,
-			&pcPixelShader
-			)
-		);
+		
 	});
 
 	//Once both shaders are loaded, create the mesh.
 	auto loadModelTask = Concurrency::create_task([this]()
 	{
-		Iqm::Load(deviceResources, ccache, "Content/test.iqm", iqm);
+		Iqm::Load(deviceResources, texCache, "Content/test.iqm", iqm);
 		iqmSkel = Mesh::Create(deviceResources, iqm.CreateSkeletalMesh(Color(1, 0.6f, 0, 0)), true);
 
 		timeline.Add(&iqm.poses[iqm.pose]);
@@ -185,14 +149,10 @@ void TestScene::CreateDeviceDependentResources()
 void TestScene::ReleaseDeviceDependentResources()
 {
 	loadingComplete = false;
-	
-	vertexShader.Reset();
-	inputLayout.Reset();
-	pixelShader.Reset();
 
-	pcVertexShader.Reset();
-	pcInputLayout.Reset();
-	pcPixelShader.Reset();
+	//pcVertexShader.Reset();
+	//pcInputLayout.Reset();
+	//pcPixelShader.Reset();
 }
 
 //Called once per frame, rotates the cube and calculates the model and view matrices.
@@ -256,13 +216,13 @@ void TestScene::Render()
 	context->RSSetState(nullptr);
 	context->IASetInputLayout(inputLayout.Get());
 
-	context->VSSetShader(vertexShader.Get(), nullptr, 0);
+	vshader.Apply();
 
 	iqm.Skin(objectCBuffer.data.joints);
 	objectCBuffer.Update();
 	objectCBuffer.BindVertex(0);
 
-	context->PSSetShader(pixelShader.Get(), nullptr, 0);
+	pshader.Apply();
 	context->PSSetSamplers(0, 1, sampler.GetAddressOf());
 
 	lightingCBuffer.BindPixel(1);
@@ -287,15 +247,15 @@ void TestScene::Render()
 	//Draw skeleton
 	context->RSSetState(wireRasterizer.Get());
 
-	context->IASetInputLayout(pcInputLayout.Get());
+	//context->IASetInputLayout(pcInputLayout.Get());
 
-	pcCbuffer.data.wvp = objectCBuffer.data.worldViewProjection;
-	pcCbuffer.Update();
-	pcCbuffer.BindVertex(0);
-
-	context->VSSetShader(pcVertexShader.Get(), nullptr, 0);
-	context->PSSetShader(pcPixelShader.Get(), nullptr, 0);
-
-	iqmSkel.Draw();
-	context->RSSetState(nullptr);
+	//pcCbuffer.data.wvp = objectCBuffer.data.worldViewProjection;
+	//pcCbuffer.Update();
+	//pcCbuffer.BindVertex(0);
+	//
+	//context->VSSetShader(pcVertexShader.Get(), nullptr, 0);
+	//context->PSSetShader(pcPixelShader.Get(), nullptr, 0);
+	//
+	//iqmSkel.Draw();
+	//context->RSSetState(nullptr);
 }

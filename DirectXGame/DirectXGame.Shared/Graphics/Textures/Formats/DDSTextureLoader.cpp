@@ -42,13 +42,13 @@ static HRESULT LoadTextureDataFromFile( _In_z_ const wchar_t* fileName,
 
     //open the file
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-    App::ScopedHandle hFile( App::SafeHandle( CreateFile2( fileName,
+    Sys::ScopedHandle hFile( Sys::SafeHandle( CreateFile2( fileName,
                                                   GENERIC_READ,
                                                   FILE_SHARE_READ,
                                                   OPEN_EXISTING,
                                                   nullptr ) ) );
 #else
-    ScopedHandle hFile( App::SafeHandle ( CreateFileW( fileName,
+    ScopedHandle hFile( Sys::SafeHandle ( CreateFileW( fileName,
                                                   GENERIC_READ,
                                                   FILE_SHARE_READ,
                                                   nullptr,

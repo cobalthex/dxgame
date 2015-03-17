@@ -1,15 +1,17 @@
 ﻿#pragma once
 
 #include "Graphics/Renderer.hpp"
-#include "Graphics/ShaderStructures.hpp"
 #include "Graphics/Models/Model.hpp"
+#include "Graphics/Textures/TextureCache.hpp"
 #include "Graphics/Textures/Texture2D.hpp"
-#include "Common/ContentCache.hpp"
 #include "Graphics/ConstantBuffer.hpp"
 #include "Graphics/Lighting.hpp"
 #include "Graphics/Scene/Camera.hpp"
 #include "Common/AlignedStorage.hpp"
 #include "Animation/Timeline.hpp"
+#include "Graphics/Shaders/ShaderStructures.hpp"
+#include "Graphics/Shaders/ShaderCache.hpp"
+#include "Graphics/Shaders/PositionColorShader.hpp"
 
 namespace DirectXGame
 {
@@ -32,21 +34,17 @@ namespace DirectXGame
 		void Rotate(float Radians);
 
 	private:
-		//A content cache for storing textures and such
-		ContentCache ccache;
+		VertexShader vshader;
+		PixelShader pshader;
 
-		// Direct3D resources for cube geometry.
+		TextureCache texCache;
+		ShaderCache shCache;
+
 		ComPtr<ID3D11InputLayout>	inputLayout;
-		ComPtr<ID3D11VertexShader>	vertexShader;
-		ComPtr<ID3D11PixelShader>	pixelShader;
 		ComPtr<ID3D11SamplerState>	sampler;
 		ComPtr<ID3D11RasterizerState> wireRasterizer;
 
-		//Position color shaders
-		ComPtr<ID3D11VertexShader>	pcVertexShader;
-		ComPtr<ID3D11PixelShader>	pcPixelShader;
-		ComPtr<ID3D11InputLayout>	pcInputLayout;
-		ConstantBuffer<WVPConstantBufferDef> pcCbuffer;
+		Shaders::PositionColorShader pcShader;
 
 		Camera cam;
 		

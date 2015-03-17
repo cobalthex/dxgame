@@ -78,7 +78,7 @@ void DX::DeviceResources::CreateDeviceIndependentResources()
 #endif
 
 	//Initialize the Direct2D Factory.
-	App::ThrowIfFailed(
+	Sys::ThrowIfFailed(
 		D2D1CreateFactory(
 			D2D1_FACTORY_TYPE_SINGLE_THREADED,
 			__uuidof(ID2D1Factory2),
@@ -88,7 +88,7 @@ void DX::DeviceResources::CreateDeviceIndependentResources()
 		);
 
 	//Initialize the DirectWrite Factory.
-	App::ThrowIfFailed(
+	Sys::ThrowIfFailed(
 		DWriteCreateFactory(
 			DWRITE_FACTORY_TYPE_SHARED,
 			__uuidof(IDWriteFactory2),
@@ -97,7 +97,7 @@ void DX::DeviceResources::CreateDeviceIndependentResources()
 		);
 
 	//Initialize the Windows Imaging Component (WIC) Factory.
-	App::ThrowIfFailed(
+	Sys::ThrowIfFailed(
 		CoCreateInstance(
 			CLSID_WICImagingFactory2,
 			nullptr,
@@ -159,7 +159,7 @@ void DX::DeviceResources::CreateDeviceResources()
 		//If the initialization fails, fall back to the WARP device.
 		//For more information on WARP, see: 
 		//http://go.microsoft.com/fwlink/?LinkId=286690
-		App::ThrowIfFailed(
+		Sys::ThrowIfFailed(
 			D3D11CreateDevice(
 				nullptr,
 				D3D_DRIVER_TYPE_WARP, //Create a WARP device instead of a hardware device.
@@ -176,17 +176,17 @@ void DX::DeviceResources::CreateDeviceResources()
 	}
 
 	//Store pointers to the Direct3D 11.1 API device and immediate context.
-	App::ThrowIfFailed(device.As(&d3dDevice));
+	Sys::ThrowIfFailed(device.As(&d3dDevice));
 
-	App::ThrowIfFailed(context.As(&d3dContext));
+	Sys::ThrowIfFailed(context.As(&d3dContext));
 
 	//Create the Direct2D device object and a corresponding context.
 	ComPtr<IDXGIDevice3> dxgiDevice;
-	App::ThrowIfFailed(d3dDevice.As(&dxgiDevice));
+	Sys::ThrowIfFailed(d3dDevice.As(&dxgiDevice));
 
-	App::ThrowIfFailed(d2dFactory->CreateDevice(dxgiDevice.Get(), &d2dDevice));
+	Sys::ThrowIfFailed(d2dFactory->CreateDevice(dxgiDevice.Get(), &d2dDevice));
 
-	App::ThrowIfFailed(
+	Sys::ThrowIfFailed(
 		d2dDevice->CreateDeviceContext(
 			D2D1_DEVICE_CONTEXT_OPTIONS_NONE,
 			&d2dContext
@@ -210,8 +210,8 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 	d3dContext->Flush();
 
 	//Calculate the necessary render target size in pixels.
-	outputSize.Width = App::ConvertDipsToPixels(logicalSize.Width, dpi);
-	outputSize.Height = App::ConvertDipsToPixels(logicalSize.Height, dpi);
+	outputSize.Width = Sys::ConvertDipsToPixels(logicalSize.Width, dpi);
+	outputSize.Height = Sys::ConvertDipsToPixels(logicalSize.Height, dpi);
 	
 	//Prevent zero size DirectX content from being created.
 	outputSize.Width = max(outputSize.Width, 1);
@@ -250,7 +250,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 		}
 		else
 		{
-			App::ThrowIfFailed(hr);
+			Sys::ThrowIfFailed(hr);
 		}
 	}
 	else
@@ -287,15 +287,15 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 
 		//This sequence obtains the DXGI factory that was used to create the Direct3D device above.
 		ComPtr<IDXGIDevice3> dxgiDevice;
-		App::ThrowIfFailed(d3dDevice.As(&dxgiDevice));
+		Sys::ThrowIfFailed(d3dDevice.As(&dxgiDevice));
 
 		ComPtr<IDXGIAdapter> dxgiAdapter;
-		App::ThrowIfFailed(dxgiDevice->GetAdapter(&dxgiAdapter));
+		Sys::ThrowIfFailed(dxgiDevice->GetAdapter(&dxgiAdapter));
 
 		ComPtr<IDXGIFactory2> dxgiFactory;
-		App::ThrowIfFailed(dxgiAdapter->GetParent(IID_PPV_ARGS(&dxgiFactory)));
+		Sys::ThrowIfFailed(dxgiAdapter->GetParent(IID_PPV_ARGS(&dxgiFactory)));
 
-		App::ThrowIfFailed(
+		Sys::ThrowIfFailed(
 			dxgiFactory->CreateSwapChainForCoreWindow(
 			d3dDevice.Get(),
 			reinterpret_cast<IUnknown*>(window.Get()),
@@ -307,7 +307,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 
 		//Ensure that DXGI does not queue more than one frame at a time. This both reduces latency and
 		//ensures that the application will only render after each VSync, minimizing power consumption.
-		App::ThrowIfFailed(dxgiDevice->SetMaximumFrameLatency(1));
+		Sys::ThrowIfFailed(dxgiDevice->SetMaximumFrameLatency(1));
 	}
 
 	//Set the proper orientation for the swap chain, and generate 2D and
@@ -348,9 +348,9 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 		throw ref new FailureException();
 	}
 
-	App::ThrowIfFailed(swapChain->SetRotation(displayRotation));
+	Sys::ThrowIfFailed(swapChain->SetRotation(displayRotation));
 
-	App::ThrowIfFailed(swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf())));
+	Sys::ThrowIfFailed(swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf())));
 
 	//create a special multi-sampled surface
 	D3D11_TEXTURE2D_DESC offScreenSurfaceDesc;
@@ -366,7 +366,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 	offScreenSurfaceDesc.SampleDesc.Quality = sampleQuality;
 
 	// Create a surface that's multisampled
-	App::ThrowIfFailed(
+	Sys::ThrowIfFailed(
 		d3dDevice->CreateTexture2D(
 		&offScreenSurfaceDesc,
 		nullptr,
@@ -374,7 +374,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 		);
 
 	CD3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc(D3D11_RTV_DIMENSION_TEXTURE2DMS);
-	App::ThrowIfFailed(
+	Sys::ThrowIfFailed(
 		d3dDevice->CreateRenderTargetView(
 			offScreenSurface.Get(),
 			&renderTargetViewDesc,
@@ -398,7 +398,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 	);
 
 	ComPtr<ID3D11Texture2D> depthStencil;
-	App::ThrowIfFailed(
+	Sys::ThrowIfFailed(
 		d3dDevice->CreateTexture2D(
 			&depthStencilDesc,
 			nullptr,
@@ -407,7 +407,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 		);
 
 	CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2DMS);
-	App::ThrowIfFailed(
+	Sys::ThrowIfFailed(
 		d3dDevice->CreateDepthStencilView(
 			depthStencil.Get(),
 			&depthStencilViewDesc,
@@ -436,11 +436,11 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 			);
 
 	ComPtr<IDXGISurface2> dxgiBackBuffer;
-	App::ThrowIfFailed(
+	Sys::ThrowIfFailed(
 		swapChain->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer))
 		);
 
-	App::ThrowIfFailed(
+	Sys::ThrowIfFailed(
 		d2dContext->CreateBitmapFromDxgiSurface(
 			dxgiBackBuffer.Get(),
 			&bitmapProperties,
@@ -513,30 +513,30 @@ void DX::DeviceResources::ValidateDevice()
 	//First, get the information for the default adapter from when the device was created.
 
 	ComPtr<IDXGIDevice3> dxgiDevice;
-	App::ThrowIfFailed(d3dDevice.As(&dxgiDevice));
+	Sys::ThrowIfFailed(d3dDevice.As(&dxgiDevice));
 
 	ComPtr<IDXGIAdapter> deviceAdapter;
-	App::ThrowIfFailed(dxgiDevice->GetAdapter(&deviceAdapter));
+	Sys::ThrowIfFailed(dxgiDevice->GetAdapter(&deviceAdapter));
 
 	ComPtr<IDXGIFactory2> deviceFactory;
-	App::ThrowIfFailed(deviceAdapter->GetParent(IID_PPV_ARGS(&deviceFactory)));
+	Sys::ThrowIfFailed(deviceAdapter->GetParent(IID_PPV_ARGS(&deviceFactory)));
 
 	ComPtr<IDXGIAdapter1> previousDefaultAdapter;
-	App::ThrowIfFailed(deviceFactory->EnumAdapters1(0, &previousDefaultAdapter));
+	Sys::ThrowIfFailed(deviceFactory->EnumAdapters1(0, &previousDefaultAdapter));
 
 	DXGI_ADAPTER_DESC previousDesc;
-	App::ThrowIfFailed(previousDefaultAdapter->GetDesc(&previousDesc));
+	Sys::ThrowIfFailed(previousDefaultAdapter->GetDesc(&previousDesc));
 
 	//Next, get the information for the current default adapter.
 
 	ComPtr<IDXGIFactory2> currentFactory;
-	App::ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&currentFactory)));
+	Sys::ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&currentFactory)));
 
 	ComPtr<IDXGIAdapter1> currentDefaultAdapter;
-	App::ThrowIfFailed(currentFactory->EnumAdapters1(0, &currentDefaultAdapter));
+	Sys::ThrowIfFailed(currentFactory->EnumAdapters1(0, &currentDefaultAdapter));
 
 	DXGI_ADAPTER_DESC currentDesc;
-	App::ThrowIfFailed(currentDefaultAdapter->GetDesc(&currentDesc));
+	Sys::ThrowIfFailed(currentDefaultAdapter->GetDesc(&currentDesc));
 
 	//If the adapter LUIDs don't match, or if the device reports that it has been removed,
 	//a new D3D device must be created.
@@ -627,7 +627,7 @@ void DX::DeviceResources::Present()
 	if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
 		HandleDeviceLost();
 	else
-		App::ThrowIfFailed(hr);
+		Sys::ThrowIfFailed(hr);
 }
 
 //This method determines the rotation between the display device's native Orientation and the

@@ -1,8 +1,9 @@
 ﻿#pragma once
 
 #include <ppltasks.h>	// For create_task
+#include <cwctype>
 
-namespace App
+namespace Sys
 {
 	struct HandleCloserFunc { void operator()(HANDLE H) { if (H) CloseHandle(H); } }; //Close a handle with the () operator
 	typedef std::unique_ptr<void, HandleCloserFunc> ScopedHandle; //A handle that automatically closes itself when it goes out of scope
@@ -12,6 +13,16 @@ namespace App
 	inline std::wstring GetWorkingDirectory()
 	{
 		return std::wstring(Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Begin());
+	}
+
+	//Get a filename's extension
+	inline std::wstring GetFileExtension(const std::wstring& Filename)
+	{
+		auto last = Filename.find_last_of(L'.');
+		auto ext = Filename.substr(last);
+		for (auto& c : ext)
+			c = std::towlower(c);
+		return ext;
 	}
 
 	//Throw an exception based on the HRESULT if the operation failed
@@ -24,8 +35,24 @@ namespace App
 		}
 	}
 
-	// Function that reads from a binary file asynchronously.
-	inline Concurrency::task<std::vector<byte>> ReadDataAsync(const std::wstring& Filename)
+	typedef std::vector<byte> FileData;
+
+	//Read a binary file synchronously
+	inline FileData ReadFile(const std::string& Filename)
+	{
+		std::ifstream fin (Filename, std::ios::ate | std::ios::binary);
+		auto sz = fin.tellg();
+		fin.seekg(0, std::ios::beg);
+		
+		std::vector<byte> buffer;
+		buffer.resize((unsigned)sz.seekpos());
+		fin.read((char*)buffer.data(), buffer.size());
+
+		return buffer;
+	}
+
+	//Read a binary file asynchronously
+	inline Concurrency::task<FileData> ReadFileAsync(const std::wstring& Filename)
 	{
 		using namespace Windows::Storage;
 		using namespace Concurrency;
@@ -35,9 +62,9 @@ namespace App
 		return create_task(folder->GetFileAsync(Platform::StringReference(Filename.c_str()))).then([](StorageFile^ file)
 		{
 			return FileIO::ReadBufferAsync(file);
-		}).then([](Streams::IBuffer^ fileBuffer) -> std::vector < byte >
+		}).then([](Streams::IBuffer^ fileBuffer) -> FileData
 		{
-			std::vector<byte> returnBuffer;
+			FileData returnBuffer;
 			returnBuffer.resize(fileBuffer->Length);
 			Streams::DataReader::FromBuffer(fileBuffer)->ReadBytes(Platform::ArrayReference<byte>(returnBuffer.data(), fileBuffer->Length));
 			return returnBuffer;

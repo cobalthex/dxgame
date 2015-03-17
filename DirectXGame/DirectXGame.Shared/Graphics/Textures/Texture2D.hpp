@@ -71,6 +71,8 @@ public:
 
 	inline bool IsValid() const { return (srv != nullptr && deviceResources != nullptr); } //Is this texture valid?
 
+	static bool IsTextureFile(const std::wstring& Extension);
+
 protected:
 	D3D11_TEXTURE2D_DESC desc;
 

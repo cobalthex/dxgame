@@ -6,7 +6,6 @@
 
 namespace DirectXGame
 {
-	//Main entry point for our app. Connects the app with the Windows shell and handles application lifecycle events.
 	ref class App sealed : public Windows::ApplicationModel::Core::IFrameworkView
 	{
 	public:

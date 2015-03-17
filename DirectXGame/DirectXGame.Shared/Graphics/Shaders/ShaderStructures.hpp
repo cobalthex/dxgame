@@ -8,6 +8,8 @@ using namespace DirectX::SimpleMath;
 
 #define MAX_JOINTS 128 //The maximum allowed number of joints per shader
 
+typedef ComPtr<ID3D11InputLayout> InputLayout;
+
 //A basic world view projection matrix
 struct WVPConstantBufferDef : public ConstantBufferDef
 {

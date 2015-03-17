@@ -33,7 +33,7 @@ namespace DirectXGame
 		{
 			DWTextFormat format;
 			//Create device independent resources
-			App::ThrowIfFailed
+			Sys::ThrowIfFailed
 			(
 				DeviceResources->GetDWriteFactory()->CreateTextFormat
 				(
@@ -47,7 +47,7 @@ namespace DirectXGame
 					&format
 				)
 			);
-			App::ThrowIfFailed(format->SetParagraphAlignment(DefaultAlignment));
+			Sys::ThrowIfFailed(format->SetParagraphAlignment(DefaultAlignment));
 
 			return format;
 		}

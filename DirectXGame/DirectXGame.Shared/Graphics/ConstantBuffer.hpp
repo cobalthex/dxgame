@@ -18,6 +18,8 @@ public:
 	ConstantBuffer(const DX::DeviceResourcesPtr& DeviceResources, const BufferType& InitialData)
 		: devContext(DeviceResources->GetD3DDeviceContext()), data(InitialData)
 	{
+		static_assert((sizeof(BufferType) % 16) == 0, "Constant Buffer must be 16-byte aligned");
+
 		CD3D11_BUFFER_DESC constantBufferDesc (sizeof(BufferType), D3D11_BIND_CONSTANT_BUFFER);
 		constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 		constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -26,9 +28,7 @@ public:
 		sub.pSysMem = &InitialData;
 		sub.SysMemPitch = 0;
 		sub.SysMemSlicePitch = 0;
-		App::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateBuffer(&constantBufferDesc, &sub, &constantBuffer));
-
-		static_assert((sizeof(BufferType) % 16) == 0, "Constant Buffer must be 16-byte aligned");
+		Sys::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateBuffer(&constantBufferDesc, &sub, &constantBuffer));
 	}
 	ConstantBuffer(const DX::DeviceResourcesPtr& DeviceResources) : ConstantBuffer(DeviceResources, BufferType()) { }
 
@@ -45,6 +45,16 @@ public:
 		CopyMemory(map.pData, &data, sizeof(data));
 		devContext->Unmap(cb, 0);
 	}
+	//Update the constant buffer on the gpu with values in Buffer
+	inline virtual void Update(const BufferType& Buffer) const
+	{
+		auto cb = constantBuffer.Get();
+		D3D11_MAPPED_SUBRESOURCE map;
+		devContext->Map(cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+		CopyMemory(map.pData, &Buffer, sizeof(Buffer));
+		devContext->Unmap(cb, 0);
+	}
+
 	inline void BindVertex(unsigned Slot) const { devContext->VSSetConstantBuffers(Slot, 1, constantBuffer.GetAddressOf()); } //Bind this constant buffer to a vertex shader
 	inline void BindPixel(unsigned Slot) const { devContext->PSSetConstantBuffers(Slot, 1, constantBuffer.GetAddressOf()); } //Bind this constant buffer to a pixel shader
 	inline void BindDomain(unsigned Slot) const { devContext->DSSetConstantBuffers(Slot, 1, constantBuffer.GetAddressOf()); } //Bind this constant buffer to a domain shader
