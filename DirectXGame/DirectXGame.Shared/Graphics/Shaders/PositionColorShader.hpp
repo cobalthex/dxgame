@@ -20,8 +20,8 @@ namespace Shaders
 			static const unsigned ElementCount;
 		};
 
-		PositionColorShader() : vshader(), pshader(), inputLayout(nullptr) { }
-		PositionColorShader(const DX::DeviceResourcesPtr& DeviceResources);
+		PositionColorShader() : vshader(), pshader(), inputLayout(nullptr), wvp() { }
+		PositionColorShader(const DeviceResourcesPtr& DeviceResources);
 
 		inline void Apply() override
 		{
@@ -34,6 +34,8 @@ namespace Shaders
 		{
 			wvp.Update();
 		}
+
+		inline void SetInputLayout() const{ vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
 
 		InputLayout inputLayout;
 

@@ -8,6 +8,7 @@ class Cache
 {
 public:
 	typedef std::shared_ptr<StorageType> CacheItem;
+	typedef std::map<KeyType, CacheItem> CacheMap;
 
 	Cache() : cache() { }
 	virtual ~Cache() { }
@@ -34,6 +35,9 @@ public:
 		}
 	}
 
+	inline const CacheMap& Map() const { return cache; } //return the underlying storage container
+	inline CacheMap& Map() { return cache; } //return the underlying storage container
+
 protected:
-	std::map<KeyType, CacheItem> cache;
+	CacheMap cache;
 };

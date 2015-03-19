@@ -1,17 +1,24 @@
 #pragma once
 
 #include "Graphics/DeviceResources.hpp"
-#include "Common/Cache.hpp"
+#include "Data/Cache.hpp"
 #include "Shader.hpp"
 
-class ShaderCache : public Cache<std::string, Shader>
+enum class ShaderType
+{
+	Unknown,
+	PositionColor,
+	LitSkinned
+};
+
+class ShaderCache : public Cache<ShaderType, Shader>
 {
 public:
-	ShaderCache(const DX::DeviceResourcesPtr& DeviceResources) { }
+	ShaderCache(const DeviceResourcesPtr& DeviceResources) : deviceResources(DeviceResources) { }
 	virtual ~ShaderCache() { }
 
-	virtual std::shared_ptr<Shader>& Load(const std::string& Key) override;
+	virtual std::shared_ptr<Shader>& Load(const ShaderType& Key) override;
 
 protected:
-	DX::DeviceResourcesPtr deviceResources;
+	DeviceResourcesPtr deviceResources;
 };

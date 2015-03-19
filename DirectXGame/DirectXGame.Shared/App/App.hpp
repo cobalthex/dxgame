@@ -39,7 +39,7 @@ protected:
 		void OnDisplayContentsInvalidated(Windows::Graphics::Display::DisplayInformation^ Sender, Platform::Object^ Args);
 
 	private:
-		std::shared_ptr<DX::DeviceResources> deviceResources;
+		std::shared_ptr<DeviceResources> deviceResources;
 		std::unique_ptr<Game> main;
 		bool windowClosed;
 		bool windowVisible;

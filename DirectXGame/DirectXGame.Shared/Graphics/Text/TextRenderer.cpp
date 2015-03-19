@@ -6,7 +6,7 @@
 using namespace DirectXGame;
 
 //Initializes D2D resources used for text rendering
-TextRenderer::TextRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources)
+TextRenderer::TextRenderer(const std::shared_ptr<DeviceResources>& deviceResources)
 	: deviceResources(deviceResources)
 {
 	Sys::ThrowIfFailed(deviceResources->GetD2DFactory()->CreateDrawingStateBlock(&state));

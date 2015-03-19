@@ -15,7 +15,7 @@ class ConstantBuffer
 {
 public:
 	ConstantBuffer() : constantBuffer(nullptr), devContext(nullptr), data() { }
-	ConstantBuffer(const DX::DeviceResourcesPtr& DeviceResources, const BufferType& InitialData)
+	ConstantBuffer(const DeviceResourcesPtr& DeviceResources, const BufferType& InitialData)
 		: devContext(DeviceResources->GetD3DDeviceContext()), data(InitialData)
 	{
 		static_assert((sizeof(BufferType) % 16) == 0, "Constant Buffer must be 16-byte aligned");
@@ -30,7 +30,7 @@ public:
 		sub.SysMemSlicePitch = 0;
 		Sys::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateBuffer(&constantBufferDesc, &sub, &constantBuffer));
 	}
-	ConstantBuffer(const DX::DeviceResourcesPtr& DeviceResources) : ConstantBuffer(DeviceResources, BufferType()) { }
+	ConstantBuffer(const DeviceResourcesPtr& DeviceResources) : ConstantBuffer(DeviceResources, BufferType()) { }
 
 	virtual ~ConstantBuffer() { }
 

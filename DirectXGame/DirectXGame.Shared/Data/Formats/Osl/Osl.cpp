@@ -1,7 +1,7 @@
 #include "Pch.hpp"
-#include "Json.hpp"
+#include "Osl.hpp"
 
-using namespace Json;
+using namespace Osl;
 
 size_t Value::DefaultStringReserveLength = 32;
 
@@ -19,18 +19,18 @@ Value& Value::operator = (bool Value)
 	new (value) bool(Value);
 	return *this;
 }
-Value& Value::operator = (integer Value)
+Value& Value::operator = (fat Value)
 {
 	Reset();
 	type = Types::Integer;
-	new (value)integer(Value);
+	new (value)fat(Value);
 	return *this;
 }
-Value& Value::operator = (decimal Value)
+Value& Value::operator = (double Value)
 {
 	Reset();
-	type = Types::Decimal;
-	new (value) decimal(Value);
+	type = Types::Floating;
+	new (value) double(Value);
 	return *this;
 }
 Value& Value::operator = (const std::string& Value)
@@ -47,13 +47,6 @@ Value& Value::operator = (const Object& Value)
 	new (value)Object(Value);
 	return *this;
 }
-Value& Value::operator = (const Array& Value)
-{
-	Reset();
-	type = Types::Array;
-	new (value)Array(Value);
-	return *this;
-}
 
 void Value::Reset()
 {
@@ -63,8 +56,6 @@ void Value::Reset()
 		((std::string*)(value))->~basic_string(); break;
 	case Types::Object:
 		((Object*)(value))->~Object(); break;
-	case Types::Array:
-		((Array*)(value))->~Array(); break;
 	}
 	type = Types::Invalid;
 }
@@ -107,10 +98,10 @@ void Value::Read(std::istream& Stream)
 			Stream.get();
 		}
 		//if (s.length() > 0)
-			operator=(std::stoll(s));
+		operator=(std::stoll(s));
 		break;
 
-	case Types::Decimal:
+	case Types::Floating:
 		//negative must come first
 		if (Stream.peek() == '-')
 			s.append('-', 1);
@@ -228,34 +219,6 @@ void Value::Read(std::istream& Stream)
 	}
 	break;
 
-	case Types::Array:
-	{
-		Array values;
-		Stream.get(); //read [
-		while (!Stream.eof() && Stream.peek() != ']')
-		{
-			SkipWhitespace(Stream);
-			//skip comma
-			if (Stream.peek() == ',')
-			{
-				Stream.get();
-				SkipWhitespace(Stream);
-			}
-
-			Value v;
-			//type is guessed inside
-			v.Read(Stream);
-			values.push_back(v);
-
-			SkipWhitespace(Stream);
-		}
-		SkipWhitespace(Stream);
-		Stream.get(); //read ]
-
-		operator=(values);
-	}
-	break;
-
 	}
 }
 void Value::Write(std::ostream& Stream) const
@@ -273,12 +236,12 @@ void Value::Write(std::ostream& Stream) const
 		break;
 
 	case Types::Integer:
-		out = std::to_string(*(integer*)value);
+		out = std::to_string(*(fat*)value);
 		Stream.write(out.data(), out.length());
 		break;
 
-	case Types::Decimal:
-		out = std::to_string(*(decimal*)value);
+	case Types::Floating:
+		out = std::to_string(*(double*)value);
 		Stream.write(out.data(), out.length());
 		break;
 
@@ -315,25 +278,6 @@ void Value::Write(std::ostream& Stream) const
 	}
 	break;
 
-	case Types::Array:
-	{
-		Stream.put('[');
-
-		auto& vec = *(Array*)value;
-
-		size_t n = vec.size(), nm1 = n - 1;
-		for (size_t i = 0; i < n; i++)
-		{
-			//write value
-			vec[i].Write(Stream);
-
-			//write encloser
-			if (i != nm1)
-				Stream.put(',');
-		}
-		Stream.put(']');
-	}
-	break;
 	}
 }
 
@@ -341,7 +285,7 @@ void Value::Write(std::ostream& Stream) const
 Types Value::GuessType(std::istream& Stream)
 {
 	char pk = Stream.peek();
-	//figure out type of number (integer, Decimal)
+	//figure out type of number (integer, floating)
 	if ((pk >= '0' && pk <= '9') || pk == '-')
 	{
 		ptrdiff_t count = 1;
@@ -352,15 +296,14 @@ Types Value::GuessType(std::istream& Stream)
 		Stream.seekg(-count, std::ios::cur); //reset
 
 		if (nk == '.')
-			return Types::Decimal;
+			return Types::Floating;
 		return Types::Integer;
 	}
 
 	switch (pk)
 	{
 	case '{': return Types::Object;
-	case '[': return Types::Array;
-	case '.': return Types::Decimal;
+	case '.': return Types::Floating;
 	case 't':
 	case 'T':
 	case 'f':

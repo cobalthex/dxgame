@@ -6,7 +6,7 @@
 using namespace DirectXGame;
 
 //Initializes D2D resources used for text rendering
-FpsRenderer::FpsRenderer(const std::shared_ptr<DX::DeviceResources>& DeviceResources)
+FpsRenderer::FpsRenderer(const std::shared_ptr<DeviceResources>& DeviceResources)
 	: text(L""), lastFps(0), Renderer(DeviceResources)
 {
 	ZeroMemory(&textMetrics, sizeof(DWRITE_TEXT_METRICS));
@@ -44,7 +44,7 @@ FpsRenderer::FpsRenderer(const std::shared_ptr<DX::DeviceResources>& DeviceResou
 }
 
 //Updates the text to be displayed
-void FpsRenderer::Update(const DX::StepTimer& Timer)
+void FpsRenderer::Update(const StepTimer& Timer)
 {
 	//Update display text
 	uint32_t fps = Timer.GetFramesPerSecond();

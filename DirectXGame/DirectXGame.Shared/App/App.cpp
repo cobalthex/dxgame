@@ -56,7 +56,7 @@ void App::Initialize(CoreApplicationView^ ApplicationView)
 
 	//At this point we have access to the device. 
 	//We can create the device-dependent resources.
-	deviceResources = std::make_shared<DX::DeviceResources>();
+	deviceResources = std::make_shared<DeviceResources>();
 }
 
 //Called when the CoreWindow object is created (or re-created).

@@ -4,7 +4,7 @@
 
 Model::Model
 (
-	const DX::DeviceResourcesPtr& DeviceResources,
+	const DeviceResourcesPtr& DeviceResources,
 	const std::vector<VertexType>& Vertices,
 	const std::vector<IndexType>& Indices,
 	PrimitiveTopology Topology,
@@ -66,14 +66,14 @@ void Model::Skin(const std::string& Pose, Matrix* PoseArray, size_t MaxPoses) co
 	}
 }
 
-BasicMesh<VertexTypes::VertexPositionColor, unsigned> Model::CreateSkeletalMesh(const std::string& Pose, const Color& VertexColor) const
+BasicMesh<Shaders::PositionColorShader::Vertex, unsigned> Model::CreateSkeletalMesh(const std::string& Pose, const Color& VertexColor) const
 {
-	std::vector<VertexTypes::VertexPositionColor> vertices;
+	std::vector<Shaders::PositionColorShader::Vertex> vertices;
 	std::vector<unsigned> indices;
 	vertices.reserve(joints.size() * 3); //octahedrons (6 vertices)
 	indices.reserve(joints.size() * 3); //8 faces
 
-	VertexTypes::VertexPositionColor v;
+	Shaders::PositionColorShader::Vertex v;
 	v.color = VertexColor.ToVector3();
 
 	float radius = 0.05f;
@@ -120,5 +120,5 @@ BasicMesh<VertexTypes::VertexPositionColor, unsigned> Model::CreateSkeletalMesh(
 
 	delete[] transforms;
 
-	return BasicMesh<VertexTypes::VertexPositionColor, unsigned>(vertices, indices, PrimitiveTopology::List);
+	return BasicMesh<Shaders::PositionColorShader::Vertex, unsigned>(vertices, indices, PrimitiveTopology::List);
 }

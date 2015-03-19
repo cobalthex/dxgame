@@ -24,7 +24,7 @@ class ShaderProgram : public ShaderProgramBase
 {
 public:
 	ShaderProgram() : devContext(nullptr), shader(nullptr) { }
-	ShaderProgram(const DX::DeviceResourcesPtr& DeviceResources, const std::vector<uint8_t>& ShaderByteCode) //Create a shader, from bytecode
+	ShaderProgram(const DeviceResourcesPtr& DeviceResources, const std::vector<uint8_t>& ShaderByteCode) //Create a shader, from bytecode
 		: devContext(DeviceResources->GetD3DDeviceContext())
 	{
 		CreateD3dShader(DeviceResources, ShaderByteCode);
@@ -52,14 +52,14 @@ public:
 	//Is this shader valid?
 	inline bool IsValid() const { return (devContext != nullptr && shader != nullptr); }
 
+	inline ComPtr<ID3D11DeviceContext> DeviceContext() const { return devContext; }
+
 protected:
 	ComPtr<ID3D11DeviceContext> devContext;
 	ComPtr<ID3D11DeviceChild> shader;
 
-	friend class ShaderCache;
-
 	//Create the D3D shader
-	void CreateD3dShader(const DX::DeviceResourcesPtr& DeviceResources, const std::vector<uint8_t>& ShaderByteCode)
+	void CreateD3dShader(const DeviceResourcesPtr& DeviceResources, const std::vector<uint8_t>& ShaderByteCode)
 	{
 		if (DeviceResources == nullptr)
 			return;

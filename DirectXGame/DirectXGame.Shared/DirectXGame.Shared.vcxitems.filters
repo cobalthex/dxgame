@@ -10,11 +10,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\TimelineEvents.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Helpers.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\ISerializable.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\EventQueue.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Event.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Time.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackId.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackCollection.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDS.hpp" />
@@ -47,11 +43,17 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)App\Game.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColorShader.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Cache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderStructures.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Shader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinnedShader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Data\Cache.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Events\CallbackCollection.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Events\CallbackId.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Events\Event.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Events\EventQueue.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Osl\Osl.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
@@ -71,10 +73,11 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\Game.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderStructures.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColorShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderCache.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinnedShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Osl\Osl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\LitSkinned.ps.hlsl" />

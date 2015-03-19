@@ -18,12 +18,13 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Timeline.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Osl\Osl.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Skinning.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinnedShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColorShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderCache.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderStructures.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
@@ -35,17 +36,18 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Sequence.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\AlignedStorage.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackCollection.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\CallbackId.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Osl\Osl.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Events\CallbackCollection.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Events\CallbackId.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\PlatformHelpers.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Time.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Timeline.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\TimelineEvents.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Event.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\EventQueue.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Events\Event.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Events\EventQueue.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Helpers.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Cache.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Data\Cache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\ISerializable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\ModelMesh.hpp" />
@@ -61,6 +63,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\ChaseCamera.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinnedShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Shader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderStructures.hpp" />

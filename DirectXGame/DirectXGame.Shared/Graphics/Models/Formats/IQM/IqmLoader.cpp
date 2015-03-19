@@ -58,7 +58,7 @@ void CleanupTemp(IqmTemp& Temp)
 	delete[] Temp.genJoints;
 }
 
-bool Iqm::Load(const DX::DeviceResourcesPtr& DeviceResources, TextureCache& TexCache, const std::string& Filename, __out::Model& mdl)
+bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, TextureCache& TexCache, const std::string& Filename, __out::Model& mdl)
 {
 	const char* fn = Filename.c_str();
 	FILE* f = nullptr;

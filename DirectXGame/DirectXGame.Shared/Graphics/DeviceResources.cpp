@@ -48,7 +48,7 @@ namespace ScreenRotation
 };
 
 //Constructor for DeviceResources.
-DX::DeviceResources::DeviceResources() : 
+DeviceResources::DeviceResources() : 
 	screenViewport(),
 	d3dFeatureLevel(D3D_FEATURE_LEVEL_11_1),
 	d3dRenderTargetSize(),
@@ -66,7 +66,7 @@ DX::DeviceResources::DeviceResources() :
 }
 
 //Configures resources that don't depend on the Direct3D device.
-void DX::DeviceResources::CreateDeviceIndependentResources()
+void DeviceResources::CreateDeviceIndependentResources()
 {
 	//Initialize Direct2D resources.
 	D2D1_FACTORY_OPTIONS options;
@@ -108,7 +108,7 @@ void DX::DeviceResources::CreateDeviceIndependentResources()
 }
 
 //Configures the Direct3D device, and stores handles to it and the device context.
-void DX::DeviceResources::CreateDeviceResources() 
+void DeviceResources::CreateDeviceResources() 
 {
 	//This flag adds support for surfaces with a different color channel ordering
 	//than the API default. It is required for compatibility with Direct2D.
@@ -195,7 +195,7 @@ void DX::DeviceResources::CreateDeviceResources()
 }
 
 //These resources need to be recreated every time the window size is changed.
-void DX::DeviceResources::CreateWindowSizeDependentResources() 
+void DeviceResources::CreateWindowSizeDependentResources() 
 {
 #if (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
 	//Windows Phone does not support resizing the swap chain, so clear it instead of resizing.
@@ -455,7 +455,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 }
 
 //This method is called when the CoreWindow is created (or re-created).
-void DX::DeviceResources::SetWindow(CoreWindow^ Window)
+void DeviceResources::SetWindow(CoreWindow^ Window)
 {
 	DisplayInformation^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
 
@@ -470,7 +470,7 @@ void DX::DeviceResources::SetWindow(CoreWindow^ Window)
 }
 
 //This method is called in the event handler for the SizeChanged event.
-void DX::DeviceResources::SetLogicalSize(Windows::Foundation::Size LogicalSize)
+void DeviceResources::SetLogicalSize(Windows::Foundation::Size LogicalSize)
 {
 	if (logicalSize != LogicalSize)
 	{
@@ -480,7 +480,7 @@ void DX::DeviceResources::SetLogicalSize(Windows::Foundation::Size LogicalSize)
 }
 
 //This method is called in the event handler for the DpiChanged event.
-void DX::DeviceResources::SetDpi(float Dpi)
+void DeviceResources::SetDpi(float Dpi)
 {
 	if (dpi != Dpi)
 	{
@@ -495,7 +495,7 @@ void DX::DeviceResources::SetDpi(float Dpi)
 }
 
 //This method is called in the event handler for the OrientationChanged event.
-void DX::DeviceResources::SetCurrentOrientation(DisplayOrientations CurrentOrientation)
+void DeviceResources::SetCurrentOrientation(DisplayOrientations CurrentOrientation)
 {
 	if (currentOrientation != CurrentOrientation)
 	{
@@ -505,7 +505,7 @@ void DX::DeviceResources::SetCurrentOrientation(DisplayOrientations CurrentOrien
 }
 
 //This method is called in the event handler for the DisplayContentsInvalidated event.
-void DX::DeviceResources::ValidateDevice()
+void DeviceResources::ValidateDevice()
 {
 	//The D3D Device is no longer valid if the default adapter changed since the device
 	//was created or if the device has been removed.
@@ -557,7 +557,7 @@ void DX::DeviceResources::ValidateDevice()
 }
 
 //Recreate all device resources and set them back to the current state.
-void DX::DeviceResources::HandleDeviceLost()
+void DeviceResources::HandleDeviceLost()
 {
 	swapChain = nullptr;
 
@@ -577,14 +577,14 @@ void DX::DeviceResources::HandleDeviceLost()
 }
 
 //Register our DeviceNotify to be informed on device lost and creation.
-void DX::DeviceResources::RegisterDeviceNotify(DX::IDeviceNotify* DeviceNotify)
+void DeviceResources::RegisterDeviceNotify(IDeviceNotify* DeviceNotify)
 {
 	deviceNotify = DeviceNotify;
 }
 
 //Call this method when the app suspends. It provides a hint to the driver that the app 
 //is entering an idle state and that temporary buffers can be reclaimed for use by other apps.
-void DX::DeviceResources::Trim()
+void DeviceResources::Trim()
 {
 	ComPtr<IDXGIDevice3> dxgiDevice;
 	d3dDevice.As(&dxgiDevice);
@@ -593,7 +593,7 @@ void DX::DeviceResources::Trim()
 }
 
 //Present the contents of the swap chain to the screen.
-void DX::DeviceResources::Present() 
+void DeviceResources::Present() 
 {
 	//if multisampling is used, update the back buffer correctly
 	if (sampleSize > 1)
@@ -632,7 +632,7 @@ void DX::DeviceResources::Present()
 
 //This method determines the rotation between the display device's native Orientation and the
 //current display orientation.
-DXGI_MODE_ROTATION DX::DeviceResources::ComputeDisplayRotation()
+DXGI_MODE_ROTATION DeviceResources::ComputeDisplayRotation()
 {
 	DXGI_MODE_ROTATION rotation = DXGI_MODE_ROTATION_UNSPECIFIED;
 

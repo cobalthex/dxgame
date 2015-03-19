@@ -20,7 +20,7 @@ namespace DirectXGame
 		//A direct way to create a text format Throws on error
 		static inline DWTextFormat CreateTextFormat
 		(
-			const std::shared_ptr<DX::DeviceResources>& DeviceResources,
+			const std::shared_ptr<DeviceResources>& DeviceResources,
 			const std::wstring& FontFamily,
 			float Size,
 			DWRITE_FONT_WEIGHT Weight = DWRITE_FONT_WEIGHT_NORMAL,
@@ -57,14 +57,14 @@ namespace DirectXGame
 	class TextRenderer
 	{
 	public:
-		TextRenderer(const std::shared_ptr<DX::DeviceResources>& DeviceResources);
+		TextRenderer(const std::shared_ptr<DeviceResources>& DeviceResources);
 
 		void Render(const std::wstring& Text, const TextLayoutParams& Params, const D2DBrush& Brush, const D2D1::Matrix3x2F& Position, const D2D_POINT_2F& Origin = D2D1::Point2F());
 		void Render(const DWTextLayout& Layout, const D2DBrush& Brush, const D2D1::Matrix3x2F& Position, const D2D_POINT_2F& Origin = D2D1::Point2F());
 		
 	private:
 		//Cached pointer to device resources
-		std::shared_ptr<DX::DeviceResources> deviceResources;
+		std::shared_ptr<DeviceResources> deviceResources;
 		Microsoft::WRL::ComPtr<ID2D1DrawingStateBlock> state;
 	};
 }

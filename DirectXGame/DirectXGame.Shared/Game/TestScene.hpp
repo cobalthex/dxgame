@@ -9,8 +9,8 @@
 #include "Graphics/Scene/Camera.hpp"
 #include "Common/AlignedStorage.hpp"
 #include "Animation/Timeline.hpp"
-#include "Graphics/Shaders/ShaderStructures.hpp"
 #include "Graphics/Shaders/ShaderCache.hpp"
+#include "Graphics/Shaders/LitSkinnedShader.hpp"
 #include "Graphics/Shaders/PositionColorShader.hpp"
 
 namespace DirectXGame
@@ -19,11 +19,11 @@ namespace DirectXGame
 	class TestScene : public AlignedStorage<16>, public Renderer
 	{
 	public:
-		TestScene(const DX::DeviceResourcesPtr& DeviceResources);
+		TestScene(const DeviceResourcesPtr& DeviceResources);
 		void CreateDeviceDependentResources();
 		void CreateWindowSizeDependentResources();
 		void ReleaseDeviceDependentResources();
-		void Update(const DX::StepTimer& Timer);
+		void Update(const StepTimer& Timer);
 		void Render();
 		void StartTracking();
 		void TrackingUpdate(float PositionX);
@@ -34,23 +34,17 @@ namespace DirectXGame
 		void Rotate(float Radians);
 
 	private:
-		VertexShader vshader;
-		PixelShader pshader;
-
 		TextureCache texCache;
 		ShaderCache shCache;
+
+		std::shared_ptr<Shaders::LitSkinnedShader> lsShader;
+		std::shared_ptr<Shaders::PositionColorShader> pcShader;
 
 		ComPtr<ID3D11InputLayout>	inputLayout;
 		ComPtr<ID3D11SamplerState>	sampler;
 		ComPtr<ID3D11RasterizerState> wireRasterizer;
 
-		Shaders::PositionColorShader pcShader;
-
 		Camera cam;
-		
-		ConstantBuffer<ObjectConstantBufferDef> objectCBuffer;
-		ConstantBuffer<LightConstantBufferDef> lightingCBuffer;
-		ConstantBuffer<MaterialConstantBufferDef> materialCBuffer;
 
 		Model iqm;
 		Mesh iqmSkel;

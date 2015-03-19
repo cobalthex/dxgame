@@ -45,13 +45,13 @@ public:
 	inline bool HasDynamicUsage() const { return hasDynamicUsage; } //Were the buffers for this created using D3D11_USAGE_DYNAMIC (allows for faster updating if necessary)
 
 	template <typename VertexType>
-	void CreateFrom(const DX::DeviceResourcesPtr& DeviceResources, const BasicMesh<VertexType, IndexType>& BasicMesh, bool DynamicUsage = false)
+	void CreateFrom(const DeviceResourcesPtr& DeviceResources, const BasicMesh<VertexType, IndexType>& BasicMesh, bool DynamicUsage = false)
 	{
 		CreateFrom(DeviceResources, BasicMesh.vertices, BasicMesh.indices, BasicMesh.topology, DynamicUsage);
 	}
 
 	template <typename VertexType>
-	void CreateFrom(const DX::DeviceResourcesPtr& DeviceResources, const std::vector<VertexType>& Vertices, const std::vector<IndexType>& Indices, PrimitiveTopology Topology, bool DynamicUsage = false)
+	void CreateFrom(const DeviceResourcesPtr& DeviceResources, const std::vector<VertexType>& Vertices, const std::vector<IndexType>& Indices, PrimitiveTopology Topology, bool DynamicUsage = false)
 	{
 		devContext = DeviceResources->GetD3DDeviceContext();
 		hasDynamicUsage = DynamicUsage;
@@ -92,12 +92,12 @@ public:
 		indexCount = (unsigned)Indices.size();
 	}
 	template <typename VertexType>
-	static Mesh Create(const DX::DeviceResourcesPtr& DeviceResources, const BasicMesh<VertexType, IndexType>& BasicMesh, bool DynamicUsage = false)
+	static Mesh Create(const DeviceResourcesPtr& DeviceResources, const BasicMesh<VertexType, IndexType>& BasicMesh, bool DynamicUsage = false)
 	{
 		return Create(DeviceResources, BasicMesh.vertices, BasicMesh.indices, BasicMesh.topology, DynamicUsage);
 	}
 	template <typename VertexType>
-	static Mesh Create(const DX::DeviceResourcesPtr& DeviceResources, const std::vector<VertexType>& Vertices, const std::vector<IndexType>& Indices, PrimitiveTopology Topology, bool DynamicUsage = false)
+	static Mesh Create(const DeviceResourcesPtr& DeviceResources, const std::vector<VertexType>& Vertices, const std::vector<IndexType>& Indices, PrimitiveTopology Topology, bool DynamicUsage = false)
 	{
 		Mesh m;
 		m.CreateFrom(DeviceResources, Vertices, Indices, Topology, DynamicUsage);

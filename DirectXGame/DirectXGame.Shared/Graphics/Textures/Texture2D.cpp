@@ -31,7 +31,7 @@ inline bool EndsWith(const std::wstring& String, const std::wstring& Suffix)
 	return std::equal(Suffix.rbegin(), Suffix.rend(), String.rbegin());
 }
 
-Texture2D::Texture2D(const DX::DeviceResourcesPtr& DeviceResources, const std::wstring& File, bool AllowWrites)
+Texture2D::Texture2D(const DeviceResourcesPtr& DeviceResources, const std::wstring& File, bool AllowWrites)
 	: Texture(DeviceResources, nullptr)
 {
 	if (EndsWith(File, L".dds")) //load with DDS loader
@@ -74,7 +74,7 @@ Texture2D::Texture2D(const DX::DeviceResourcesPtr& DeviceResources, const std::w
 
 }
 
-Texture2D::Texture2D(const DX::DeviceResourcesPtr& DeviceResources, const ComPtr<ID3D11ShaderResourceView>& ShaderResourceView)
+Texture2D::Texture2D(const DeviceResourcesPtr& DeviceResources, const ComPtr<ID3D11ShaderResourceView>& ShaderResourceView)
 	: Texture(DeviceResources, ShaderResourceView)
 {
 	ComPtr<ID3D11Resource> tex = nullptr;
@@ -94,7 +94,7 @@ Texture2D& Texture2D::operator=(const Texture2D& Copy)
 	return *this;
 }
 
-Texture2D::Texture2D(const DX::DeviceResourcesPtr& DeviceResources, unsigned Width, unsigned Height, DXGI_FORMAT Format, unsigned MipLevels, bool AllowWrites)
+Texture2D::Texture2D(const DeviceResourcesPtr& DeviceResources, unsigned Width, unsigned Height, DXGI_FORMAT Format, unsigned MipLevels, bool AllowWrites)
 	: Texture(DeviceResources, nullptr)
 {
 	ID3D11Texture2D* tex = nullptr;

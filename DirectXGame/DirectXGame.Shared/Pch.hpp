@@ -23,8 +23,10 @@
 //C++SL includes
 
 #include <string>
+#include <algorithm>
 #include <vector>
 #include <queue>
+#include <set>
 #include <map>
 #include <memory>
 #include <new>

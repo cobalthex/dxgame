@@ -1,11 +1,15 @@
 #include "Pch.hpp"
 #include "TextureCache.hpp"
+#include "Common/Helpers.hpp"
 
 std::shared_ptr<Texture2D>& TextureCache::Load(const std::string& Key)
 {
-	if (Has(Key))
-		return cache[Key];
+	auto key = Key;
+	StringToLower(key);
 
-	cache[Key] = std::make_shared<Texture2D>(deviceResources, Key);
-	return cache[Key];
+	if (Has(key))
+		return cache[key];
+
+	cache[key] = std::make_shared<Texture2D>(deviceResources, Key); //files may be case sensitive so use original key (POSIX)
+	return cache[key];
 }
