@@ -9,7 +9,7 @@ using namespace Windows::System::Threading;
 using namespace Concurrency;
 
 //Loads and initializes application assets when the application is loaded.
-Game::Game(const std::shared_ptr<DX::DeviceResources>& DeviceResources) :
+Game::Game(const std::shared_ptr<DeviceResources>& DeviceResources) :
 	deviceResources(DeviceResources)
 {
 	//Register to be notified if the Device is lost or recreated

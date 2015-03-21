@@ -7,16 +7,16 @@
 class Texture2D : public Texture
 {
 public:
-	Texture2D(const DX::DeviceResourcesPtr& DeviceResources, unsigned Width, unsigned Height, DXGI_FORMAT Format = DXGI_FORMAT_R8G8B8A8_UINT, unsigned MipLevels = 1, bool AllowWrites = false); //Create an empty texture
-	Texture2D(const DX::DeviceResourcesPtr& DeviceResources, const ComPtr<ID3D11ShaderResourceView>& ShaderResourceView);
+	Texture2D(const DeviceResourcesPtr& DeviceResources, unsigned Width, unsigned Height, DXGI_FORMAT Format = DXGI_FORMAT_R8G8B8A8_UINT, unsigned MipLevels = 1, bool AllowWrites = false); //Create an empty texture
+	Texture2D(const DeviceResourcesPtr& DeviceResources, const ComPtr<ID3D11ShaderResourceView>& ShaderResourceView);
 
-	Texture2D::Texture2D(const DX::DeviceResourcesPtr& DeviceResources, const std::string& File, bool AllowWrites = false)
+	Texture2D::Texture2D(const DeviceResourcesPtr& DeviceResources, const std::string& File, bool AllowWrites = false)
 		: Texture2D(DeviceResources, std::wstring(File.begin(), File.end()), AllowWrites) { } //Load a texture from a file. DDS and formats in the WIC are supported
-	Texture2D(const DX::DeviceResourcesPtr& DeviceResources, const std::wstring& File, bool AllowWrites = false); //Load a texture from a file. DDS and formats in the WIC are supported
+	Texture2D(const DeviceResourcesPtr& DeviceResources, const std::wstring& File, bool AllowWrites = false); //Load a texture from a file. DDS and formats in the WIC are supported
 
-	Texture2D(const DX::DeviceResourcesPtr& DeviceResources, const char* File, bool AllowWrites = false)
+	Texture2D(const DeviceResourcesPtr& DeviceResources, const char* File, bool AllowWrites = false)
 		: Texture2D(DeviceResources, std::string(File), AllowWrites) { } //Load a texture from a file. DDS and formats in the WIC are supported
-	Texture2D(const DX::DeviceResourcesPtr& DeviceResources, const wchar_t* File, bool AllowWrites = false) //Load a texture from a file. DDS and formats in the WIC are supported
+	Texture2D(const DeviceResourcesPtr& DeviceResources, const wchar_t* File, bool AllowWrites = false) //Load a texture from a file. DDS and formats in the WIC are supported
 		: Texture2D(DeviceResources, std::wstring(File), AllowWrites) { }
 
 	Texture2D& operator=(const Texture2D& Copy); //Copies shader resource view pointer (does not copy resource)
@@ -70,6 +70,8 @@ public:
 	inline DXGI_FORMAT Format() const { return desc.Format; }
 
 	inline bool IsValid() const { return (srv != nullptr && deviceResources != nullptr); } //Is this texture valid?
+
+	static bool IsTextureFile(const std::wstring& Extension);
 
 protected:
 	D3D11_TEXTURE2D_DESC desc;

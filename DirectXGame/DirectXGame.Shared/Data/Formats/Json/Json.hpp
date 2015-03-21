@@ -14,7 +14,7 @@ namespace Json
 		Null,
 		Boolean,
 		Integer,
-		Floating,
+		Decimal,
 		String,
 		Object,
 		Array
@@ -22,7 +22,8 @@ namespace Json
 
 	class Value;
 
-	typedef long long fat;
+	typedef long long integer;
+	typedef double decimal;
 	typedef std::vector<Value> Array;
 	typedef std::map<std::string, Value> Object;
 
@@ -38,8 +39,8 @@ namespace Json
 		template <typename T> static Value Create(const T& Val) { return Value(); }
 		template <> static Value Create<nullptr_t>(const nullptr_t& Val) { Value v; v.operator=(Val); return v; }
 		template <> static Value Create<bool>(const bool& Val) { Value v; v.operator=(Val); return v; }
-		template <> static Value Create<fat>(const fat& Val) { Value v; v.operator=(Val); return v; }
-		template <> static Value Create<double>(const double& Val) { Value v; v.operator=(Val); return v; }
+		template <> static Value Create<integer>(const integer& Val) { Value v; v.operator=(Val); return v; }
+		template <> static Value Create<decimal>(const decimal& Val) { Value v; v.operator=(Val); return v; }
 		template <> static Value Create<std::string>(const std::string& Val) { Value v; v.operator=(Val); return v; }
 		template <> static Value Create<Object>(const Object& Val) { Value v; v.operator=(Val); return v; }
 		template <> static Value Create<Array>(const Array& Val) { Value v; v.operator=(Val); return v; }
@@ -52,15 +53,15 @@ namespace Json
 
 		Value& operator = (const std::nullptr_t& Value);
 		Value& operator = (bool Value);
-		Value& operator = (fat Value);
-		Value& operator = (double Value);
+		Value& operator = (integer Value);
+		Value& operator = (decimal Value);
 		Value& operator = (const std::string& Value);
 		Value& operator = (const Object& Value);
 		Value& operator = (const Array& Value);
 
 		inline Value& operator = (short Value) { return operator=(short(Value)); }
-		inline Value& operator = (int Value) { return operator=(fat(Value)); }
-		inline Value& operator = (unsigned Value) { return operator=(fat(Value)); }
+		inline Value& operator = (int Value) { return operator=(integer(Value)); }
+		inline Value& operator = (unsigned Value) { return operator=(integer(Value)); }
 		inline Value& operator = (float Value) { return operator=(float(Value)); }
 		inline Value& operator = (const char* Value) { return operator=(std::string(Value)); }
 
@@ -68,16 +69,16 @@ namespace Json
 
 		inline operator std::nullptr_t() const { return *(std::nullptr_t*)(value); }
 		inline operator bool() const { return *(bool*)(value); }
-		inline operator fat () const { return *(fat*)(value); }
-		inline operator double() const { return *(double*)(value); }
+		inline operator integer () const { return *(integer*)(value); }
+		inline operator decimal() const { return *(decimal*)(value); }
 		inline operator std::string() const { return *(std::string*)(value); }
 		inline operator Object() const { return *(Object*)(value); }
 		inline operator Array() const { return *(Array*)(value); }
 
-		inline operator short() const { return (short)(*(fat*)(value)); }
-		inline operator int() const { return (int)(*(fat*)(value)); }
-		inline operator unsigned() const { return (unsigned)(*(fat*)(value)); }
-		inline operator float() const { return (float)(*(double*)(value)); }
+		inline operator short() const { return (short)(*(integer*)(value)); }
+		inline operator int() const { return (int)(*(integer*)(value)); }
+		inline operator unsigned() const { return (unsigned)(*(integer*)(value)); }
+		inline operator float() const { return (float)(*(decimal*)(value)); }
 		inline operator const char*() const { return ((std::string*)(value))->c_str(); }
 
 		//Serializers
@@ -101,7 +102,7 @@ namespace Json
 
 	protected:
 		Types type;
-		Variant<std::nullptr_t, bool, fat, double, std::string, Object, Array> value;
+		Variant<std::nullptr_t, bool, integer, decimal, std::string, Object, Array> value;
 
 		//Delete any old values and reset it to the default
 		void Reset();

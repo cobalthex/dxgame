@@ -6,10 +6,10 @@
 using namespace DirectXGame;
 
 //Initializes D2D resources used for text rendering
-TextRenderer::TextRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources)
+TextRenderer::TextRenderer(const std::shared_ptr<DeviceResources>& deviceResources)
 	: deviceResources(deviceResources)
 {
-	App::ThrowIfFailed(deviceResources->GetD2DFactory()->CreateDrawingStateBlock(&state));
+	Sys::ThrowIfFailed(deviceResources->GetD2DFactory()->CreateDrawingStateBlock(&state));
 }
 
 //Renders a frame to the screen
@@ -17,7 +17,7 @@ void TextRenderer::Render(const std::wstring& Text, const TextLayoutParams& Para
 {
 	//create layout
 	DWTextLayout layout;
-	App::ThrowIfFailed
+	Sys::ThrowIfFailed
 	(
 		deviceResources->GetDWriteFactory()->CreateTextLayout
 		(
@@ -48,7 +48,7 @@ void TextRenderer::Render(const DWTextLayout& Layout, const D2DBrush& Brush, con
 	//is lost. It will be handled during the next call to Present
 	HRESULT hr = context->EndDraw();
 	if (hr != D2DERR_RECREATE_TARGET)
-		App::ThrowIfFailed(hr);
+		Sys::ThrowIfFailed(hr);
 
 	context->RestoreDrawingState(state.Get());
 }

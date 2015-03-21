@@ -9,10 +9,10 @@ namespace DirectXGame
 	class FpsRenderer : public Renderer
 	{
 	public:
-		FpsRenderer(const std::shared_ptr<DX::DeviceResources>& DeviceResources);
+		FpsRenderer(const std::shared_ptr<DeviceResources>& DeviceResources);
 		void CreateDeviceDependentResources();
 		void ReleaseDeviceDependentResources();
-		void Update(const DX::StepTimer& Timer);
+		void Update(const StepTimer& Timer);
 		void Render();
 
 	protected:

@@ -3,7 +3,8 @@
 #include "Pch.hpp"
 #include "Skinning.hpp"
 #include "Graphics/DeviceResources.hpp"
-#include "Graphics/ShaderStructures.hpp"
+#include "Graphics/Shaders/LitSkinnedShader.hpp"
+#include "Graphics/Shaders/PositionColorShader.hpp"
 #include "ModelMesh.hpp"
 #include "Mesh.hpp"
 
@@ -11,14 +12,14 @@
 class Model : public Mesh
 {
 public:
-	typedef VertexTypes::VertexSkinned VertexType;
+	typedef Shaders::LitSkinnedShader::Vertex VertexType;
 	typedef unsigned IndexType;
 
 	Model()
 		: meshes(), joints(), poses(), devContext(nullptr), Mesh() { }
 	Model
 	(
-		const DX::DeviceResourcesPtr& DeviceResources,
+		const DeviceResourcesPtr& DeviceResources,
 		const std::vector<VertexType>& Vertices, 
 		const std::vector<IndexType>& Indices,
 		PrimitiveTopology Topology,
@@ -32,17 +33,15 @@ public:
 	std::map<std::string, SkinnedSequence> poses; //A collection of animated poses
 	std::string pose; //the current pose (maps to poses)
 
-
-
 	inline void Skin(Matrix* PoseArray, size_t MaxPoses = MAX_JOINTS) const { Skin(pose, PoseArray, MaxPoses); } //bind the current pose to a constant buffer
 	void Skin(const std::string& Pose, Matrix* PoseArray, size_t MaxPoses = MAX_JOINTS) const; //Bind a pose to a constant buffer (uses bind pose if doesn't exist)
 
 	void Draw(unsigned Slot = 0) const; //Draws only the basic mesh without any materials or skinning
 
-	inline BasicMesh<VertexTypes::VertexPositionColor, unsigned> CreateSkeletalMesh(const Color& VertexColor = Color(255, 0, 0)) const { return CreateSkeletalMesh(pose, VertexColor); }
-	BasicMesh<VertexTypes::VertexPositionColor, unsigned> CreateSkeletalMesh(const std::string& Pose, const Color& VertexColor = Color(255, 0, 0)) const; //create a mesh skeleton using the joints of this model. These meshes use the VertexPositionColor. Returns a triangle list vertex buffer
+	inline BasicMesh<Shaders::PositionColorShader::Vertex, unsigned> CreateSkeletalMesh(const Color& VertexColor = Color(255, 0, 0)) const { return CreateSkeletalMesh(pose, VertexColor); }
+	BasicMesh<Shaders::PositionColorShader::Vertex, unsigned> CreateSkeletalMesh(const std::string& Pose, const Color& VertexColor = Color(255, 0, 0)) const; //create a mesh skeleton using the joints of this model. These meshes use the VertexPositionColor. Returns a triangle list vertex buffer
 
 protected:
-	DX::DeviceResourcesPtr deviceResources;
+	DeviceResourcesPtr deviceResources;
 	ComPtr<ID3D11DeviceContext> devContext;
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Sequence.hpp"
-#include "Common/EventQueue.hpp"
+#include "Events/EventQueue.hpp"
 
 enum class TimelineEventType
 {

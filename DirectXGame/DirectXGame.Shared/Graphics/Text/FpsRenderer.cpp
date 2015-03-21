@@ -6,24 +6,24 @@
 using namespace DirectXGame;
 
 //Initializes D2D resources used for text rendering
-FpsRenderer::FpsRenderer(const std::shared_ptr<DX::DeviceResources>& DeviceResources)
+FpsRenderer::FpsRenderer(const std::shared_ptr<DeviceResources>& DeviceResources)
 	: text(L""), lastFps(0), Renderer(DeviceResources)
 {
 	ZeroMemory(&textMetrics, sizeof(DWRITE_TEXT_METRICS));
 
 	ComPtr<IDWriteFactory> dwFactory = deviceResources->GetDWriteFactory();
 
-	std::wstring fontFilename (App::GetWorkingDirectory());
+	std::wstring fontFilename (Sys::GetWorkingDirectory());
 	fontFilename.append(std::wstring(L"\\Content\\Fonts\\DebugFixed\\DebugFixed.ttf"));
 
 	ComPtr<IDWriteFontCollectionLoader> pCollectionLoader = new DWriteFontCollectionLoader(fontFilename.data());
-	App::ThrowIfFailed(dwFactory->RegisterFontCollectionLoader(pCollectionLoader.Get()));
+	Sys::ThrowIfFailed(dwFactory->RegisterFontCollectionLoader(pCollectionLoader.Get()));
 
 	ComPtr<IDWriteFontCollection> pFontCollection;
-	App::ThrowIfFailed(dwFactory->CreateCustomFontCollection(pCollectionLoader.Get(), nullptr, 0, &pFontCollection));
+	Sys::ThrowIfFailed(dwFactory->CreateCustomFontCollection(pCollectionLoader.Get(), nullptr, 0, &pFontCollection));
 
 	//Create device independent resources
-	App::ThrowIfFailed(
+	Sys::ThrowIfFailed(
 		dwFactory->CreateTextFormat(
 		L"DebugFixed",
 		pFontCollection.Get(),
@@ -36,15 +36,15 @@ FpsRenderer::FpsRenderer(const std::shared_ptr<DX::DeviceResources>& DeviceResou
 		)
 	);
 
-	App::ThrowIfFailed(textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
+	Sys::ThrowIfFailed(textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
 
-	App::ThrowIfFailed(deviceResources->GetD2DFactory()->CreateDrawingStateBlock(&stateBlock));
+	Sys::ThrowIfFailed(deviceResources->GetD2DFactory()->CreateDrawingStateBlock(&stateBlock));
 
 	CreateDeviceDependentResources();
 }
 
 //Updates the text to be displayed
-void FpsRenderer::Update(const DX::StepTimer& Timer)
+void FpsRenderer::Update(const StepTimer& Timer)
 {
 	//Update display text
 	uint32_t fps = Timer.GetFramesPerSecond();
@@ -54,7 +54,7 @@ void FpsRenderer::Update(const DX::StepTimer& Timer)
 	//cache fps text layout
 	if (fps != lastFps || textLayout == nullptr)
 	{
-		App::ThrowIfFailed
+		Sys::ThrowIfFailed
 		(
 			deviceResources->GetDWriteFactory()->CreateTextLayout
 			(
@@ -67,7 +67,7 @@ void FpsRenderer::Update(const DX::StepTimer& Timer)
 			)
 		);
 
-		App::ThrowIfFailed(textLayout->GetMetrics(&textMetrics));
+		Sys::ThrowIfFailed(textLayout->GetMetrics(&textMetrics));
 	}
 	lastFps = fps;
 }
@@ -90,7 +90,7 @@ void FpsRenderer::Render()
 
 	context->SetTransform(screenTranslation * deviceResources->GetOrientationTransform2D());
 
-	App::ThrowIfFailed(textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING));
+	Sys::ThrowIfFailed(textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING));
 
 	context->DrawTextLayout(D2D1::Point2F(-1.f, -1.f), textLayout.Get(), blackBrush.Get());
 	context->DrawTextLayout(D2D1::Point2F(1.f, -1.f), textLayout.Get(), blackBrush.Get());
@@ -103,15 +103,15 @@ void FpsRenderer::Render()
 	//is lost. It will be handled during the next call to Present
 	HRESULT hr = context->EndDraw();
 	if (hr != D2DERR_RECREATE_TARGET)
-		App::ThrowIfFailed(hr);
+		Sys::ThrowIfFailed(hr);
 
 	context->RestoreDrawingState(stateBlock.Get());
 }
 
 void FpsRenderer::CreateDeviceDependentResources()
 {
-	App::ThrowIfFailed(deviceResources->GetD2DDeviceContext()->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &whiteBrush));
-	App::ThrowIfFailed(deviceResources->GetD2DDeviceContext()->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black, 0.5f), &blackBrush));
+	Sys::ThrowIfFailed(deviceResources->GetD2DDeviceContext()->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &whiteBrush));
+	Sys::ThrowIfFailed(deviceResources->GetD2DDeviceContext()->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black, 0.5f), &blackBrush));
 }
 void FpsRenderer::ReleaseDeviceDependentResources()
 {

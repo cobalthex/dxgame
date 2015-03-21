@@ -2,7 +2,7 @@
 
 #include "Pch.hpp"
 #include "Event.hpp"
-#include "Common/CallbackCollection.hpp"
+#include "CallbackCollection.hpp"
 
 //A simple, thread-safe, event queue that is designed to handle events of any time
 template <class EventType = Event>

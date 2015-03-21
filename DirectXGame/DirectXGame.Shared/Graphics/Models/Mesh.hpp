@@ -45,13 +45,13 @@ public:
 	inline bool HasDynamicUsage() const { return hasDynamicUsage; } //Were the buffers for this created using D3D11_USAGE_DYNAMIC (allows for faster updating if necessary)
 
 	template <typename VertexType>
-	void CreateFrom(const DX::DeviceResourcesPtr& DeviceResources, const BasicMesh<VertexType, IndexType>& BasicMesh, bool DynamicUsage = false)
+	void CreateFrom(const DeviceResourcesPtr& DeviceResources, const BasicMesh<VertexType, IndexType>& BasicMesh, bool DynamicUsage = false)
 	{
 		CreateFrom(DeviceResources, BasicMesh.vertices, BasicMesh.indices, BasicMesh.topology, DynamicUsage);
 	}
 
 	template <typename VertexType>
-	void CreateFrom(const DX::DeviceResourcesPtr& DeviceResources, const std::vector<VertexType>& Vertices, const std::vector<IndexType>& Indices, PrimitiveTopology Topology, bool DynamicUsage = false)
+	void CreateFrom(const DeviceResourcesPtr& DeviceResources, const std::vector<VertexType>& Vertices, const std::vector<IndexType>& Indices, PrimitiveTopology Topology, bool DynamicUsage = false)
 	{
 		devContext = DeviceResources->GetD3DDeviceContext();
 		hasDynamicUsage = DynamicUsage;
@@ -69,7 +69,7 @@ public:
 		vertexBufferData.SysMemPitch = 0;
 		vertexBufferData.SysMemSlicePitch = 0;
 
-		App::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &vertices));
+		Sys::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &vertices));
 		vertexStride = (unsigned)sizeof(VertexType);
 		vertexCount = (unsigned)Vertices.size();
 
@@ -88,16 +88,16 @@ public:
 		indexBufferData.SysMemPitch = 0;
 		indexBufferData.SysMemSlicePitch = 0;
 
-		App::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateBuffer(&indexBufferDesc, &indexBufferData, &indices));
+		Sys::ThrowIfFailed(DeviceResources->GetD3DDevice()->CreateBuffer(&indexBufferDesc, &indexBufferData, &indices));
 		indexCount = (unsigned)Indices.size();
 	}
 	template <typename VertexType>
-	static Mesh Create(const DX::DeviceResourcesPtr& DeviceResources, const BasicMesh<VertexType, IndexType>& BasicMesh, bool DynamicUsage = false)
+	static Mesh Create(const DeviceResourcesPtr& DeviceResources, const BasicMesh<VertexType, IndexType>& BasicMesh, bool DynamicUsage = false)
 	{
 		return Create(DeviceResources, BasicMesh.vertices, BasicMesh.indices, BasicMesh.topology, DynamicUsage);
 	}
 	template <typename VertexType>
-	static Mesh Create(const DX::DeviceResourcesPtr& DeviceResources, const std::vector<VertexType>& Vertices, const std::vector<IndexType>& Indices, PrimitiveTopology Topology, bool DynamicUsage = false)
+	static Mesh Create(const DeviceResourcesPtr& DeviceResources, const std::vector<VertexType>& Vertices, const std::vector<IndexType>& Indices, PrimitiveTopology Topology, bool DynamicUsage = false)
 	{
 		Mesh m;
 		m.CreateFrom(DeviceResources, Vertices, Indices, Topology, DynamicUsage);

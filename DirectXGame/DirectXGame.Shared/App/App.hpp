@@ -6,7 +6,6 @@
 
 namespace DirectXGame
 {
-	//Main entry point for our app. Connects the app with the Windows shell and handles application lifecycle events.
 	ref class App sealed : public Windows::ApplicationModel::Core::IFrameworkView
 	{
 	public:
@@ -40,7 +39,7 @@ protected:
 		void OnDisplayContentsInvalidated(Windows::Graphics::Display::DisplayInformation^ Sender, Platform::Object^ Args);
 
 	private:
-		std::shared_ptr<DX::DeviceResources> deviceResources;
+		std::shared_ptr<DeviceResources> deviceResources;
 		std::unique_ptr<Game> main;
 		bool windowClosed;
 		bool windowVisible;
