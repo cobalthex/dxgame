@@ -134,7 +134,7 @@ public:
 			devContext->Unmap(vt, 0);
 		}
 		else
-			devContext->UpdateSubresource(vertices.Get(), 0, nullptr, Vertices.data(), Vertices.size() * sizeof(VertexType), 0);
+			devContext->UpdateSubresource(vertices.Get(), 0, nullptr, Vertices.data(), (unsigned)(Vertices.size() * sizeof(VertexType)), 0);
 	}
 	//Update the all of the mesh's indices with new data
 	void UpdateIndices(const std::vector<IndexType>& Indices)
@@ -148,7 +148,7 @@ public:
 			devContext->Unmap(ix, 0);
 		}
 		else
-			devContext->UpdateSubresource(indices.Get(), 0, nullptr, Indices.data(), Indices.size() * sizeof(IndexType), 0);
+			devContext->UpdateSubresource(indices.Get(), 0, nullptr, Indices.data(), (unsigned)(Indices.size() * sizeof(IndexType)), 0);
 	}
 
 protected:

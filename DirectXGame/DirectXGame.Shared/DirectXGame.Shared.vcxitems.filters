@@ -48,8 +48,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\DWriteFontCollectionLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\Game.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\IContent.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
