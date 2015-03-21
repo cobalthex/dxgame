@@ -43,7 +43,7 @@ namespace Osl
 
 	typedef long long integer;
 	typedef double decimal;
-	typedef std::chrono::time_point<std::chrono::system_clock> DateTime;
+	typedef std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> DateTime;
 	typedef Object* Reference;
 
 	//An OSL document

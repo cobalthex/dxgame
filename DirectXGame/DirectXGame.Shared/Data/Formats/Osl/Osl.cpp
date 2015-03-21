@@ -317,11 +317,28 @@ void Value::Write(std::ostream& Stream) const
 	break;
 
 	case Types::Time:
-		auto t = std::chrono::system_clock::to_time_t(*((DateTime*)value));
-		auto* tp = gmtime(&t);
-		char ts[24];
-		auto sz = strftime(ts, 24, "%X", tp);
-		Stream.write(ts, sz);
+		auto dur = *(DateTime*)value - DateTime();
+		auto mil = dur.count() % 1000;
+		auto sec = std::chrono::duration_cast<std::chrono::seconds>(dur).count() % 60;
+		auto min = std::chrono::duration_cast<std::chrono::seconds>(dur).count() % 60;
+		auto hour = std::chrono::duration_cast<std::chrono::seconds>(dur).count();
+		std::string t;
+		t.reserve(32);
+		t += std::to_string(hour);
+		t += '.';
+		if (min < 10) t += '0';
+		t += min;
+		t += '.';
+		if (sec < 10) t += '0';
+		t += sec;
+		if (mil > 0)
+		{
+			t += '.';
+			if (mil < 100) t += '0';
+			if (mil < 10) t += '0';
+			t += mil;
+		}
+		Stream.write(t.data(), t.size());
 		break;
 
 	case Types::Object:
