@@ -284,7 +284,7 @@ void Value::Write(std::ostream& Stream) const
 
 	case Types::String:
 		Stream.put('"');
-		Stream.write((*(std::string*)value).data(), (*(std::string*)value).length());
+		Stream.write(((std::string*)value)->data(), ((std::string*)value)->length());
 		Stream.put('"');
 		break;
 

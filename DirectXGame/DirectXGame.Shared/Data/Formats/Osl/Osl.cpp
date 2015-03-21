@@ -1,9 +1,71 @@
 #include "Pch.hpp"
 #include "Osl.hpp"
+#include <ctime>
 
 using namespace Osl;
 
+
+void Object::Read(std::istream& Stream)
+{
+
+}
+
+void Object::Write(std::ostream& Stream) const
+{
+	if (type.size() > 0)
+	{
+		Stream.write(type.data(), type.size());
+		Stream.put(' ');
+	}
+	if (name.size() > 0)
+	{
+		Stream.write(name.data(), name.size());
+		Stream.put(' ');
+	}
+	if (attributes.size() > 0)
+	{
+		Stream.write(": ", 2);
+		for (auto& attr : attributes)
+		{
+			Stream.write(attr.data(), attr.size());
+			Stream.put(' ');
+		}
+	}
+	Stream.put('{');
+
+	for (auto& p : properties)
+	{
+		//write key
+		Stream.put('"');
+		Stream.write(p.first.data(), p.first.length());
+		Stream.write("\":", 2);
+
+		bool first = true;
+		//write value
+		for (auto& v : p.second)
+		{
+			Stream.put(' ');
+			v.Write(Stream);
+			first = false;
+		}
+
+		Stream.put(';');
+	}
+	Stream.put('}');
+}
+
+void Document::Read(std::istream& Stream)
+{
+
+}
+
+void Document::Write(std::ostream& Stream) const
+{
+
+}
+
 size_t Value::DefaultStringReserveLength = 32;
+std::string Value::WhitespaceCharacters = "\n\r\t ";
 
 Value& Value::operator = (const std::nullptr_t& Value)
 {
@@ -19,18 +81,18 @@ Value& Value::operator = (bool Value)
 	new (value) bool(Value);
 	return *this;
 }
-Value& Value::operator = (fat Value)
+Value& Value::operator = (integer Value)
 {
 	Reset();
 	type = Types::Integer;
-	new (value)fat(Value);
+	new (value)integer(Value);
 	return *this;
 }
-Value& Value::operator = (double Value)
+Value& Value::operator = (decimal Value)
 {
 	Reset();
-	type = Types::Floating;
-	new (value) double(Value);
+	type = Types::Decimal;
+	new (value) decimal(Value);
 	return *this;
 }
 Value& Value::operator = (const std::string& Value)
@@ -48,6 +110,22 @@ Value& Value::operator = (const Object& Value)
 	return *this;
 }
 
+Value& Value::operator = (const DateTime& Value)
+{
+	Reset();
+	type = Types::Time;
+	new (value)DateTime(Value);
+	return *this;
+
+}
+Value& Value::operator = (const Reference& Value)
+{
+	Reset();
+	type = Types::Reference;
+	new (value)Reference(Value);
+	return *this;
+}
+
 void Value::Reset()
 {
 	switch (type)
@@ -56,8 +134,10 @@ void Value::Reset()
 		((std::string*)(value))->~basic_string(); break;
 	case Types::Object:
 		((Object*)(value))->~Object(); break;
+	case Types::Date:
+	case Types::Time:
+		((DateTime*)(value))->~DateTime(); break;
 	}
-	type = Types::Invalid;
 }
 
 void Value::Read(std::istream& Stream)
@@ -65,6 +145,7 @@ void Value::Read(std::istream& Stream)
 	auto type = GuessType(Stream);
 	char ch = 0;
 	std::string s = "";
+	s.reserve(DefaultStringReserveLength); //most strings are short
 
 	switch (type)
 	{
@@ -101,7 +182,7 @@ void Value::Read(std::istream& Stream)
 		operator=(std::stoll(s));
 		break;
 
-	case Types::Floating:
+	case Types::Decimal:
 		//negative must come first
 		if (Stream.peek() == '-')
 			s.append('-', 1);
@@ -117,7 +198,6 @@ void Value::Read(std::istream& Stream)
 
 	case Types::String:
 	{
-		s.reserve(DefaultStringReserveLength); //most strings are short
 		char us[5]; //unicode string (first char is u)
 		char lastUni; //last unicode character (for surrogate pairs)
 		bool isLastUni = false;
@@ -175,47 +255,22 @@ void Value::Read(std::istream& Stream)
 
 	case Types::Object:
 	{
-		Object properties;
-		Stream.get(); //read {
-		while (!Stream.eof() && Stream.peek() != '}')
-		{
-			SkipWhitespace(Stream);
-			//skip comma
-			if (Stream.peek() == ',')
-			{
-				Stream.get();
-				SkipWhitespace(Stream);
-			}
+		Object o;
+		o.Read(Stream);
+		operator=(o);
+	}
+	break;
 
-			//read key (supports single quotes)
-			std::string key;
-			key.reserve(32);
+	case Types::Reference:
+	{
+		//References are parsed as strings and converted to pointers by Document (after all objects are loaded)
+		Stream.get(); //skip @
+		char pk;
+		while (!Stream.eof() && WhitespaceCharacters.find(pk = Stream.peek()) >= 0 && pk != ';')
+			s += Stream.get();
 
-			char oq = Stream.get(), ch = Stream.get();
-			while (ch != oq)
-			{
-				key += ch;
-				if (ch == '\\')
-					key += Stream.get();
-
-				ch = Stream.get();
-			}
-
-			SkipWhitespace(Stream);
-			Stream.get(); //read :
-			SkipWhitespace(Stream);
-
-			Value v;
-			//type is guessed inside
-			v.Read(Stream);
-			properties[key] = v;
-
-			SkipWhitespace(Stream);
-		}
-		SkipWhitespace(Stream);
-		Stream.get(); //read }
-
-		operator=(properties);
+		type = Types::_ReferenceString;
+		new (value)std::string(s);
 	}
 	break;
 
@@ -236,92 +291,64 @@ void Value::Write(std::ostream& Stream) const
 		break;
 
 	case Types::Integer:
-		out = std::to_string(*(fat*)value);
+		out = std::to_string(*(integer*)value);
 		Stream.write(out.data(), out.length());
 		break;
 
-	case Types::Floating:
-		out = std::to_string(*(double*)value);
+	case Types::Decimal:
+		out = std::to_string(*(decimal*)value);
 		Stream.write(out.data(), out.length());
 		break;
 
 	case Types::String:
 		Stream.put('"');
-		Stream.write((*(std::string*)value).data(), (*(std::string*)value).length());
+		Stream.write(((std::string*)value)->data(), ((std::string*)value)->length());
 		Stream.put('"');
 		break;
 
-	case Types::Object:
+	case Types::Date:
 	{
-		Stream.put('{');
-
-		auto& prop = *(Object*)value;
-
-		size_t i = 0, n = prop.size();
-		for (auto& p : prop)
-		{
-			i++;
-
-			//write key
-			Stream.put('"');
-			Stream.write(p.first.data(), p.first.length());
-			Stream.write("\":", 2);
-
-			//write value
-			p.second.Write(Stream);
-
-			//write encloser
-			if (i != n)
-				Stream.put(',');
-		}
-		Stream.put('}');
+		auto t = std::chrono::system_clock::to_time_t(*((DateTime*)value));
+		auto* tp = gmtime(&t);
+		char ts[11];
+		auto sz = strftime(ts, 11, "%F", tp);
+		Stream.write(ts, sz);
 	}
 	break;
 
+	case Types::Time:
+		auto t = std::chrono::system_clock::to_time_t(*((DateTime*)value));
+		auto* tp = gmtime(&t);
+		char ts[24];
+		auto sz = strftime(ts, 24, "%X", tp);
+		Stream.write(ts, sz);
+		break;
+
+	case Types::Object:
+		((Object*)value)->Write(Stream);
+		break;
+
+	case Types::Reference:
+		Stream.put('@');
+		Stream.write((*(Object**)value)->name.data(), (*(Object**)value)->name.size());
+		break;
+
+	case Types::_ReferenceString:
+		Stream.put('@');
+		Stream.write(((std::string*)value)->data(), ((std::string*)value)->length());
+		break;
 	}
 }
 
-
 Types Value::GuessType(std::istream& Stream)
 {
-	char pk = Stream.peek();
-	//figure out type of number (integer, floating)
-	if ((pk >= '0' && pk <= '9') || pk == '-')
-	{
-		ptrdiff_t count = 1;
-		char nk = Stream.get(); //skip first (already known from above)
-		while ((nk = Stream.peek()) >= '0' && nk <= '9')
-			count++, nk = Stream.get();
-
-		Stream.seekg(-count, std::ios::cur); //reset
-
-		if (nk == '.')
-			return Types::Floating;
-		return Types::Integer;
-	}
-
-	switch (pk)
-	{
-	case '{': return Types::Object;
-	case '.': return Types::Floating;
-	case 't':
-	case 'T':
-	case 'f':
-	case 'F': return Types::Boolean;
-	case 'n':
-	case 'N': return Types::Null;
-	case '\'':
-	case '"': return Types::String;
-
-	default: return Types::Invalid;
-	}
+	return Types::Invalid;
 }
 
 void Value::SkipWhitespace(std::istream& Stream)
 {
-	char pk;
-	while (!Stream.eof() && ((pk = Stream.peek()) == ' ' || pk == '\t' || pk == '\r' || pk == '\n'))
-		pk = Stream.get();
+	while (!Stream.eof() && WhitespaceCharacters.find(Stream.peek()) >= 0)
+		Stream.get();
 }
 std::string Value::EscapeQuotes(std::string String)
 {

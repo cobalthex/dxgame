@@ -17,33 +17,55 @@ namespace Osl
 		String,
 		Date,
 		Time,
-		Type, //A type name (all objects have types, all types must start with letter or _)
-		Reference //A reference to another value (@object:name, or name if just @local)
+		Object, //embedded objects do not have names (left empty)
+		Reference, //A reference to another property (@object:name, or name if just @local)
+		_ReferenceString, //A referencce to another property, temporarily stored as a string
 	};
 
 	class Value;
 
-	typedef long long integer;
-	typedef double decimal;
-
-	typedef std::vector<Value> PropertyList;
+	typedef std::vector<Value> ValueList;
 	
-	//A single OSL object
-	class Object
+	//A single OSL object (Duplicate objects in a document are combined, both in properties and attributes; all else latter-replaced)
+	class Object : public ISerializable
 	{
 	public:
-		std::string type;
+		Object() : type(), attributes(), properties() { }
+
+		std::string type; //the type of this object
+		std::string name; //the name of this object
 		std::set<std::string> attributes; //optional attributes (key only)
-		std::map<std::string, PropertyList> values;
+		std::map<std::string, ValueList> properties; //all properties in this object
+
+		virtual void Read(std::istream& Stream) override; //Create a value from a stream
+		virtual void Write(std::ostream& Stream) const override; //Write a value to a stream
 	};
+
+	typedef long long integer;
+	typedef double decimal;
+	typedef std::chrono::time_point<std::chrono::system_clock> DateTime;
+	typedef Object* Reference;
 
 	//An OSL document
-	class Document
+	class Document : public ISerializable
 	{
-		std::map<std::string*, Object> objects;
+		std::map<std::string, Object> objects;
+
+		virtual void Read(std::istream& Stream) override; //Create a value from a stream
+		virtual void Write(std::ostream& Stream) const override; //Write a value to a stream
+
+		//Load a value automatically from a file
+		static inline Document FromFile(const std::string& FileName)
+		{
+			std::ifstream fin(FileName, std::ios::in);
+			Document d;
+			d.Read(fin);
+			fin.close();
+			return d;
+		}
 	};
 
-	//A value representing one of the OSL types. (integers floats, null, bool, strings, objects)
+	//A value representing one of the OSL types (Note, all objects converted to date/time are times)
 	class Value : public ISerializable
 	{
 	public:
@@ -51,13 +73,8 @@ namespace Osl
 
 		//factory methods
 
-		template <typename T> static Value Create(const T& Val) { return Value(); }
-		template <> static Value Create<nullptr_t>(const nullptr_t& Val) { Value v; v.operator=(Val); return v; }
-		template <> static Value Create<bool>(const bool& Val) { Value v; v.operator=(Val); return v; }
-		template <> static Value Create<integer>(const integer& Val) { Value v; v.operator=(Val); return v; }
-		template <> static Value Create<decimal>(const decimal& Val) { Value v; v.operator=(Val); return v; }
-		template <> static Value Create<std::string>(const std::string& Val) { Value v; v.operator=(Val); return v; }
-		template <> static Value Create<Object>(const Object& Val) { Value v; v.operator=(Val); return v; }
+		template <typename T>
+		static Value Create(const T& Val) { Value v; v.operator=(Val); return v; }
 
 		static Value Create(const char* Val) { Value v; v.operator=(std::string(Val)); return v; } //Create a value from a string constant
 
@@ -71,6 +88,8 @@ namespace Osl
 		Value& operator = (decimal Value);
 		Value& operator = (const std::string& Value);
 		Value& operator = (const Object& Value);
+		Value& operator = (const DateTime& Value);
+		Value& operator = (const Reference& Value);
 
 		inline Value& operator = (short Value) { return operator=(short(Value)); }
 		inline Value& operator = (int Value) { return operator=(integer(Value)); }
@@ -80,42 +99,20 @@ namespace Osl
 
 		//Get operators
 
-		inline operator std::nullptr_t() const { return *(std::nullptr_t*)(value); }
-		inline operator bool() const { return *(bool*)(value); }
-		inline operator integer () const { return *(integer*)(value); }
-		inline operator decimal() const { return *(decimal*)(value); }
-		inline operator std::string() const { return *(std::string*)(value); }
-		inline operator Object() const { return *(Object*)(value); }
-
-		inline operator short() const { return (short)(*(integer*)(value)); }
-		inline operator int() const { return (int)(*(integer*)(value)); }
-		inline operator unsigned() const { return (unsigned)(*(integer*)(value)); }
-		inline operator float() const { return (float)(*(decimal*)(value)); }
-		inline operator const char*() const { return ((std::string*)(value))->c_str(); }
+		template <typename T>
+		inline operator T() const { return *(T*)(value); }
 
 		//Serializers
 
-		void Read(std::istream& Stream); //Create a value from a stream
-		void Write(std::ostream& Stream) const; //Write a value to a stream
+		virtual void Read(std::istream& Stream) override; //Create a value from a stream
+		virtual void Write(std::ostream& Stream) const override; //Write a value to a stream
 
 		static size_t DefaultStringReserveLength; //the default string reservation length (in chars) - Defaults to 32
-
-		//Helper methods
-
-		//Load a value automatically from a file
-		static inline Value FromFile(const std::string& FileName)
-		{
-			std::ifstream fin(FileName, std::ios::in);
-			
-			Value v;
-
-			fin.close();
-			return v;
-		}
+		static std::string WhitespaceCharacters; //characters that count as whitespace
 
 	protected:
 		Types type;
-		Variant<std::nullptr_t, bool, integer, decimal, std::string, Object> value;
+		Variant<std::nullptr_t, bool, integer, decimal, std::string, DateTime, Object, Reference> value;
 
 		//Delete any old values and reset it to the default
 		void Reset();
