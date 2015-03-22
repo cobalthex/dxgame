@@ -22,6 +22,21 @@ namespace Osl
 		_ReferenceString, //A referencce to another property, temporarily stored as a string
 	};
 
+	extern std::string WhitespaceCharacters; //characters that count as whitespace
+	inline std::string ReadWord(std::istream& Stream) //Read until hitting a whitespace character (returns string)
+	{
+		std::string s;
+		char pk;
+		while (!Stream.eof() && WhitespaceCharacters.find(pk = Stream.peek()) < 0 && pk != ';')
+			s += Stream.get();
+		return s;
+	}
+	inline void SkipWhitespace(std::istream& Stream) //Skip any whitespace (Schema defined whitespace)
+	{
+		while (!Stream.eof() && WhitespaceCharacters.find(Stream.peek()) >= 0)
+			Stream.get();
+	}
+
 	class Value;
 
 	typedef std::vector<Value> ValueList;
@@ -39,6 +54,11 @@ namespace Osl
 
 		virtual void Read(std::istream& Stream) override; //Create a value from a stream
 		virtual void Write(std::ostream& Stream) const override; //Write a value to a stream
+
+	protected:
+		void ReadAttributes(std::istream& Stream); //Read in all attributes after the :
+
+		friend class Value;
 	};
 
 	typedef long long integer;
@@ -107,9 +127,6 @@ namespace Osl
 		virtual void Read(std::istream& Stream) override; //Create a value from a stream
 		virtual void Write(std::ostream& Stream) const override; //Write a value to a stream
 
-		static size_t DefaultStringReserveLength; //the default string reservation length (in chars) - Defaults to 32
-		static std::string WhitespaceCharacters; //characters that count as whitespace
-
 	protected:
 		Types type;
 		Variant<std::nullptr_t, bool, integer, decimal, std::string, DateTime, Object, Reference> value;
@@ -117,8 +134,7 @@ namespace Osl
 		//Delete any old values and reset it to the default
 		void Reset();
 
-		static Types GuessType(std::istream& Stream); //Guess the type of object (Only looks based on the first character) - Assumes first character at stream pos is usable
-		static void SkipWhitespace(std::istream& Stream); //Skip any whitespace (Schema defined whitespace)
 		static std::string EscapeQuotes(std::string String);
+		static Types GuessType(std::istream& Stream); //Guess the type of the value (Only looks based on the first character) - Assumes first character at stream pos is usable
 	};
 }

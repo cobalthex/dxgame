@@ -4,10 +4,70 @@
 
 using namespace Osl;
 
+std::string Osl::WhitespaceCharacters = "\n\r\t ";
 
 void Object::Read(std::istream& Stream)
 {
+	//read first word
+	SkipWhitespace(Stream);
+	char pk = Stream.peek();
+	//if no name or type
+	if (pk == ':')
+	{
+		Stream.get(); //skip :
+		ReadAttributes(Stream);
+	}
+	//contains type and/or name
+	if (pk != '{')
+	{
+		auto a = ReadWord(Stream);
+		SkipWhitespace(Stream);
+		if (Stream.peek() != '{')
+		{
+			type = a;
+			name = ReadWord(Stream);
+		}
+		else
+			name = a;
+		SkipWhitespace(Stream);
+		if (Stream.peek() == ':')
+		{
+			Stream.get();
+			ReadAttributes(Stream);
+		}
+	}
+	//read into object (already skipped whitespace above)
+	Stream.get(); //skip {
+	while ((pk = Stream.peek()) != '}')
+	{
+		SkipWhitespace(Stream);
+		//read to colon (will read the colon)
+		std::string s;
+		while ((pk = Stream.get()) != ':')
+			s += pk;
 
+		s.resize(s.find_last_not_of(WhitespaceCharacters) + 1); //trim end of string
+
+		SkipWhitespace(Stream);
+		while (Stream.peek() != ';')
+		{
+			Value v;
+			v.Read(Stream);
+			properties[s].push_back(v);
+			SkipWhitespace(Stream);
+		}
+		Stream.get(); //semicolon
+	}
+}
+
+void Object::ReadAttributes(std::istream& Stream)
+{
+	SkipWhitespace(Stream);
+	while (Stream.peek() != '{')
+	{
+		attributes.insert(ReadWord(Stream));
+		SkipWhitespace(Stream);
+	}
 }
 
 void Object::Write(std::ostream& Stream) const
@@ -36,9 +96,8 @@ void Object::Write(std::ostream& Stream) const
 	for (auto& p : properties)
 	{
 		//write key
-		Stream.put('"');
 		Stream.write(p.first.data(), p.first.length());
-		Stream.write("\":", 2);
+		Stream.put(':');
 
 		bool first = true;
 		//write value
@@ -56,16 +115,21 @@ void Object::Write(std::ostream& Stream) const
 
 void Document::Read(std::istream& Stream)
 {
-
+	SkipWhitespace(Stream);
+	while (!Stream.eof())
+	{
+		Object o;
+		o.Read(Stream);
+		objects[o.name] = o;
+		SkipWhitespace(Stream);
+	}
 }
 
 void Document::Write(std::ostream& Stream) const
 {
-
+	for (auto& o : objects)
+		o.second.Write(Stream);
 }
-
-size_t Value::DefaultStringReserveLength = 32;
-std::string Value::WhitespaceCharacters = "\n\r\t ";
 
 Value& Value::operator = (const std::nullptr_t& Value)
 {
@@ -145,7 +209,6 @@ void Value::Read(std::istream& Stream)
 	auto type = GuessType(Stream);
 	char ch = 0;
 	std::string s = "";
-	s.reserve(DefaultStringReserveLength); //most strings are short
 
 	switch (type)
 	{
@@ -261,7 +324,7 @@ void Value::Read(std::istream& Stream)
 	}
 	break;
 
-	case Types::Reference:
+	case Types::_ReferenceString:
 	{
 		//References are parsed as strings and converted to pointers by Document (after all objects are loaded)
 		Stream.get(); //skip @
@@ -317,6 +380,7 @@ void Value::Write(std::ostream& Stream) const
 	break;
 
 	case Types::Time:
+	{
 		auto dur = *(DateTime*)value - DateTime();
 		auto mil = dur.count() % 1000;
 		auto sec = std::chrono::duration_cast<std::chrono::seconds>(dur).count() % 60;
@@ -327,19 +391,20 @@ void Value::Write(std::ostream& Stream) const
 		t += std::to_string(hour);
 		t += '.';
 		if (min < 10) t += '0';
-		t += min;
+		t += (int)min;
 		t += '.';
 		if (sec < 10) t += '0';
-		t += sec;
+		t += (int)sec;
 		if (mil > 0)
 		{
 			t += '.';
 			if (mil < 100) t += '0';
 			if (mil < 10) t += '0';
-			t += mil;
+			t += (int)mil;
 		}
 		Stream.write(t.data(), t.size());
-		break;
+	}
+	break;
 
 	case Types::Object:
 		((Object*)value)->Write(Stream);
@@ -357,16 +422,6 @@ void Value::Write(std::ostream& Stream) const
 	}
 }
 
-Types Value::GuessType(std::istream& Stream)
-{
-	return Types::Invalid;
-}
-
-void Value::SkipWhitespace(std::istream& Stream)
-{
-	while (!Stream.eof() && WhitespaceCharacters.find(Stream.peek()) >= 0)
-		Stream.get();
-}
 std::string Value::EscapeQuotes(std::string String)
 {
 	size_t loc = 0;
@@ -374,4 +429,13 @@ std::string Value::EscapeQuotes(std::string String)
 		String.replace(loc, 1, "\\\""), loc += 2;
 
 	return String;
+}
+
+Types Value::GuessType(std::istream& Stream)
+{
+	char pk = Stream.peek();
+
+
+
+	return Types::Invalid;
 }
