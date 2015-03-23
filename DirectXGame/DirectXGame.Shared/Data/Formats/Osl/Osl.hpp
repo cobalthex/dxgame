@@ -23,17 +23,22 @@ namespace Osl
 	};
 
 	extern std::string WhitespaceCharacters; //characters that count as whitespace
-	inline std::string ReadWord(std::istream& Stream) //Read until hitting a whitespace character (returns string)
+	extern std::string TerminatorCharacters; //characters that count as word terminators
+	inline std::string ReadWord(std::istream& Stream) //Read until hitting a whitespace or terminator character - returns a string
 	{
 		std::string s;
 		char pk;
-		while (!Stream.eof() && WhitespaceCharacters.find(pk = Stream.peek()) < 0 && pk != ';')
+		while (
+			!Stream.eof()
+			&& WhitespaceCharacters.find(pk = Stream.peek()) == std::string::npos
+			&& TerminatorCharacters.find(pk) == std::string::npos
+			)
 			s += Stream.get();
 		return s;
 	}
 	inline void SkipWhitespace(std::istream& Stream) //Skip any whitespace (Schema defined whitespace)
 	{
-		while (!Stream.eof() && WhitespaceCharacters.find(Stream.peek()) >= 0)
+		while (!Stream.eof() && WhitespaceCharacters.find(Stream.peek()) != std::string::npos)
 			Stream.get();
 	}
 
@@ -69,20 +74,30 @@ namespace Osl
 	//An OSL document
 	class Document : public ISerializable
 	{
+	public:
 		std::map<std::string, Object> objects;
 
 		virtual void Read(std::istream& Stream) override; //Create a value from a stream
 		virtual void Write(std::ostream& Stream) const override; //Write a value to a stream
 
+		inline void WriteToFile(const std::string& FileName)
+		{
+			std::ofstream fout (FileName, std::ios::out);
+			Write(fout);
+			fout.close();
+		}
+
 		//Load a value automatically from a file
 		static inline Document FromFile(const std::string& FileName)
 		{
-			std::ifstream fin(FileName, std::ios::in);
+			std::ifstream fin (FileName, std::ios::in);
 			Document d;
 			d.Read(fin);
 			fin.close();
 			return d;
 		}
+
+		void ConvertAllReferences(); //convert all reference strings to reference strings to pointers
 	};
 
 	//A value representing one of the OSL types (Note, all objects converted to date/time are times)

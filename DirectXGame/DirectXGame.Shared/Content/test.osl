@@ -1,0 +1,7 @@
+type name : foo bar {
+	a: "b" true 5 4.0;
+}
+type2 name3 {
+	c: 4 3 5 2;
+	d : 12345 "def" @name;
+}

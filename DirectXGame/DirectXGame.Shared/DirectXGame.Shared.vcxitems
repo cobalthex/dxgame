@@ -129,6 +129,9 @@
     <None Include="$(MSBuildThisFileDirectory)Content\sword.iqm">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="$(MSBuildThisFileDirectory)Content\test.osl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lighting.hlsli" />
   </ItemGroup>
   <ItemGroup>

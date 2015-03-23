@@ -90,6 +90,13 @@ namespace Json
 
 		//Helper methods
 
+		inline void WriteToFile(const std::string& FileName)
+		{
+			std::ofstream fout(FileName, std::ios::out);
+			Write(fout);
+			fout.close();
+		}
+
 		//Load a value automatically from a file
 		static inline Value FromFile(const std::string& FileName)
 		{

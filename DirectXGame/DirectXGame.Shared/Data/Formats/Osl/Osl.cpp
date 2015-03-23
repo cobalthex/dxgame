@@ -5,6 +5,7 @@
 using namespace Osl;
 
 std::string Osl::WhitespaceCharacters = "\n\r\t ";
+std::string Osl::TerminatorCharacters = "{};";
 
 void Object::Read(std::istream& Stream)
 {
@@ -38,18 +39,22 @@ void Object::Read(std::istream& Stream)
 	}
 	//read into object (already skipped whitespace above)
 	Stream.get(); //skip {
+	SkipWhitespace(Stream);
 	while ((pk = Stream.peek()) != '}')
 	{
-		SkipWhitespace(Stream);
 		//read to colon (will read the colon)
 		std::string s;
 		while ((pk = Stream.get()) != ':')
+		{
+			if (Stream.eof())
+				throw "Invalid OSL object format";
 			s += pk;
+		}
 
 		s.resize(s.find_last_not_of(WhitespaceCharacters) + 1); //trim end of string
 
 		SkipWhitespace(Stream);
-		while (Stream.peek() != ';')
+		while ((pk = Stream.peek()) != ';')
 		{
 			Value v;
 			v.Read(Stream);
@@ -57,7 +62,9 @@ void Object::Read(std::istream& Stream)
 			SkipWhitespace(Stream);
 		}
 		Stream.get(); //semicolon
+		SkipWhitespace(Stream);
 	}
+	Stream.get(); // }
 }
 
 void Object::ReadAttributes(std::istream& Stream)
@@ -115,6 +122,7 @@ void Object::Write(std::ostream& Stream) const
 
 void Document::Read(std::istream& Stream)
 {
+	bool open = ((std::ifstream*)&Stream)->is_open();
 	SkipWhitespace(Stream);
 	while (!Stream.eof())
 	{
@@ -129,6 +137,32 @@ void Document::Write(std::ostream& Stream) const
 {
 	for (auto& o : objects)
 		o.second.Write(Stream);
+}
+
+void Document::ConvertAllReferences()
+{
+	std::stack<Object> s;
+	for (auto& o : objects)
+		s.push(o.second);
+
+	while (!s.empty())
+	{
+		auto o = s.top();
+		s.pop();
+		for (auto& p : o.properties)
+		{
+			for (auto& v : p.second)
+			{
+				if (v.Type() == Types::_ReferenceString)
+				{
+					auto f = objects.find((std::string)v);
+					v = (f != objects.end() ? &f->second : nullptr);
+				}
+				else if (v.Type() == Types::Object)
+					s.push((Object)v);
+			}
+		}
+	}
 }
 
 Value& Value::operator = (const std::nullptr_t& Value)
@@ -156,7 +190,7 @@ Value& Value::operator = (decimal Value)
 {
 	Reset();
 	type = Types::Decimal;
-	new (value) decimal(Value);
+	new (value)decimal(Value);
 	return *this;
 }
 Value& Value::operator = (const std::string& Value)
@@ -195,6 +229,7 @@ void Value::Reset()
 	switch (type)
 	{
 	case Types::String:
+	case Types::_ReferenceString:
 		((std::string*)(value))->~basic_string(); break;
 	case Types::Object:
 		((Object*)(value))->~Object(); break;
@@ -328,14 +363,19 @@ void Value::Read(std::istream& Stream)
 	{
 		//References are parsed as strings and converted to pointers by Document (after all objects are loaded)
 		Stream.get(); //skip @
-		char pk;
-		while (!Stream.eof() && WhitespaceCharacters.find(pk = Stream.peek()) >= 0 && pk != ';')
-			s += Stream.get();
+		s = ReadWord(Stream);
 
-		type = Types::_ReferenceString;
+		Reset();
+		this->type = Types::_ReferenceString;
 		new (value)std::string(s);
 	}
 	break;
+
+	default:
+		char pk;
+		while (!Stream.eof() && WhitespaceCharacters.find(pk = Stream.peek()) == std::string::npos && TerminatorCharacters.find(pk) == std::string::npos)
+			Stream.get();
+		break;
 
 	}
 }
@@ -372,7 +412,12 @@ void Value::Write(std::ostream& Stream) const
 	case Types::Date:
 	{
 		auto t = std::chrono::system_clock::to_time_t(*((DateTime*)value));
-		auto* tp = gmtime(&t);
+		tm* tp = nullptr;
+#ifdef _WIN32
+		gmtime_s(tp, &t);
+#else
+		gmtime_r(&t, tp);
+#endif
 		char ts[11];
 		auto sz = strftime(ts, 11, "%F", tp);
 		Stream.write(ts, sz);
@@ -412,7 +457,7 @@ void Value::Write(std::ostream& Stream) const
 
 	case Types::Reference:
 		Stream.put('@');
-		Stream.write((*(Object**)value)->name.data(), (*(Object**)value)->name.size());
+		Stream.write((*(Object**)value)->name.data(), (*(Object**)value)->name.length());
 		break;
 
 	case Types::_ReferenceString:
@@ -435,7 +480,67 @@ Types Value::GuessType(std::istream& Stream)
 {
 	char pk = Stream.peek();
 
+	//figure out type of number (integer, Decimal)
+	if ((pk >= '0' && pk <= '9') || pk == '-')
+	{
+		ptrdiff_t count = 1;
+		char nk = Stream.get(); //skip first (already known from above)
+		while ((nk = Stream.peek()) >= '0' && nk <= '9')
+			count++, nk = Stream.get();
+		Stream.seekg(-count, std::ios::cur); //reset
 
+		if (count == 4 && nk == '-')
+			return Types::Date;
+		if (nk == ':')
+			return Types::Time;
+		if (nk == '.')
+			return Types::Decimal;
+		return Types::Integer;
+	}
 
+	if (pk == '.')
+		return Types::Decimal;
+
+	if (pk == 't' || pk == 'T')
+	{
+		char str[4];
+		Stream.read(str, 4);
+		Stream.seekg(-4, std::ios::cur);
+		std::for_each(str, str + 4, tolower);
+		if (strncmp("true", str, 4) == 0)
+			return Types::Boolean;
+		return Types::Object;
+	}
+	if (pk == 'f' || pk == 'F')
+	{
+		char str[5];
+		Stream.read(str, 5);
+		Stream.seekg(-5, std::ios::cur);
+		std::for_each(str, str + 5, tolower);
+		if (strncmp("false", str, 5) == 0)
+			return Types::Boolean;
+		return Types::Object;
+	}
+	if (pk == 'n' || pk == 'N')
+	{
+		char str[4];
+		Stream.read(str, 4);
+		Stream.seekg(-4, std::ios::cur);
+		std::for_each(str, str + 4, tolower);
+		if (strncmp("null", str, 4) == 0)
+			return Types::Null;
+		return Types::Object;
+	}
+
+	switch (pk)
+	{
+	case '\'':
+	case '"': return Types::String;
+	case '@': return Types::_ReferenceString;
+	case '{':
+	case ':': return Types::Object;
+
+	default: return Types::Invalid;
+	}
 	return Types::Invalid;
 }

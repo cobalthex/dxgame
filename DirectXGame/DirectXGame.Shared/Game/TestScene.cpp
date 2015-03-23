@@ -4,6 +4,8 @@
 #include "Common/Helpers.hpp"
 #include "Graphics/Models/Formats/IQM/IqmLoader.hpp"
 
+#include "Data/Formats/Osl/Osl.hpp"
+
 using namespace DirectXGame;
 
 using namespace DirectX;
@@ -20,6 +22,7 @@ TestScene::TestScene(const std::shared_ptr<DeviceResources>& DeviceResources) :
 {
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
+	
 }
 
 //Initializes view parameters when the window size changes.

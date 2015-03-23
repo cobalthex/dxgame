@@ -100,6 +100,7 @@
     <None Include="$(MSBuildThisFileDirectory)Content\ship.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Content\test.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lighting.hlsli" />
+    <None Include="$(MSBuildThisFileDirectory)Content\test.osl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\license.txt" />
