@@ -86,24 +86,24 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureCache.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="$(MSBuildThisFileDirectory)Content\Body.dds" />
-    <Image Include="$(MSBuildThisFileDirectory)Content\Ground.dds" />
-    <Image Include="$(MSBuildThisFileDirectory)Content\Head.dds" />
-    <Image Include="$(MSBuildThisFileDirectory)Content\sword.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />
-    <None Include="$(MSBuildThisFileDirectory)Content\sword.iqm" />
-    <None Include="$(MSBuildThisFileDirectory)Content\ship.iqm" />
-    <None Include="$(MSBuildThisFileDirectory)Content\test.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lighting.hlsli" />
-    <None Include="$(MSBuildThisFileDirectory)Content\test.osl" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\mrfixit.iqm" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\ship.iqm" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\sword.iqm" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Materials\mrfixit.matl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\license.txt" />
     <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Body.dds" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Ground.dds" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Head.dds" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.png" />
   </ItemGroup>
 </Project>

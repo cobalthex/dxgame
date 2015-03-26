@@ -14,12 +14,14 @@ namespace Osl
 		Boolean,
 		Integer,
 		Decimal,
-		String,
+		String, //Quoted strings or single word strings
 		Date,
 		Time,
-		Object, //embedded objects do not have names (left empty)
+		Object, //embedded objects do not have names or types (left empty)
 		Reference, //A reference to another property (@object:name, or name if just @local)
 		_ReferenceString, //A referencce to another property, temporarily stored as a string
+		Type, //one of the types (mainly for schemas), start with *,
+		Any  //Any type, does not have any value by itself
 	};
 
 	extern std::string WhitespaceCharacters; //characters that count as whitespace
@@ -41,11 +43,28 @@ namespace Osl
 		while (!Stream.eof() && WhitespaceCharacters.find(Stream.peek()) != std::string::npos)
 			Stream.get();
 	}
+	extern void SkipComments(std::istream& Stream);
+	//skip comments then whitespace as many times as necessary until a non whitespace/comment is found
+	inline void SkipNonValues(std::istream& Stream)
+	{
+		char pk;
+		while (!Stream.eof() && (WhitespaceCharacters.find(pk = Stream.peek()) != std::string::npos || pk == '/'))
+		{
+			auto pos = Stream.tellg();
+
+			SkipComments(Stream);
+			SkipWhitespace(Stream);
+
+			//nothing read, therefore going again isn't going to do anything
+			if (Stream.tellg() == pos)
+				break;
+		}
+	}
 
 	class Value;
 
 	typedef std::vector<Value> ValueList;
-	
+
 	//A single OSL object (Duplicate objects in a document are combined, both in properties and attributes; all else latter-replaced)
 	class Object : public ISerializable
 	{
@@ -60,6 +79,9 @@ namespace Osl
 		virtual void Read(std::istream& Stream) override; //Create a value from a stream
 		virtual void Write(std::ostream& Stream) const override; //Write a value to a stream
 
+		inline ValueList& operator [](const std::string& Key) { return properties.at(Key); }
+		inline const ValueList& operator [](const std::string& Key) const { return properties.at(Key); }
+
 	protected:
 		void ReadAttributes(std::istream& Stream); //Read in all attributes after the :
 
@@ -68,7 +90,7 @@ namespace Osl
 
 	typedef long long integer;
 	typedef double decimal;
-	typedef std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> DateTime;
+	typedef std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> Time;
 	typedef Object* Reference;
 
 	//An OSL document
@@ -82,7 +104,7 @@ namespace Osl
 
 		inline void WriteToFile(const std::string& FileName)
 		{
-			std::ofstream fout (FileName, std::ios::out);
+			std::ofstream fout(FileName, std::ios::out);
 			Write(fout);
 			fout.close();
 		}
@@ -90,17 +112,30 @@ namespace Osl
 		//Load a value automatically from a file
 		static inline Document FromFile(const std::string& FileName)
 		{
-			std::ifstream fin (FileName, std::ios::in);
+			std::ifstream fin(FileName, std::ios::in);
 			Document d;
 			d.Read(fin);
 			fin.close();
 			return d;
 		}
 
+		inline Object& operator [](const std::string& Key) { return objects.at(Key); }
+		inline const Object& operator [](const std::string& Key) const { return objects.at(Key); }
+
 		void ConvertAllReferences(); //convert all reference strings to reference strings to pointers
 	};
 
-	//A value representing one of the OSL types (Note, all objects converted to date/time are times)
+	//A simple representation of a date
+	struct Date
+	{
+		int year : 2;
+		int month : 1;
+		int day : 1;
+
+		Date() : year(0), month(0), day(0) { }
+	};
+
+	//A value representing one of the OSL types
 	class Value : public ISerializable
 	{
 	public:
@@ -123,8 +158,10 @@ namespace Osl
 		Value& operator = (decimal Value);
 		Value& operator = (const std::string& Value);
 		Value& operator = (const Object& Value);
-		Value& operator = (const DateTime& Value);
+		Value& operator = (const Date& Value);
+		Value& operator = (const Time& Value);
 		Value& operator = (const Reference& Value);
+		Value& operator = (Types Value);
 
 		inline Value& operator = (short Value) { return operator=(short(Value)); }
 		inline Value& operator = (int Value) { return operator=(integer(Value)); }
@@ -144,7 +181,7 @@ namespace Osl
 
 	protected:
 		Types type;
-		Variant<std::nullptr_t, bool, integer, decimal, std::string, DateTime, Object, Reference> value;
+		Variant<std::nullptr_t, bool, integer, decimal, std::string, Date, Time, Object, Reference, Types> value;
 
 		//Delete any old values and reset it to the default
 		void Reset();

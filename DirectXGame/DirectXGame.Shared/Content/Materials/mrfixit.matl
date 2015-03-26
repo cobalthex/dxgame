@@ -1,0 +1,8 @@
+LitSkinnedShader head
+{
+	diffuse: 255 255 255 255;
+	ambient: 255 255 255 255;
+	emissive: 0 0 0 0;
+	specular: 255 255 255 255 500; //r g b a pow
+	diffmap: "test.png";
+}

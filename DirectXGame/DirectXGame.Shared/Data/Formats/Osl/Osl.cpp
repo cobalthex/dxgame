@@ -4,13 +4,33 @@
 
 using namespace Osl;
 
-std::string Osl::WhitespaceCharacters = "\n\r\t ";
+std::string Osl::WhitespaceCharacters = "\n\r\f\t\v ";
 std::string Osl::TerminatorCharacters = "{};";
+
+void Osl::SkipComments(std::istream& Stream)
+{
+	if (Stream.peek() == '/')
+	{
+		Stream.get();
+		char pk;
+		if ((pk = Stream.peek()) == '/')
+			while (!Stream.eof() && Stream.get() != '\n'); //line comment
+		else if (pk == '*')
+		{
+			Stream.get();
+			while (!Stream.eof())
+			{
+				if (Stream.get() == '*' && Stream.get() == '/')
+					return;
+			}
+		}
+	}
+}
 
 void Object::Read(std::istream& Stream)
 {
 	//read first word
-	SkipWhitespace(Stream);
+	SkipNonValues(Stream);
 	char pk = Stream.peek();
 	//if no name or type
 	if (pk == ':')
@@ -22,7 +42,7 @@ void Object::Read(std::istream& Stream)
 	if (pk != '{')
 	{
 		auto a = ReadWord(Stream);
-		SkipWhitespace(Stream);
+		SkipNonValues(Stream);
 		if (Stream.peek() != '{')
 		{
 			type = a;
@@ -30,7 +50,7 @@ void Object::Read(std::istream& Stream)
 		}
 		else
 			name = a;
-		SkipWhitespace(Stream);
+		SkipNonValues(Stream);
 		if (Stream.peek() == ':')
 		{
 			Stream.get();
@@ -39,9 +59,11 @@ void Object::Read(std::istream& Stream)
 	}
 	//read into object (already skipped whitespace above)
 	Stream.get(); //skip {
-	SkipWhitespace(Stream);
+	SkipNonValues(Stream);
 	while ((pk = Stream.peek()) != '}')
 	{
+		SkipNonValues(Stream);
+
 		//read to colon (will read the colon)
 		std::string s;
 		while ((pk = Stream.get()) != ':')
@@ -51,51 +73,59 @@ void Object::Read(std::istream& Stream)
 			s += pk;
 		}
 
+		static const char* commStr = "/*";
+		s.resize(std::find_end(s.begin(), s.end(), commStr, commStr + 2) - s.begin()); //trim comments at end of string
 		s.resize(s.find_last_not_of(WhitespaceCharacters) + 1); //trim end of string
 
-		SkipWhitespace(Stream);
+		SkipNonValues(Stream);
 		while ((pk = Stream.peek()) != ';')
 		{
 			Value v;
 			v.Read(Stream);
 			properties[s].push_back(v);
-			SkipWhitespace(Stream);
+			SkipNonValues(Stream);
 		}
 		Stream.get(); //semicolon
-		SkipWhitespace(Stream);
+		SkipNonValues(Stream);
 	}
 	Stream.get(); // }
 }
 
 void Object::ReadAttributes(std::istream& Stream)
 {
-	SkipWhitespace(Stream);
+	SkipNonValues(Stream);
 	while (Stream.peek() != '{')
 	{
 		attributes.insert(ReadWord(Stream));
-		SkipWhitespace(Stream);
+		SkipNonValues(Stream);
 	}
 }
 
 void Object::Write(std::ostream& Stream) const
 {
+	bool written = false; //for writing minimal string
 	if (type.size() > 0)
 	{
 		Stream.write(type.data(), type.size());
-		Stream.put(' ');
+		written = true;
 	}
 	if (name.size() > 0)
 	{
+		if (written)
+			Stream.put(' ');
 		Stream.write(name.data(), name.size());
-		Stream.put(' ');
+		written = true;
 	}
 	if (attributes.size() > 0)
 	{
-		Stream.write(": ", 2);
+		Stream.put(':');
+		written = false;
 		for (auto& attr : attributes)
 		{
+			if (written)
+				Stream.put(' ');
 			Stream.write(attr.data(), attr.size());
-			Stream.put(' ');
+			written = true;
 		}
 	}
 	Stream.put('{');
@@ -106,13 +136,14 @@ void Object::Write(std::ostream& Stream) const
 		Stream.write(p.first.data(), p.first.length());
 		Stream.put(':');
 
-		bool first = true;
+		bool written = false;
 		//write value
 		for (auto& v : p.second)
 		{
-			Stream.put(' ');
+			if (written)
+				Stream.put(' ');
 			v.Write(Stream);
-			first = false;
+			written = true;
 		}
 
 		Stream.put(';');
@@ -124,12 +155,14 @@ void Document::Read(std::istream& Stream)
 {
 	bool open = ((std::ifstream*)&Stream)->is_open();
 	SkipWhitespace(Stream);
+
 	while (!Stream.eof())
 	{
+		SkipNonValues(Stream);
 		Object o;
 		o.Read(Stream);
 		objects[o.name] = o;
-		SkipWhitespace(Stream);
+		SkipNonValues(Stream); //necessary to make sure not trailing empty space
 	}
 }
 
@@ -207,20 +240,32 @@ Value& Value::operator = (const Object& Value)
 	new (value)Object(Value);
 	return *this;
 }
-
-Value& Value::operator = (const DateTime& Value)
+Value& Value::operator = (const Date& Value)
+{
+	Reset();
+	type = Types::Date;
+	new (value)Date(Value);
+	return *this;
+}
+Value& Value::operator = (const Time& Value)
 {
 	Reset();
 	type = Types::Time;
-	new (value)DateTime(Value);
+	new (value)Time(Value);
 	return *this;
-
 }
 Value& Value::operator = (const Reference& Value)
 {
 	Reset();
 	type = Types::Reference;
 	new (value)Reference(Value);
+	return *this;
+}
+Value& Value::operator = (Types Value)
+{
+	Reset();
+	type = Types::Type;
+	new (value)Types(Value);
 	return *this;
 }
 
@@ -234,18 +279,19 @@ void Value::Reset()
 	case Types::Object:
 		((Object*)(value))->~Object(); break;
 	case Types::Date:
+		((Date*)(value))->~Date(); break;
 	case Types::Time:
-		((DateTime*)(value))->~DateTime(); break;
+		((Time*)(value))->~Time(); break;
 	}
 }
 
 void Value::Read(std::istream& Stream)
 {
-	auto type = GuessType(Stream);
+	auto ty = GuessType(Stream);
 	char ch = 0;
 	std::string s = "";
 
-	switch (type)
+	switch (ty)
 	{
 	case Types::Null:
 		operator=(std::nullptr_t());
@@ -300,54 +346,116 @@ void Value::Read(std::istream& Stream)
 		char lastUni; //last unicode character (for surrogate pairs)
 		bool isLastUni = false;
 
-		char oq = Stream.get();
-		ch = Stream.get(); //(supports single quotes)
-		while (ch != oq)
+		if ((ch = Stream.peek()) == '\'' || ch == '"')
 		{
-			if (ch == '\\') //escape character
+			char oq = Stream.get();
+			ch = Stream.get(); //(supports single quotes)
+			while (ch != oq)
 			{
-				//parse unicode quads
-				if ((ch = Stream.peek()) == 'u' || ch == 'U')
+				if (ch == '\\') //escape character
 				{
-					Stream.read(us, 5); //read uXXXX
-					int u = std::stoi(us + 1, 0, 16);
-
-					//surrogate pairs
-					if (isLastUni)
+					//parse unicode quads
+					if ((ch = Stream.peek()) == 'u' || ch == 'U')
 					{
-						s += (char)(u + lastUni);
-						isLastUni = false;
+						Stream.read(us, 5); //read uXXXX
+						int u = std::stoi(us + 1, 0, 16);
+
+						//surrogate pairs
+						if (isLastUni)
+						{
+							s += (char)(u + lastUni);
+							isLastUni = false;
+						}
+						else
+						{
+							lastUni = u;
+							isLastUni = true;
+						}
 					}
 					else
 					{
-						lastUni = u;
-						isLastUni = true;
+						s += Stream.get();
+						isLastUni = false;
 					}
 				}
-				else
+				else //regular char
 				{
-					s += Stream.get();
-					isLastUni = false;
-				}
-			}
-			else //regular char
-			{
-				if (isLastUni)
-				{
-					s += lastUni;
-					isLastUni = false;
+					if (isLastUni)
+					{
+						s += lastUni;
+						isLastUni = false;
+					}
+
+					s += ch;
 				}
 
-				s += ch;
+				ch = Stream.get();
 			}
+			//add last unicode
+			if (isLastUni)
+				s += lastUni;
 
-			ch = Stream.get();
+			operator=(s);
 		}
-		//add last unicode
-		if (isLastUni)
-			s += lastUni;
+		else
+			operator=(ReadWord(Stream)); //single word
+	}
+	break;
 
-		operator=(s);
+	case Types::Date:
+	{
+		Date d;
+
+		while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+		d.year = strtoul(s.data(), nullptr, 10);
+		Stream.get();
+
+		s.clear();
+		while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+		d.month = strtoul(s.data(), nullptr, 10);
+		Stream.get();
+
+		s.clear();
+		while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+		d.day = strtoul(s.data(), nullptr, 10);
+
+		operator=(d);
+	}
+	break;
+
+	case Types::Time:
+	{
+		while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+		unsigned hr = strtoul(s.data(), nullptr, 10);
+		Stream.get();
+
+		s.clear();
+		while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+		unsigned min = strtoul(s.data(), nullptr, 10);
+		Stream.get();
+
+		s.clear();
+		while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+		unsigned sec = strtoul(s.data(), nullptr, 10);
+
+		unsigned ms = 0;
+		if ((ch = Stream.peek()) == '.')
+		{
+			Stream.get();
+			s.clear();
+			while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+			ms = strtoul(s.data(), nullptr, 10);
+		}
+
+		Time t;
+		t += std::chrono::hours(hr);
+		t += std::chrono::minutes(min);
+		t += std::chrono::seconds(sec);
+		t += std::chrono::milliseconds(ms);
+
+		char pk = Stream.peek();
+
+		operator=(t);
 	}
 	break;
 
@@ -366,8 +474,31 @@ void Value::Read(std::istream& Stream)
 		s = ReadWord(Stream);
 
 		Reset();
-		this->type = Types::_ReferenceString;
+		type = Types::_ReferenceString;
 		new (value)std::string(s);
+	}
+	break;
+
+	case Types::Type:
+	{
+		Stream.get(); //skip $
+		s = ReadWord(Stream);
+		StringToLower(s);
+		Types t;
+
+		if (s == "null" || s == "nil") t = Types::Null;
+		else if (s == "bool" || s == "boolean") t = Types::Boolean;
+		else if (s == "int" || s == "integer") t = Types::Integer;
+		else if (s == "dec" || s == "decimal" || s == "float") t = Types::Decimal;
+		else if (s == "str" || s == "string") t = Types::String;
+		else if (s == "date") t = Types::Date;
+		else if (s == "time") t = Types::Time;
+		else if (s == "obj" || s == "object") t = Types::Object;
+		else if (s == "ref" || s == "reference") t = Types::Reference;
+		else if (s == "type") t = Types::Type;
+		else if (s == "" || s == "any") t = Types::Any;
+
+		operator=(t);
 	}
 	break;
 
@@ -411,41 +542,35 @@ void Value::Write(std::ostream& Stream) const
 
 	case Types::Date:
 	{
-		auto t = std::chrono::system_clock::to_time_t(*((DateTime*)value));
-		tm* tp = nullptr;
-#ifdef _WIN32
-		gmtime_s(tp, &t);
-#else
-		gmtime_r(&t, tp);
-#endif
-		char ts[11];
-		auto sz = strftime(ts, 11, "%F", tp);
-		Stream.write(ts, sz);
+		auto d = (Date*)value;
+		char ds[12];
+		auto sz = sprintf_s(ds, "%04i-%02i-%02i", d->year, d->month, d->day);
+		Stream.write(ds, sz);
 	}
 	break;
 
 	case Types::Time:
 	{
-		auto dur = *(DateTime*)value - DateTime();
+		auto dur = *(Time*)value - Time();
 		auto mil = dur.count() % 1000;
 		auto sec = std::chrono::duration_cast<std::chrono::seconds>(dur).count() % 60;
-		auto min = std::chrono::duration_cast<std::chrono::seconds>(dur).count() % 60;
-		auto hour = std::chrono::duration_cast<std::chrono::seconds>(dur).count();
+		auto min = std::chrono::duration_cast<std::chrono::minutes>(dur).count() % 60;
+		auto hour = std::chrono::duration_cast<std::chrono::hours>(dur).count();
 		std::string t;
 		t.reserve(32);
 		t += std::to_string(hour);
-		t += '.';
+		t += ':';
 		if (min < 10) t += '0';
-		t += (int)min;
-		t += '.';
+		t += std::to_string(min);
+		t += ':';
 		if (sec < 10) t += '0';
-		t += (int)sec;
+		t += std::to_string(sec);
 		if (mil > 0)
 		{
 			t += '.';
 			if (mil < 100) t += '0';
 			if (mil < 10) t += '0';
-			t += (int)mil;
+			t += std::to_string(mil);
 		}
 		Stream.write(t.data(), t.size());
 	}
@@ -463,6 +588,26 @@ void Value::Write(std::ostream& Stream) const
 	case Types::_ReferenceString:
 		Stream.put('@');
 		Stream.write(((std::string*)value)->data(), ((std::string*)value)->length());
+		break;
+
+	case Types::Type:
+		Stream.put('$');
+		switch (*(Types*)value)
+		{
+		case Types::Null: Stream.write("null", 4); break;
+		case Types::Boolean: Stream.write("boolean", 4); break;
+		case Types::Integer: Stream.write("integer", 7); break;
+		case Types::Decimal: Stream.write("decimal", 7); break;
+		case Types::String: Stream.write("string", 6); break;
+		case Types::Date: Stream.write("date", 4); break;
+		case Types::Time: Stream.write("time", 4); break;
+		case Types::Object: Stream.write("object", 6); break;
+		case Types::_ReferenceString:
+		case Types::Reference: Stream.write("reference", 9); break;
+		case Types::Type: Stream.write("type", 4); break;
+		case Types::Any: break;
+		default: Stream.write("invalid", 7); break;
+		}
 		break;
 	}
 }
@@ -506,30 +651,30 @@ Types Value::GuessType(std::istream& Stream)
 		char str[4];
 		Stream.read(str, 4);
 		Stream.seekg(-4, std::ios::cur);
-		std::for_each(str, str + 4, tolower);
+		for (auto i = str; i != str + 4; i++) *i = tolower(*i);
 		if (strncmp("true", str, 4) == 0)
 			return Types::Boolean;
-		return Types::Object;
+		return Types::String;
 	}
 	if (pk == 'f' || pk == 'F')
 	{
 		char str[5];
 		Stream.read(str, 5);
 		Stream.seekg(-5, std::ios::cur);
-		std::for_each(str, str + 5, tolower);
+		for (auto i = str; i != str + 5; i++) *i = tolower(*i);
 		if (strncmp("false", str, 5) == 0)
 			return Types::Boolean;
-		return Types::Object;
+		return Types::String;
 	}
 	if (pk == 'n' || pk == 'N')
 	{
 		char str[4];
 		Stream.read(str, 4);
 		Stream.seekg(-4, std::ios::cur);
-		std::for_each(str, str + 4, tolower);
+		for (auto i = str; i != str + 4; i++) *i = tolower(*i);
 		if (strncmp("null", str, 4) == 0)
 			return Types::Null;
-		return Types::Object;
+		return Types::String;
 	}
 
 	switch (pk)
@@ -537,10 +682,9 @@ Types Value::GuessType(std::istream& Stream)
 	case '\'':
 	case '"': return Types::String;
 	case '@': return Types::_ReferenceString;
-	case '{':
-	case ':': return Types::Object;
+	case '{': return Types::Object;
+	case '$': return Types::Type;
 
-	default: return Types::Invalid;
+	default: return Types::String; //Defaults to string
 	}
-	return Types::Invalid;
 }

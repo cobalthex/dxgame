@@ -126,33 +126,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />
-    <None Include="$(MSBuildThisFileDirectory)Content\sword.iqm">
+    <None Include="$(MSBuildThisFileDirectory)Content\Materials\mrfixit.matl">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="$(MSBuildThisFileDirectory)Content\test.osl">
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\mrfixit.iqm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\ship.iqm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\sword.iqm">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lighting.hlsli" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="$(MSBuildThisFileDirectory)Content\Body.dds">
-      <DeploymentContent>true</DeploymentContent>
-    </Image>
-    <Image Include="$(MSBuildThisFileDirectory)Content\Ground.dds">
-      <DeploymentContent>true</DeploymentContent>
-    </Image>
-    <Image Include="$(MSBuildThisFileDirectory)Content\Head.dds">
-      <DeploymentContent>true</DeploymentContent>
-    </Image>
-    <Image Include="$(MSBuildThisFileDirectory)Content\sword.png">
-      <DeploymentContent>true</DeploymentContent>
-    </Image>
-    <None Include="$(MSBuildThisFileDirectory)Content\ship.iqm">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="$(MSBuildThisFileDirectory)Content\test.iqm">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf">
@@ -166,5 +152,23 @@
     <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\readme.txt">
       <DeploymentContent>true</DeploymentContent>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Body.dds">
+      <FileType>Document</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Ground.dds">
+      <FileType>Document</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Head.dds">
+      <FileType>Document</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.png">
+      <FileType>Document</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
   </ItemGroup>
 </Project>
