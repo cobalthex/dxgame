@@ -51,7 +51,7 @@ namespace Osl
 		while (!Stream.eof() && (WhitespaceCharacters.find(pk = Stream.peek()) != std::string::npos || pk == '/'))
 		{
 			auto pos = Stream.tellg();
-
+			
 			SkipComments(Stream);
 			SkipWhitespace(Stream);
 

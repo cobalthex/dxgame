@@ -62,27 +62,33 @@ void Object::Read(std::istream& Stream)
 	SkipNonValues(Stream);
 	while ((pk = Stream.peek()) != '}')
 	{
+		if (Stream.eof())
+			return;
+
 		SkipNonValues(Stream);
 
 		//read to colon (will read the colon)
-		std::string s;
+		std::string prop;
 		while ((pk = Stream.get()) != ':')
 		{
 			if (Stream.eof())
 				throw "Invalid OSL object format";
-			s += pk;
+			prop += pk;
 		}
 
 		static const char* commStr = "/*";
-		s.resize(std::find_end(s.begin(), s.end(), commStr, commStr + 2) - s.begin()); //trim comments at end of string
-		s.resize(s.find_last_not_of(WhitespaceCharacters) + 1); //trim end of string
+		prop.resize(std::find_end(prop.begin(), prop.end(), commStr, commStr + 2) - prop.begin()); //trim comments at end of string
+		prop.resize(prop.find_last_not_of(WhitespaceCharacters) + 1); //trim end of string
 
 		SkipNonValues(Stream);
-		while ((pk = Stream.peek()) != ';')
+		while ((pk = Stream.peek()) != ';' && (pk != '}'))
 		{
+			if (Stream.eof())
+				return;
+
 			Value v;
 			v.Read(Stream);
-			properties[s].push_back(v);
+			properties[prop].push_back(v);
 			SkipNonValues(Stream);
 		}
 		Stream.get(); //semicolon
@@ -350,7 +356,7 @@ void Value::Read(std::istream& Stream)
 		{
 			char oq = Stream.get();
 			ch = Stream.get(); //(supports single quotes)
-			while (ch != oq)
+			while (!Stream.eof() && ch != oq)
 			{
 				if (ch == '\\') //escape character
 				{
@@ -442,6 +448,7 @@ void Value::Read(std::istream& Stream)
 		if ((ch = Stream.peek()) == '.')
 		{
 			Stream.get();
+
 			s.clear();
 			while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
 			ms = strtoul(s.data(), nullptr, 10);
@@ -452,8 +459,6 @@ void Value::Read(std::istream& Stream)
 		t += std::chrono::minutes(min);
 		t += std::chrono::seconds(sec);
 		t += std::chrono::milliseconds(ms);
-
-		char pk = Stream.peek();
 
 		operator=(t);
 	}
@@ -669,12 +674,25 @@ Types Value::GuessType(std::istream& Stream)
 	if (pk == 'n' || pk == 'N')
 	{
 		char str[4];
-		Stream.read(str, 4);
-		Stream.seekg(-4, std::ios::cur);
-		for (auto i = str; i != str + 4; i++) *i = tolower(*i);
-		if (strncmp("null", str, 4) == 0)
-			return Types::Null;
-		return Types::String;
+		Stream.read(str, 3);
+		if (str[2] == 'u')
+		{
+			str[3] = Stream.get();
+			Stream.seekg(-4, std::ios::cur);
+			for (auto i = str; i != str + 4; i++) *i = tolower(*i);
+			if (strncmp("null", str, 4) == 0)
+				return Types::Null;
+			else
+				return Types::String;
+		}
+		else
+		{
+			Stream.seekg(-3, std::ios::cur);
+			for (auto i = str; i != str + 4; i++) *i = tolower(*i);
+			if (strncmp("nil", str, 4) == 0)
+				return Types::Null;
+			return Types::String;
+		}
 	}
 
 	switch (pk)
