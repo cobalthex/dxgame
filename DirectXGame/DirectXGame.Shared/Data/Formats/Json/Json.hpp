@@ -33,6 +33,15 @@ namespace Json
 	public:
 
 		Value() : type(Types::Invalid) { } 
+		Value(const std::string& FileName)
+		{
+			std::ifstream fin(FileName, std::ios::in);
+			if (fin.is_open())
+			{
+				Read(fin);
+				fin.close();
+			}
+		}
 
 		//factory methods
 
@@ -83,33 +92,28 @@ namespace Json
 
 		//Serializers
 
-		void Read(std::istream& Stream); //Create a value from a stream
-		void Write(std::ostream& Stream) const; //Write a value to a stream
+		bool Read(std::istream& Stream); //Create a value from a stream
+		bool Write(std::ostream& Stream) const; //Write a value to a stream
 
 		static size_t DefaultStringReserveLength; //the default string reservation length (in chars) - Defaults to 32
 
 		//Helper methods
 
-		inline void WriteToFile(const std::string& FileName)
+		inline bool WriteToFile(const std::string& FileName)
 		{
 			std::ofstream fout(FileName, std::ios::out);
-			Write(fout);
-			fout.close();
-		}
-
-		//Load a value automatically from a file
-		static inline Value FromFile(const std::string& FileName)
-		{
-			std::ifstream fin (FileName, std::ios::in);
-			Value v;
-			v.Read(fin);
-			fin.close();
-			return v;
+			if (fout.is_open())
+			{
+				Write(fout);
+				fout.close();
+				return true;
+			}
+			return false;
 		}
 
 	protected:
 		Types type;
-		Variant<std::nullptr_t, bool, integer, decimal, std::string, Object, Array> value;
+		VariantBuffer<std::nullptr_t, bool, integer, decimal, std::string, Object, Array> value;
 
 		//Delete any old values and reset it to the default
 		void Reset();

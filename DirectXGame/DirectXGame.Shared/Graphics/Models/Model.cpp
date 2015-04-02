@@ -28,7 +28,15 @@ void Model::Draw(unsigned Slot) const
 	//Draw all of the meshes
 	for (auto& m : meshes)
 	{
-		m.material.texture->Apply();
+		if (m.material.shader != nullptr)
+		{
+			m.material.shader->material.data = m.material;
+			m.material.shader->Update();
+			m.material.shader->Apply();
+		}
+		if (m.material.diffuseMap != nullptr)
+			m.material.diffuseMap->Apply();
+
 		//Draw the objects.
 		devContext->DrawIndexed((unsigned)m.IndexCount(), (unsigned)m.StartIndex(), 0);
 	}

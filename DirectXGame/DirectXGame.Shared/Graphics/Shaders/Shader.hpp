@@ -23,7 +23,7 @@ template <ShaderProgramType Ty>
 class ShaderProgram : public ShaderProgramBase
 {
 public:
-	ShaderProgram() : devContext(nullptr), shader(nullptr) { }
+	ShaderProgram() { }
 	ShaderProgram(const DeviceResourcesPtr& DeviceResources, const std::vector<uint8_t>& ShaderByteCode) //Create a shader, from bytecode
 		: devContext(DeviceResources->GetD3DDeviceContext())
 	{

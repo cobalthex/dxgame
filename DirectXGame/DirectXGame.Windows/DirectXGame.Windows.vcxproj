@@ -110,6 +110,9 @@
       <DisableSpecificWarnings>4453;28204;4996</DisableSpecificWarnings>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <FxCompile>
+      <ObjectFileOutput>$(OutDir)Content/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Link>
@@ -123,6 +126,9 @@
       <DisableSpecificWarnings>4453;28204;4996</DisableSpecificWarnings>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <FxCompile>
+      <ObjectFileOutput>$(OutDir)Content/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Link>
@@ -136,6 +142,9 @@
       <DisableSpecificWarnings>4453;28204;4996</DisableSpecificWarnings>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <FxCompile>
+      <ObjectFileOutput>$(OutDir)Content/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Link>
@@ -149,6 +158,9 @@
       <DisableSpecificWarnings>4453;28204;4996</DisableSpecificWarnings>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <FxCompile>
+      <ObjectFileOutput>$(OutDir)Content/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
@@ -162,6 +174,9 @@
       <DisableSpecificWarnings>4453;28204;4996</DisableSpecificWarnings>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <FxCompile>
+      <ObjectFileOutput>$(OutDir)Content/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
@@ -175,6 +190,9 @@
       <DisableSpecificWarnings>4453;28204;4996</DisableSpecificWarnings>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <FxCompile>
+      <ObjectFileOutput>$(OutDir)Content/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Image Include="Assets\Logo.png" />

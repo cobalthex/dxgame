@@ -76,8 +76,10 @@ namespace Osl
 		std::set<std::string> attributes; //optional attributes (key only)
 		std::map<std::string, ValueList> properties; //all properties in this object
 
-		virtual void Read(std::istream& Stream) override; //Create a value from a stream
-		virtual void Write(std::ostream& Stream) const override; //Write a value to a stream
+		virtual bool Read(std::istream& Stream) override; //Create a value from a stream
+		virtual bool Write(std::ostream& Stream) const override; //Write a value to a stream
+
+		inline bool Contains(const std::string& Key) const { return (properties.find(Key) != properties.end()); } //Does this object contain the specified property?
 
 		inline ValueList& operator [](const std::string& Key) { return properties.at(Key); }
 		inline const ValueList& operator [](const std::string& Key) const { return properties.at(Key); }
@@ -97,30 +99,41 @@ namespace Osl
 	class Document : public ISerializable
 	{
 	public:
-		std::map<std::string, Object> objects;
-
-		virtual void Read(std::istream& Stream) override; //Create a value from a stream
-		virtual void Write(std::ostream& Stream) const override; //Write a value to a stream
-
-		inline void WriteToFile(const std::string& FileName)
-		{
-			std::ofstream fout(FileName, std::ios::out);
-			Write(fout);
-			fout.close();
-		}
-
-		//Load a value automatically from a file
-		static inline Document FromFile(const std::string& FileName)
+		Document(const std::string& FileName)
 		{
 			std::ifstream fin(FileName, std::ios::in);
-			Document d;
-			d.Read(fin);
-			fin.close();
-			return d;
+			if (fin.is_open())
+			{
+				Read(fin);
+				fin.close();
+			}
 		}
 
-		inline Object& operator [](const std::string& Key) { return objects.at(Key); }
-		inline const Object& operator [](const std::string& Key) const { return objects.at(Key); }
+		std::map<std::string, Object> objects;
+
+		virtual bool Read(std::istream& Stream) override; //Create a value from a stream
+		virtual bool Write(std::ostream& Stream) const override; //Write a value to a stream
+
+		//Write this document to a file
+		inline bool WriteToFile(const std::string& FileName)
+		{
+			std::ofstream fout(FileName, std::ios::out);
+			if (fout.is_open())
+			{
+				Write(fout);
+				fout.close();
+				return true;
+			}
+			return false;
+		}
+
+		inline bool Contains(const std::string& Key) const { return (objects.find(Key) != objects.end()); } //Does this document contain the specified object?
+		inline bool IsEmpty() const { return objects.size() < 1; } //Does this document have any objects. Useful to test if FromFile or Read failed
+
+		inline Object& operator [](const std::string& Key) { return objects.at(Key); } //Return a mutable object from this document
+		inline const Object& operator [](const std::string& Key) const { return objects.at(Key); } //Return a const object from this document
+
+		inline Document& operator + (const Document& Doc) { objects.insert(Doc.objects.begin(), Doc.objects.end()); } //Append this document with the objects of another. Duplicates are ignored
 
 		void ConvertAllReferences(); //convert all reference strings to reference strings to pointers
 	};
@@ -176,12 +189,12 @@ namespace Osl
 
 		//Serializers
 
-		virtual void Read(std::istream& Stream) override; //Create a value from a stream
-		virtual void Write(std::ostream& Stream) const override; //Write a value to a stream
+		virtual bool Read(std::istream& Stream) override; //Create a value from a stream
+		virtual bool Write(std::ostream& Stream) const override; //Write a value to a stream
 
 	protected:
 		Types type;
-		Variant<std::nullptr_t, bool, integer, decimal, std::string, Date, Time, Object, Reference, Types> value;
+		VariantBuffer<std::nullptr_t, bool, integer, decimal, std::string, Date, Time, Object, Reference, Types> value;
 
 		//Delete any old values and reset it to the default
 		void Reset();

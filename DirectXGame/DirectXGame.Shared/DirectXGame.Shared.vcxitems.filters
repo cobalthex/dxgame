@@ -29,6 +29,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColorShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureCache.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)App\SystemSettings.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\Helpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
@@ -49,7 +51,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Lighting.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Skinning.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\ChaseCamera.hpp" />
@@ -84,6 +85,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderStructures.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColorShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureCache.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Material.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)App\SystemSettings.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf" />

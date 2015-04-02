@@ -3,6 +3,8 @@
 #include "IqmLoader.hpp"
 #include "Common/SimpleMath.hpp"
 #include "Graphics/Shaders/ShaderStructures.hpp"
+#include "Data/Formats/Osl/Osl.hpp"
+#include "App/SystemSettings.hpp"
 
 using namespace DirectX::SimpleMath;
 
@@ -58,7 +60,7 @@ void CleanupTemp(IqmTemp& Temp)
 	delete[] Temp.genJoints;
 }
 
-bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, TextureCache& TexCache, const std::string& Filename, __out::Model& mdl)
+bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Filename, TextureCache& TexCache, const std::shared_ptr<Shaders::LitSkinnedShader>& Shader, __out Model& Mdl)
 {
 	const char* fn = Filename.c_str();
 	FILE* f = nullptr;
@@ -99,6 +101,10 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, TextureCache& TexCache
 		return false;
 
 	//Create model from generated data
+
+	auto fp = Filename.find_last_of('/') + 1;
+	auto matFile = CombinePaths(SystemSettings::BaseContentFolder, SystemSettings::BaseMaterialsFolder, Filename.substr(fp, Filename.find_last_of('.') - fp) + ".matl");
+	Osl::Document doc(matFile);
 
 	std::vector<::ModelMesh> meshes; meshes.reserve(tmp.header.numMeshes);
 	std::vector<::Model::VertexType> vertices;
@@ -152,16 +158,12 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, TextureCache& TexCache
 		}
 
 		//material
-		std::string texFile = "Content/" + std::string(tmp.texts + m.material);
-		Material mat;
-		mat.texture = TexCache.Load(texFile);
-		mat.useTexture = (mat.texture != nullptr);
-		mat.emissive = ::Color(0, 0, 0, 1);
-		mat.ambient = ::Color(1, 1, 1, 1);
-		mat.diffuse = ::Color(1, 1, 1, 1);
-		mat.specular = ::Color(1, 1, 1, 1);
-		mat.specularPower = 1;
 
+		Materials::LitSkinnedMaterial mat;
+		std::string matStr (tmp.texts + m.material);
+		if (doc.Contains(matStr))
+			mat = Materials::LitSkinnedMaterial(TexCache, doc[matStr], Shader);
+		
 		meshes.emplace_back(m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat);
 	}
 
@@ -187,9 +189,9 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, TextureCache& TexCache
 		sequences[pname] = s;
 	}
 
-	mdl = Model(DeviceResources, vertices, indices, PrimitiveTopology::List, meshes, std::vector<::Joint>(tmp.genJoints, tmp.genJoints + tmp.header.numJoints), sequences);
+	Mdl = Model(DeviceResources, vertices, indices, PrimitiveTopology::List, meshes, std::vector<::Joint>(tmp.genJoints, tmp.genJoints + tmp.header.numJoints), sequences);
 	if (tmp.header.numAnims > 0)
-		mdl.pose = std::string(tmp.texts + tmp.anims[0].name);
+		Mdl.pose = std::string(tmp.texts + tmp.anims[0].name);
 
 	CleanupTemp(tmp);
 	return true;

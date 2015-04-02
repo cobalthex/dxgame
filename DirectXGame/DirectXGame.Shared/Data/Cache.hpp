@@ -15,8 +15,8 @@ public:
 
 	virtual size_t Count() const { return cache.size(); }
 
-	virtual CacheItem& Load(const KeyType& Key) = 0; //Load an item from the cache (and fetch it if it does not exist)
-	virtual CacheItem& Add(const KeyType& Key, const CacheItem& Item) { cache[Key] = Item; return cache[Key]; } //Add an existing item to the cache
+	virtual CacheItem Load(const KeyType& Key) = 0; //Load an item from the cache (and fetch it if it does not exist)
+	virtual CacheItem Add(const KeyType& Key, const CacheItem& Item) { cache[Key] = Item; return cache[Key]; } //Add an existing item to the cache
 
 	virtual bool Has(const KeyType& Key) const { return (cache.find(Key) != cache.end()); }
 

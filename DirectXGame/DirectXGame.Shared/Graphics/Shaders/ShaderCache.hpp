@@ -17,7 +17,7 @@ public:
 	ShaderCache(const DeviceResourcesPtr& DeviceResources) : deviceResources(DeviceResources) { }
 	virtual ~ShaderCache() { }
 
-	virtual std::shared_ptr<Shader>& Load(const ShaderType& Key) override;
+	virtual std::shared_ptr<Shader> Load(const ShaderType& Key) override;
 
 protected:
 	DeviceResourcesPtr deviceResources;

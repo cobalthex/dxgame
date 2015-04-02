@@ -11,17 +11,17 @@ using namespace DirectX::SimpleMath;
 typedef ComPtr<ID3D11InputLayout> InputLayout;
 
 //A basic world view projection matrix
-struct WVPConstantBufferDef : public ConstantBufferDef
+struct WVPBufferDef : public ConstantBufferDef
 {
 	Matrix wvp; //World * View * Projection matrix
 
-	WVPConstantBufferDef() : wvp() { }
-	WVPConstantBufferDef(const Matrix& WorldViewProjection) : wvp(WorldViewProjection) { }
-	WVPConstantBufferDef(const Matrix& World, const Matrix& View, const Matrix& Projection) : wvp((Projection * View) * World) { }
+	WVPBufferDef() { }
+	WVPBufferDef(const Matrix& WorldViewProjection) : wvp(WorldViewProjection) { }
+	WVPBufferDef(const Matrix& World, const Matrix& View, const Matrix& Projection) : wvp((Projection * View) * World) { }
 };
 
 //A constant buffer with basic information specific to a single object
-struct ObjectConstantBufferDef : public ConstantBufferDef
+struct ObjectBufferDef : public ConstantBufferDef
 {
 	Matrix world;
 	Matrix inverseTransposeWorld;

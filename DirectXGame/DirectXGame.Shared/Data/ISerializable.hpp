@@ -5,8 +5,8 @@
 //Provides basic input/output guarentees for serializablility
 struct ISerializable
 {
-	virtual void Read(std::istream& Stream) = 0; //Read from a stream
-	virtual void Write(std::ostream& Stream) const = 0; //Write to a stream
+	virtual bool Read(std::istream& Stream) = 0; //Read from a stream
+	virtual bool Write(std::ostream& Stream) const = 0; //Write to a stream
 };
 
 inline std::istream& operator >> (std::istream& Stream, ISerializable& Value) { Value.Read(Stream); return Stream; }

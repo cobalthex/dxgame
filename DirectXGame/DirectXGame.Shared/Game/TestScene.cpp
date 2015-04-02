@@ -96,7 +96,7 @@ void TestScene::CreateDeviceDependentResources()
 	//Once both shaders are loaded, create the mesh.
 	auto loadModelTask = Concurrency::create_task([this]()
 	{
-		Iqm::Load(deviceResources, texCache, "Content/test.iqm", iqm);
+		Iqm::Load(deviceResources, "Content/Models/mrfixit.iqm", texCache, lsShader, iqm);
 		iqmSkel = Mesh::Create(deviceResources, iqm.CreateSkeletalMesh(Color(1, 0.6f, 0, 0)), true);
 
 		timeline.Add(&iqm.poses[iqm.pose]);
@@ -181,15 +181,17 @@ void TestScene::Render()
 	lsShader->object.Update();
 
 	iqm.Bind();
-	for (auto& mesh : iqm.meshes)
+	/*for (auto& mesh : iqm.meshes)
 	{
-		lsShader->material.data.FillFromMaterial(mesh.material);
+		lsShader->material.data = mesh.material;
 		lsShader->material.Update();
+		
+		if (mesh.material.diffuseMap != nullptr)
+			mesh.material.diffuseMap->Apply();
 
-		if (mesh.material.texture != nullptr)
-			mesh.material.texture->Apply();
 		context->DrawIndexed((unsigned)mesh.IndexCount(), (unsigned)mesh.StartIndex(), 0);
-	}
+	}*/
+	iqm.Draw();
 
 	context->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1, 0);
 

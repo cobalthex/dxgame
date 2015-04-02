@@ -1,8 +1,17 @@
-LitSkinnedShader head
+LitSkinnedShader Body.dds
 {
-	diffuse: 255 255 255 255;
-	ambient: 255 255 255 255;
-	emissive: 0 0 0 0;
-	specular: 255 255 255 255 500; //r g b a pow
-	diffmap: "test.png";
+	diffuse: 0;
+	ambient: 1 1 1 1;
+	emissive: 0;
+	specular: 0; //r g b a pow
+	diffmap: "Body.dds";
+}
+
+LitSkinnedShader Head.dds
+{
+	diffuse: 1.0 1.0 1.0 1.0;
+	ambient: 0 0 0 0;
+	emissive: 1 1 1;
+	specular: 1.0 1.0 1.0 1.0 500; //r g b a pow
+	diffmap: "Head.dds";
 }

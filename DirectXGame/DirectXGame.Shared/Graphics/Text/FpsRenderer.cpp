@@ -2,6 +2,7 @@
 #include "FpsRenderer.hpp"
 #include "Common/PlatformHelpers.hpp"
 #include "DWriteFontCollectionLoader.hpp"
+#include "App/SystemSettings.hpp"
 
 using namespace DirectXGame;
 
@@ -13,8 +14,7 @@ FpsRenderer::FpsRenderer(const std::shared_ptr<DeviceResources>& DeviceResources
 
 	ComPtr<IDWriteFactory> dwFactory = deviceResources->GetDWriteFactory();
 
-	std::wstring fontFilename (Sys::GetWorkingDirectory());
-	fontFilename.append(std::wstring(L"\\Content\\Fonts\\DebugFixed\\DebugFixed.ttf"));
+	auto fontFilename = CombinePaths(Sys::GetWorkingDirectory(), ToWString(StringReplace(SystemSettings::GetFontFile("DebugFixed/DebugFixed.ttf"), "/", "\\")));
 
 	ComPtr<IDWriteFontCollectionLoader> pCollectionLoader = new DWriteFontCollectionLoader(fontFilename.data());
 	Sys::ThrowIfFailed(dwFactory->RegisterFontCollectionLoader(pCollectionLoader.Get()));

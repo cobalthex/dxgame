@@ -69,7 +69,7 @@ void Value::Reset()
 	type = Types::Invalid;
 }
 
-void Value::Read(std::istream& Stream)
+bool Value::Read(std::istream& Stream)
 {
 	auto type = GuessType(Stream);
 	char ch = 0;
@@ -103,6 +103,9 @@ void Value::Read(std::istream& Stream)
 
 		while (((ch = Stream.peek()) >= '0' && ch <= '9') || ch == 'e' || ch == 'E')
 		{
+			if (Stream.eof())
+				return false;
+
 			s += ch;
 			Stream.get();
 		}
@@ -117,6 +120,9 @@ void Value::Read(std::istream& Stream)
 
 		while (((ch = Stream.peek()) >= '0' && ch <= '9') || ch == 'e' || ch == 'E' || ch == '.')
 		{
+			if (Stream.eof())
+				return false;
+
 			s += ch;
 			Stream.get();
 		}
@@ -135,6 +141,9 @@ void Value::Read(std::istream& Stream)
 		ch = Stream.get(); //(supports single quotes)
 		while (ch != oq)
 		{
+			if (Stream.eof())
+				return false;
+
 			if (ch == '\\') //escape character
 			{
 				//parse unicode quads
@@ -186,8 +195,11 @@ void Value::Read(std::istream& Stream)
 	{
 		Object properties;
 		Stream.get(); //read {
-		while (!Stream.eof() && Stream.peek() != '}')
+		while (Stream.peek() != '}')
 		{
+			if (Stream.eof())
+				return false;
+
 			SkipWhitespace(Stream);
 			//skip comma
 			if (Stream.peek() == ',')
@@ -232,8 +244,11 @@ void Value::Read(std::istream& Stream)
 	{
 		Array values;
 		Stream.get(); //read [
-		while (!Stream.eof() && Stream.peek() != ']')
+		while (Stream.peek() != ']')
 		{
+			if (Stream.eof())
+				return false;
+
 			SkipWhitespace(Stream);
 			//skip comma
 			if (Stream.peek() == ',')
@@ -257,8 +272,9 @@ void Value::Read(std::istream& Stream)
 	break;
 
 	}
+	return true;
 }
-void Value::Write(std::ostream& Stream) const
+bool Value::Write(std::ostream& Stream) const
 {
 	std::string out;
 	switch (type)
@@ -335,6 +351,7 @@ void Value::Write(std::ostream& Stream) const
 	}
 	break;
 	}
+	return true;
 }
 
 

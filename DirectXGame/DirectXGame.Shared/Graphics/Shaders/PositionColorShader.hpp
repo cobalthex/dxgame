@@ -20,7 +20,7 @@ namespace Shaders
 			static const unsigned ElementCount;
 		};
 
-		PositionColorShader() : vshader(), pshader(), inputLayout(nullptr), wvp() { }
+		PositionColorShader() { }
 		PositionColorShader(const DeviceResourcesPtr& DeviceResources);
 
 		inline void Apply() override
@@ -39,7 +39,7 @@ namespace Shaders
 
 		InputLayout inputLayout;
 
-		ConstantBuffer<WVPConstantBufferDef> wvp; //world view projection buffer
+		ConstantBuffer<WVPBufferDef> wvp; //world view projection buffer
 
 		VertexShader vshader;
 		PixelShader pshader;

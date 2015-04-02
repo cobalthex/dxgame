@@ -24,17 +24,10 @@ bool Texture2D::IsTextureFile(const std::wstring& Extension)
 	);
 }
 
-inline bool EndsWith(const std::wstring& String, const std::wstring& Suffix)
-{
-	if (Suffix.size() > String.size())
-		return false;
-	return std::equal(Suffix.rbegin(), Suffix.rend(), String.rbegin());
-}
-
 Texture2D::Texture2D(const DeviceResourcesPtr& DeviceResources, const std::wstring& File, bool AllowWrites)
 	: Texture(DeviceResources, nullptr)
 {
-	if (EndsWith(File, L".dds")) //load with DDS loader
+	if (StringEndsWith(File, L".dds")) //load with DDS loader
 	{
 		ID3D11Resource* tex;
 		Sys::ThrowIfFailed

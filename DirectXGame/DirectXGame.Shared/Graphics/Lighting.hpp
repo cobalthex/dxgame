@@ -31,7 +31,7 @@ CBUFFER_ALIGN struct Light
 	bool isEnabled = false;
 };
 
-struct LightConstantBufferDef : public ConstantBufferDef
+struct LightBufferDef : public ConstantBufferDef
 {
 	Vector4 eyePosition;
 	Color globalAmbience;

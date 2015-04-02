@@ -27,7 +27,7 @@ void Osl::SkipComments(std::istream& Stream)
 	}
 }
 
-void Object::Read(std::istream& Stream)
+bool Object::Read(std::istream& Stream)
 {
 	//read first word
 	SkipNonValues(Stream);
@@ -63,7 +63,7 @@ void Object::Read(std::istream& Stream)
 	while ((pk = Stream.peek()) != '}')
 	{
 		if (Stream.eof())
-			return;
+			return false;
 
 		SkipNonValues(Stream);
 
@@ -72,7 +72,7 @@ void Object::Read(std::istream& Stream)
 		while ((pk = Stream.get()) != ':')
 		{
 			if (Stream.eof())
-				throw "Invalid OSL object format";
+				return false;
 			prop += pk;
 		}
 
@@ -84,10 +84,11 @@ void Object::Read(std::istream& Stream)
 		while ((pk = Stream.peek()) != ';' && (pk != '}'))
 		{
 			if (Stream.eof())
-				return;
+				return false;
 
 			Value v;
-			v.Read(Stream);
+			if (!v.Read(Stream))
+				return false;
 			properties[prop].push_back(v);
 			SkipNonValues(Stream);
 		}
@@ -95,19 +96,21 @@ void Object::Read(std::istream& Stream)
 		SkipNonValues(Stream);
 	}
 	Stream.get(); // }
+
+	return true;
 }
 
 void Object::ReadAttributes(std::istream& Stream)
 {
 	SkipNonValues(Stream);
-	while (Stream.peek() != '{')
+	while (!Stream.eof() && Stream.peek() != '{')
 	{
 		attributes.insert(ReadWord(Stream));
 		SkipNonValues(Stream);
 	}
 }
 
-void Object::Write(std::ostream& Stream) const
+bool Object::Write(std::ostream& Stream) const
 {
 	bool written = false; //for writing minimal string
 	if (type.size() > 0)
@@ -155,9 +158,11 @@ void Object::Write(std::ostream& Stream) const
 		Stream.put(';');
 	}
 	Stream.put('}');
+
+	return true;
 }
 
-void Document::Read(std::istream& Stream)
+bool Document::Read(std::istream& Stream)
 {
 	bool open = ((std::ifstream*)&Stream)->is_open();
 	SkipWhitespace(Stream);
@@ -170,12 +175,16 @@ void Document::Read(std::istream& Stream)
 		objects[o.name] = o;
 		SkipNonValues(Stream); //necessary to make sure not trailing empty space
 	}
+
+	return true;
 }
 
-void Document::Write(std::ostream& Stream) const
+bool Document::Write(std::ostream& Stream) const
 {
 	for (auto& o : objects)
 		o.second.Write(Stream);
+
+	return true;
 }
 
 void Document::ConvertAllReferences()
@@ -291,7 +300,7 @@ void Value::Reset()
 	}
 }
 
-void Value::Read(std::istream& Stream)
+bool Value::Read(std::istream& Stream)
 {
 	auto ty = GuessType(Stream);
 	char ch = 0;
@@ -325,6 +334,9 @@ void Value::Read(std::istream& Stream)
 
 		while (((ch = Stream.peek()) >= '0' && ch <= '9') || ch == 'e' || ch == 'E')
 		{
+			if (Stream.eof())
+				return false;
+
 			s += ch;
 			Stream.get();
 		}
@@ -339,6 +351,9 @@ void Value::Read(std::istream& Stream)
 
 		while (((ch = Stream.peek()) >= '0' && ch <= '9') || ch == 'e' || ch == 'E' || ch == '.')
 		{
+			if (Stream.eof())
+				return false;
+
 			s += ch;
 			Stream.get();
 		}
@@ -356,8 +371,11 @@ void Value::Read(std::istream& Stream)
 		{
 			char oq = Stream.get();
 			ch = Stream.get(); //(supports single quotes)
-			while (!Stream.eof() && ch != oq)
+			while (ch != oq)
 			{
+				if (Stream.eof())
+					return false;
+
 				if (ch == '\\') //escape character
 				{
 					//parse unicode quads
@@ -412,17 +430,32 @@ void Value::Read(std::istream& Stream)
 	{
 		Date d;
 
-		while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+		while ((ch = Stream.peek()) >= '0' && ch <= '9')
+		{
+			if (Stream.eof())
+				return false;
+			s += Stream.get();
+		}
 		d.year = strtoul(s.data(), nullptr, 10);
 		Stream.get();
 
 		s.clear();
-		while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+		while ((ch = Stream.peek()) >= '0' && ch <= '9')
+		{
+			if (Stream.eof())
+				return false;
+			s += Stream.get();
+		}
 		d.month = strtoul(s.data(), nullptr, 10);
 		Stream.get();
 
 		s.clear();
-		while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+		while ((ch = Stream.peek()) >= '0' && ch <= '9')
+		{
+			if (Stream.eof())
+				return false;
+			s += Stream.get();
+		}
 		d.day = strtoul(s.data(), nullptr, 10);
 
 		operator=(d);
@@ -431,17 +464,32 @@ void Value::Read(std::istream& Stream)
 
 	case Types::Time:
 	{
-		while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+		while ((ch = Stream.peek()) >= '0' && ch <= '9')
+		{
+			if (Stream.eof())
+				return false;
+			s += Stream.get();
+		}
 		unsigned hr = strtoul(s.data(), nullptr, 10);
 		Stream.get();
 
 		s.clear();
-		while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+		while ((ch = Stream.peek()) >= '0' && ch <= '9')
+		{
+			if (Stream.eof())
+				return false;
+			s += Stream.get();
+		}
 		unsigned min = strtoul(s.data(), nullptr, 10);
 		Stream.get();
 
 		s.clear();
-		while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+		while ((ch = Stream.peek()) >= '0' && ch <= '9')
+		{
+			if (Stream.eof())
+				return false;
+			s += Stream.get();
+		}
 		unsigned sec = strtoul(s.data(), nullptr, 10);
 
 		unsigned ms = 0;
@@ -450,7 +498,12 @@ void Value::Read(std::istream& Stream)
 			Stream.get();
 
 			s.clear();
-			while ((ch = Stream.peek()) >= '0' && ch <= '9') s += Stream.get();
+			while ((ch = Stream.peek()) >= '0' && ch <= '9')
+			{
+				if (Stream.eof())
+					return false;
+				s += Stream.get();
+			}
 			ms = strtoul(s.data(), nullptr, 10);
 		}
 
@@ -467,7 +520,8 @@ void Value::Read(std::istream& Stream)
 	case Types::Object:
 	{
 		Object o;
-		o.Read(Stream);
+		if (!o.Read(Stream))
+			return false;
 		operator=(o);
 	}
 	break;
@@ -514,8 +568,9 @@ void Value::Read(std::istream& Stream)
 		break;
 
 	}
+	return true;
 }
-void Value::Write(std::ostream& Stream) const
+bool Value::Write(std::ostream& Stream) const
 {
 	std::string out;
 	switch (type)
@@ -582,8 +637,7 @@ void Value::Write(std::ostream& Stream) const
 	break;
 
 	case Types::Object:
-		((Object*)value)->Write(Stream);
-		break;
+		return ((Object*)value)->Write(Stream);
 
 	case Types::Reference:
 		Stream.put('@');
@@ -615,6 +669,7 @@ void Value::Write(std::ostream& Stream) const
 		}
 		break;
 	}
+	return true;
 }
 
 std::string Value::EscapeQuotes(std::string String)
