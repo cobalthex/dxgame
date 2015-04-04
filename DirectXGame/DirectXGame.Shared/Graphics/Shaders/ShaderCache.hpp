@@ -8,6 +8,7 @@ enum class ShaderType
 {
 	Unknown,
 	PositionColor,
+	Lit,
 	LitSkinned
 };
 

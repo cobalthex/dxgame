@@ -52,6 +52,8 @@ inline float OslValueToFloat(const Osl::Value& Value)
 	default: return 0;
 	}
 }
+LitMaterial::LitMaterial(const std::shared_ptr<Shaders::LitShader>& Shader)
+	: Material(Shader) { }
 LitMaterial::LitMaterial(TextureCache& TexCache, const Osl::Object& MaterialObject, const std::shared_ptr<Shaders::LitShader>& Shader)
 	: Material(Shader)
 {

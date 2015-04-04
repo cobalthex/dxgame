@@ -94,6 +94,8 @@ void TestScene::CreateDeviceDependentResources()
 	lsShader->lighting.data.globalAmbience = Color(0, 0, 0, 0);
 	lsShader->lighting.Update();
 
+	CreateStage();
+
 	//Once both shaders are loaded, create the mesh.
 	auto loadModelTask = Concurrency::create_task([this]()
 	{
@@ -115,6 +117,7 @@ void TestScene::CreateStage(float Radius)
 	StaticModel::VertexType v;
 	v.position = Vector3(-Radius, 0, -Radius);
 	v.texCoord = Vector2(0, 0);
+	v.color = DirectX::PackedVector::XMUBYTEN4(0.5f, 0.5f, 0.5f, 1);
 	v.normal = Vector3::Up;
 	verts.push_back(v);
 	
@@ -133,7 +136,8 @@ void TestScene::CreateStage(float Radius)
 	static const std::vector<unsigned> indices = { 0, 1, 2, 3 };
 
 	std::vector<ModelMesh<Materials::LitMaterial>> meshes;
-	Materials::LitMaterial mat;
+	auto& sh = shCache.Load(ShaderType::Lit);
+	Materials::LitMaterial mat (std::static_pointer_cast<Shaders::LitShader>(sh));
 	meshes.emplace_back(0, 4, 0, 4, mat);
 
 	stage = StaticModel(deviceResources, verts, indices, PrimitiveTopology::TriangleStrip, meshes);
@@ -199,29 +203,20 @@ void TestScene::Render()
 		return;
 
 	auto context = deviceResources->GetD3DDeviceContext();
+	context->RSSetState(nullptr);
+
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	stage.meshes[0].material.shader->Apply();
+	stage.meshes[0].material.shader->Update();
+	stage.Draw();
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	
-	context->RSSetState(nullptr);
-	context->IASetInputLayout(inputLayout.Get());
-
 	lsShader->SetInputLayout();
 	lsShader->Apply();
 
 	iqm.Skin(lsShader->object.data.joints);
 	lsShader->object.Update();
 
-	iqm.Bind();
-	/*for (auto& mesh : iqm.meshes)
-	{
-		lsShader->material.data = mesh.material;
-		lsShader->material.Update();
-		
-		if (mesh.material.diffuseMap != nullptr)
-			mesh.material.diffuseMap->Apply();
-
-		context->DrawIndexed((unsigned)mesh.IndexCount(), (unsigned)mesh.StartIndex(), 0);
-	}*/
 	iqm.Draw();
 
 	context->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1, 0);

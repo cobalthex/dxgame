@@ -33,7 +33,7 @@ void StaticModel::Draw(unsigned Slot) const
 		if (m.material.diffuseMap != nullptr)
 			m.material.diffuseMap->Apply();
 
-		//Draw the objects.
+		//draw each mesh
 		devContext->DrawIndexed((unsigned)m.IndexCount(), (unsigned)m.StartIndex(), 0);
 	}
 }

@@ -38,7 +38,6 @@ namespace DirectXGame
 		std::shared_ptr<Shaders::LitSkinnedShader> lsShader;
 		std::shared_ptr<Shaders::PositionColorShader> pcShader;
 
-		ComPtr<ID3D11InputLayout>	inputLayout;
 		ComPtr<ID3D11SamplerState>	sampler;
 		ComPtr<ID3D11RasterizerState> wireRasterizer;
 

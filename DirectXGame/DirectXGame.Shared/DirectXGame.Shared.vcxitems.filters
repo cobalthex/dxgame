@@ -28,11 +28,11 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColorShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureCache.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinnedShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\SystemSettings.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\Helpers.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitShader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinnedShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -87,34 +87,33 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColorShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Material.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)App\SystemSettings.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Primitives.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinnedShader.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)App\SystemSettings.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitShader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lighting.hlsli" />
+    <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Skinning.hlsli" />
     <None Include="$(MSBuildThisFileDirectory)Content\Models\mrfixit.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Content\Models\ship.iqm" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Models\sword.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Content\Materials\mrfixit.matl" />
-    <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Skinning.hlsli" />
-    <None Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.hp%3bp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\license.txt" />
-    <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Body.dds" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Ground.dds" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Head.dds" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\license.txt" />
+    <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\readme.txt" />
   </ItemGroup>
 </Project>

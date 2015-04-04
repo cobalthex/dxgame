@@ -18,7 +18,8 @@ namespace Materials
 	{
 	public:
 		LitMaterial() : Material(nullptr) { }
-		LitMaterial(TextureCache& TexCache, const Osl::Object& MaterialObject, const std::shared_ptr<Shaders::LitShader>& Shader = nullptr);
+		LitMaterial(const std::shared_ptr<Shaders::LitShader>& Shader);
+		LitMaterial(TextureCache& TexCache, const Osl::Object& MaterialObject, const std::shared_ptr<Shaders::LitShader>& Shader);
 
 		Color emissive;
 		Color ambient;
