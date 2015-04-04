@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Graphics/Shaders/LitSkinnedShader.hpp"
-
 //3D boundaries for models
 struct Bounds
 {
@@ -12,11 +10,12 @@ struct Bounds
 };
 
 //A mesh that is part of a model. Contains information about its vertices, indices, and contains a material. Does not inherit from Mesh
+template <class MaterialType>
 class ModelMesh
 {
 public:
 	ModelMesh() : startVertex(0), vertexCount(0), startIndex(0), indexCount(0), material() { }
-	ModelMesh(size_t StartVertex, size_t VertexCount, size_t StartIndex, size_t IndexCount, const Materials::LitSkinnedMaterial& Material)
+	ModelMesh(size_t StartVertex, size_t VertexCount, size_t StartIndex, size_t IndexCount, const MaterialType& Material)
 		: startVertex(StartVertex), vertexCount(VertexCount), startIndex(StartIndex), indexCount(IndexCount), material(Material) { }
 
 	inline size_t StartVertex() const { return startVertex; } //The first vertex of this mesh in the model which owns it
@@ -24,7 +23,7 @@ public:
 	inline size_t StartIndex() const { return startIndex; } //The first index of this mesh in the model which owns it
 	inline size_t IndexCount() const { return indexCount; } //The number of indices in this mesh
 
-	Materials::LitSkinnedMaterial material;
+	MaterialType material;
 
 protected:
 	size_t startVertex, vertexCount;

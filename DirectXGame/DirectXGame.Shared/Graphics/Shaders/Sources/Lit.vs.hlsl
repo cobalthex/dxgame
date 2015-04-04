@@ -1,5 +1,3 @@
-#include "Skinning.hlsli"
-
 cbuffer WorldBuffer : register(b0)
 {
 	matrix World;
@@ -16,8 +14,6 @@ struct VertexShaderInput
 	float4 tangent : TANGENT;
 	float2 texCoord : TEXCOORD;
 	float4 color : COLOR;
-	uint4 blendIndices : BLENDINDICES;
-	float4 blendWeights : BLENDWEIGHT;
 };
 
 //Per-pixel color data passed through the pixel shader
@@ -35,11 +31,6 @@ PixelShaderInput main(VertexShaderInput input)
 {
 	PixelShaderInput output;
 	float4 position = float4(input.position, 1.0f);
-	float4x3 skin = Skin(joints, input.blendWeights, input.blendIndices);
-
-	position.xyz = mul(position, skin);
-	input.normal.xyz = mul(input.normal.xyz, (float3x3)skin);
-	input.tangent.xyz = mul(input.tangent.xyz, (float3x3)skin);
 
 	//Transform the vertex position into projected space
 

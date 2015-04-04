@@ -8,12 +8,13 @@
 #include "ModelMesh.hpp"
 #include "Mesh.hpp"
 
-//A basic model. Contains a group of meshes and a skeleton
+//An animated model. Contains a group of meshes and a skeleton
 class Model : public Mesh
 {
 public:
 	typedef Shaders::LitSkinnedShader::Vertex VertexType;
 	typedef unsigned IndexType;
+	typedef ModelMesh<Materials::LitMaterial> MeshType;
 
 	Model()
 		: meshes(), joints(), poses(), devContext(nullptr), Mesh() { }
@@ -23,12 +24,12 @@ public:
 		const std::vector<VertexType>& Vertices, 
 		const std::vector<IndexType>& Indices,
 		PrimitiveTopology Topology,
-		const std::vector<ModelMesh>& Meshes,
+		const std::vector<MeshType>& Meshes,
 		const std::vector<Joint>& Joints,
 		const std::map<std::string, SkinnedSequence> Poses
 	);
 
-	std::vector<ModelMesh> meshes; //All of the model meshes that make up this model
+	std::vector<MeshType> meshes; //All of the model meshes that make up this model
 	std::vector<Joint> joints; //All of the joints connecting the meshes in this model
 	std::map<std::string, SkinnedSequence> poses; //A collection of animated poses
 	std::string pose; //the current pose (maps to poses)

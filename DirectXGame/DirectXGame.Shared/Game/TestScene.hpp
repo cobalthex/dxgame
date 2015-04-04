@@ -2,6 +2,7 @@
 
 #include "Graphics/Renderer.hpp"
 #include "Graphics/Models/Model.hpp"
+#include "Graphics/Models/StaticModel.hpp"
 #include "Graphics/Textures/TextureCache.hpp"
 #include "Graphics/Textures/Texture2D.hpp"
 #include "Graphics/ConstantBuffer.hpp"
@@ -10,8 +11,6 @@
 #include "Common/AlignedStorage.hpp"
 #include "Animation/Timeline.hpp"
 #include "Graphics/Shaders/ShaderCache.hpp"
-#include "Graphics/Shaders/LitSkinnedShader.hpp"
-#include "Graphics/Shaders/PositionColorShader.hpp"
 
 namespace DirectXGame
 {
@@ -33,7 +32,6 @@ namespace DirectXGame
 	private:
 		void Rotate(float Radians);
 
-	private:
 		TextureCache texCache;
 		ShaderCache shCache;
 
@@ -49,6 +47,9 @@ namespace DirectXGame
 		Model iqm;
 		Mesh iqmSkel;
 		Texture2D* tex;
+
+		StaticModel stage;
+		void CreateStage(float Radius = 10);
 
 		Timeline timeline;
 

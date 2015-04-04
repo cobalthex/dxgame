@@ -17,6 +17,7 @@ namespace Osl
 		String, //Quoted strings or single word strings
 		Date,
 		Time,
+		Tuple, //an ordered sequence of values (stored as a vector)
 		Object, //embedded objects do not have names or types (left empty)
 		Reference, //A reference to another property (@object:name, or name if just @local)
 		_ReferenceString, //A referencce to another property, temporarily stored as a string
@@ -94,6 +95,7 @@ namespace Osl
 	typedef double decimal;
 	typedef std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> Time;
 	typedef Object* Reference;
+	typedef std::vector<Value> Tuple;
 
 	//An OSL document
 	class Document : public ISerializable
@@ -141,9 +143,9 @@ namespace Osl
 	//A simple representation of a date
 	struct Date
 	{
-		int year : 2;
-		int month : 1;
-		int day : 1;
+		unsigned year;
+		unsigned month;
+		unsigned day;
 
 		Date() : year(0), month(0), day(0) { }
 	};
@@ -170,6 +172,7 @@ namespace Osl
 		Value& operator = (integer Value);
 		Value& operator = (decimal Value);
 		Value& operator = (const std::string& Value);
+		Value& operator = (const Tuple& Value);
 		Value& operator = (const Object& Value);
 		Value& operator = (const Date& Value);
 		Value& operator = (const Time& Value);
@@ -194,7 +197,7 @@ namespace Osl
 
 	protected:
 		Types type;
-		VariantBuffer<std::nullptr_t, bool, integer, decimal, std::string, Date, Time, Object, Reference, Types> value;
+		VariantBuffer<std::nullptr_t, bool, integer, decimal, std::string, Date, Time, Tuple, Object, Reference, Types> value;
 
 		//Delete any old values and reset it to the default
 		void Reset();

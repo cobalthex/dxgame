@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\LitSkinned.ps.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\LitSkinned.vs.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\PositionColor.ps.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\PositionColor.vs.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lit.vs.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lit.ps.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Sequence.cpp" />
@@ -23,14 +24,16 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\FpsRenderer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Osl\Osl.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinnedShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColorShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\SystemSettings.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\Helpers.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinnedShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
@@ -71,7 +74,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\FpsRenderer.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Osl\Osl.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Events\CallbackCollection.hpp" />
@@ -79,7 +81,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Events\Event.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Events\EventQueue.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\Cache.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinnedShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Shader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderStructures.hpp" />
@@ -87,6 +88,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\SystemSettings.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Primitives.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitShader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinnedShader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf" />
@@ -98,6 +104,8 @@
     <None Include="$(MSBuildThisFileDirectory)Content\Models\ship.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Content\Models\sword.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Content\Materials\mrfixit.matl" />
+    <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Skinning.hlsli" />
+    <None Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.hp%3bp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\license.txt" />

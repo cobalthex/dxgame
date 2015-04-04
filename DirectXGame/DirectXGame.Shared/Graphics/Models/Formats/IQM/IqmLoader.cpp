@@ -106,7 +106,7 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 	auto matFile = CombinePaths(SystemSettings::BaseContentFolder, SystemSettings::BaseMaterialsFolder, Filename.substr(fp, Filename.find_last_of('.') - fp) + ".matl");
 	Osl::Document doc(matFile);
 
-	std::vector<::ModelMesh> meshes; meshes.reserve(tmp.header.numMeshes);
+	std::vector<::ModelMesh<Materials::LitMaterial>> meshes; meshes.reserve(tmp.header.numMeshes);
 	std::vector<::Model::VertexType> vertices;
 	std::vector<unsigned> indices;
 	for (unsigned i = 0; i < tmp.header.numMeshes; i++)
@@ -159,10 +159,10 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 
 		//material
 
-		Materials::LitSkinnedMaterial mat;
+		Materials::LitMaterial mat;
 		std::string matStr (tmp.texts + m.material);
 		if (doc.Contains(matStr))
-			mat = Materials::LitSkinnedMaterial(TexCache, doc[matStr], Shader);
+			mat = Materials::LitMaterial(TexCache, doc[matStr], Shader);
 		
 		meshes.emplace_back(m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat);
 	}
@@ -189,7 +189,7 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 		sequences[pname] = s;
 	}
 
-	Mdl = Model(DeviceResources, vertices, indices, PrimitiveTopology::List, meshes, std::vector<::Joint>(tmp.genJoints, tmp.genJoints + tmp.header.numJoints), sequences);
+	Mdl = Model(DeviceResources, vertices, indices, PrimitiveTopology::TriangleList, meshes, std::vector<::Joint>(tmp.genJoints, tmp.genJoints + tmp.header.numJoints), sequences);
 	if (tmp.header.numAnims > 0)
 		Mdl.pose = std::string(tmp.texts + tmp.anims[0].name);
 

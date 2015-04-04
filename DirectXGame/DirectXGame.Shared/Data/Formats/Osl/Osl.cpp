@@ -76,6 +76,7 @@ bool Object::Read(std::istream& Stream)
 			prop += pk;
 		}
 
+		//trim comments from the property name
 		static const char* commStr = "/*";
 		prop.resize(std::find_end(prop.begin(), prop.end(), commStr, commStr + 2) - prop.begin()); //trim comments at end of string
 		prop.resize(prop.find_last_not_of(WhitespaceCharacters) + 1); //trim end of string
@@ -248,13 +249,6 @@ Value& Value::operator = (const std::string& Value)
 	new (value)std::string(Value);
 	return *this;
 }
-Value& Value::operator = (const Object& Value)
-{
-	Reset();
-	type = Types::Object;
-	new (value)Object(Value);
-	return *this;
-}
 Value& Value::operator = (const Date& Value)
 {
 	Reset();
@@ -267,6 +261,20 @@ Value& Value::operator = (const Time& Value)
 	Reset();
 	type = Types::Time;
 	new (value)Time(Value);
+	return *this;
+}
+Value& Value::operator = (const Tuple& Value)
+{
+	Reset();
+	type = Types::Tuple;
+	new (value)Tuple(Value);
+	return *this;
+}
+Value& Value::operator = (const Object& Value)
+{
+	Reset();
+	type = Types::Object;
+	new (value)Object(Value);
 	return *this;
 }
 Value& Value::operator = (const Reference& Value)
@@ -291,6 +299,8 @@ void Value::Reset()
 	case Types::String:
 	case Types::_ReferenceString:
 		((std::string*)(value))->~basic_string(); break;
+	case Types::Tuple:
+		((Tuple*)(value))->~Tuple(); break;
 	case Types::Object:
 		((Object*)(value))->~Object(); break;
 	case Types::Date:
@@ -365,7 +375,7 @@ bool Value::Read(std::istream& Stream)
 	{
 		char us[5]; //unicode string (first char is u)
 		char lastUni; //last unicode character (for surrogate pairs)
-		bool isLastUni = false;
+		bool isLastUni = false; //was the last character a unicode character (for combining pairs)
 
 		if ((ch = Stream.peek()) == '\'' || ch == '"')
 		{
@@ -517,6 +527,29 @@ bool Value::Read(std::istream& Stream)
 	}
 	break;
 
+	case Types::Tuple:
+	{
+		Tuple values;
+		char ob = Stream.get(); //get opening bracket: ( or [
+		SkipNonValues(Stream);
+		while ((ch = Stream.peek()) != (ob == '(' ? ')' : ']') && ch != ';' && ch != '}')
+		{
+			if (Stream.eof())
+				return false;
+
+			Value v;
+			if (!v.Read(Stream))
+				return false;
+			values.push_back(v);
+
+			SkipNonValues(Stream);
+		}
+		ob = Stream.get(); //get ) or ]
+
+		operator=(values);
+	}
+	break;
+
 	case Types::Object:
 	{
 		Object o;
@@ -633,6 +666,26 @@ bool Value::Write(std::ostream& Stream) const
 			t += std::to_string(mil);
 		}
 		Stream.write(t.data(), t.size());
+	}
+	break;
+
+	case Types::Tuple:
+	{
+		Stream.put('(');
+		bool written = false;
+		auto t = (Tuple*)value;
+		auto sz = t->size();
+		for (size_t i = 0; i < t->size(); i++)
+		{
+			if (written)
+				Stream.put(' ');
+			written = true;
+
+			auto v = t->at(i);
+			if (!v.Write(Stream))
+				return false;
+		}
+		Stream.put(')');
 	}
 	break;
 
@@ -756,6 +809,8 @@ Types Value::GuessType(std::istream& Stream)
 	case '"': return Types::String;
 	case '@': return Types::_ReferenceString;
 	case '{': return Types::Object;
+	case '[':
+	case '(': return Types::Tuple;
 	case '$': return Types::Type;
 
 	default: return Types::String; //Defaults to string

@@ -8,7 +8,7 @@ Model::Model
 	const std::vector<VertexType>& Vertices,
 	const std::vector<IndexType>& Indices,
 	PrimitiveTopology Topology,
-	const std::vector<ModelMesh>& Meshes,
+	const std::vector<MeshType>& Meshes,
 	const std::vector<Joint>& Joints,
 	const std::map<std::string, SkinnedSequence> Poses
 	) :
@@ -82,7 +82,7 @@ BasicMesh<Shaders::PositionColorShader::Vertex, unsigned> Model::CreateSkeletalM
 	indices.reserve(joints.size() * 3); //8 faces
 
 	Shaders::PositionColorShader::Vertex v;
-	v.color = VertexColor.ToVector3();
+	v.color = VertexColor;
 
 	float radius = 0.05f;
 
@@ -128,5 +128,5 @@ BasicMesh<Shaders::PositionColorShader::Vertex, unsigned> Model::CreateSkeletalM
 
 	delete[] transforms;
 
-	return BasicMesh<Shaders::PositionColorShader::Vertex, unsigned>(vertices, indices, PrimitiveTopology::List);
+	return BasicMesh<Shaders::PositionColorShader::Vertex, unsigned>(vertices, indices, PrimitiveTopology::TriangleList);
 }

@@ -10,9 +10,12 @@ typedef ComPtr<ID3D11Buffer> InstanceBuffer;
 //The primitive topologies available
 enum class PrimitiveTopology
 {
-	Unknown,
-	List,
-	Strip
+	Unknown = D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED,
+	PointList = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
+	LineList = D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
+	LineStrip = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP,
+	TriangleList = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
+	TriangleStrip = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
 };
 
 //A mesh that is stored in collections
@@ -164,17 +167,4 @@ protected:
 	unsigned indexCount;
 
 	bool hasDynamicUsage;
-};
-//A simple encapsulation around vertex, index, and instance buffers
-class InstancedMesh: public Mesh
-{
-public:
-	InstancedMesh() : Mesh(), instances(nullptr), instanceCount(0) { }
-
-	inline const InstanceBuffer& Instances() const { return instances; }
-	inline unsigned InstanceCount() const { return instanceCount; }
-
-protected:
-	InstanceBuffer instances;
-	unsigned instanceCount;
 };

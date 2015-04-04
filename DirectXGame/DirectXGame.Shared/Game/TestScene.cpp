@@ -3,6 +3,7 @@
 #include "Common/PlatformHelpers.hpp"
 #include "Common/Helpers.hpp"
 #include "Graphics/Models/Formats/IQM/IqmLoader.hpp"
+#include "Graphics/Primitives.hpp"
 
 #include "Data/Formats/Osl/Osl.hpp"
 
@@ -106,6 +107,36 @@ void TestScene::CreateDeviceDependentResources()
 	{
 		loadingComplete = true;
 	});
+}
+
+void TestScene::CreateStage(float Radius)
+{
+	std::vector<StaticModel::VertexType> verts;
+	StaticModel::VertexType v;
+	v.position = Vector3(-Radius, 0, -Radius);
+	v.texCoord = Vector2(0, 0);
+	v.normal = Vector3::Up;
+	verts.push_back(v);
+	
+	v.position = Vector3(Radius, 0, -Radius);
+	v.texCoord = Vector2(0, 0);
+	v.normal = Vector3::Up;
+
+	v.position = Vector3(-Radius, 0, Radius);
+	v.texCoord = Vector2(0, 0);
+	v.normal = Vector3::Up;
+
+	v.position = Vector3(Radius, 0, Radius);
+	v.texCoord = Vector2(0, 0);
+	v.normal = Vector3::Up;
+
+	static const std::vector<unsigned> indices = { 0, 1, 2, 3 };
+
+	std::vector<ModelMesh<Materials::LitMaterial>> meshes;
+	Materials::LitMaterial mat;
+	meshes.emplace_back(0, 4, 0, 4, mat);
+
+	stage = StaticModel(deviceResources, verts, indices, PrimitiveTopology::TriangleStrip, meshes);
 }
 
 void TestScene::ReleaseDeviceDependentResources()
