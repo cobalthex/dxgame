@@ -14,12 +14,12 @@ namespace Shaders { class LitShader; }
 
 namespace Materials
 {
-	class LitMaterial : public Material<Shaders::LitShader>
+	class LitMaterial : public Material<Shader>
 	{
 	public:
 		LitMaterial() : Material(nullptr) { }
 		LitMaterial(const std::shared_ptr<Shaders::LitShader>& Shader);
-		LitMaterial(TextureCache& TexCache, const Osl::Object& MaterialObject, const std::shared_ptr<Shaders::LitShader>& Shader);
+		LitMaterial(TextureCache& TexCache, const Osl::Object& MaterialObject, const std::shared_ptr<Shader>& Shader);
 
 		Color emissive;
 		Color ambient;
@@ -29,6 +29,27 @@ namespace Materials
 
 		bool useTexture;
 		std::shared_ptr<Texture2D> diffuseMap;
+
+		//The constant buffer definition for the material that this shader uses
+		struct BufferDef : public ConstantBufferDef
+		{
+			Color emissive;
+			Color ambient;
+			Color diffuse;
+			Color specular;
+			float specularPower;
+			bool UseTexture;
+
+			inline void operator = (const Materials::LitMaterial& Material)
+			{
+				emissive = Material.emissive;
+				ambient = Material.ambient;
+				diffuse = Material.diffuse;
+				specular = Material.specular;
+				specularPower = Material.specularPower;
+				UseTexture = Material.useTexture;
+			}
+		};
 	};
 };
 
@@ -49,27 +70,6 @@ namespace Shaders
 			//The element description of this vertex
 			static const D3D11_INPUT_ELEMENT_DESC ElementDesc[];
 			static const unsigned ElementCount;
-		};
-
-		//The constant buffer definition for the material that this shader uses
-		struct MaterialBufferDef : public ConstantBufferDef
-		{
-			Color emissive;
-			Color ambient;
-			Color diffuse;
-			Color specular;
-			float specularPower;
-			bool UseTexture;
-
-			inline void operator = (const Materials::LitMaterial& Material)
-			{
-				emissive = Material.emissive;
-				ambient = Material.ambient;
-				diffuse = Material.diffuse;
-				specular = Material.specular;
-				specularPower = Material.specularPower;
-				UseTexture = Material.useTexture;
-			}
 		};
 
 		LitShader() { }
@@ -94,22 +94,12 @@ namespace Shaders
 		inline void SetInputLayout() const{ vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
 
 		ConstantBuffer<ObjectBufferDef> object;
-		ConstantBuffer<MaterialBufferDef> material;
+		ConstantBuffer<Materials::LitMaterial::BufferDef> material;
 		ConstantBuffer<LightBufferDef> lighting;
 
 	protected:
 		VertexShader vshader;
 		PixelShader pshader;
 		InputLayout inputLayout;
-
-		//Specify the shaders to use for this shader, used by LitSkinnedShader
-		LitShader
-		(
-			const DeviceResourcesPtr& DeviceResources,
-			const std::string& VertexShaderFile,
-			const std::string& PixelShaderFile,
-			const D3D11_INPUT_ELEMENT_DESC* VertexElements,
-			unsigned VertexElementsCount
-		);
 	};
 }

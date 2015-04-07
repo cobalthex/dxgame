@@ -18,5 +18,19 @@ const D3D11_INPUT_ELEMENT_DESC LitSkinnedShader::Vertex::ElementDesc[] =
 };
 const unsigned LitSkinnedShader::Vertex::ElementCount = ARRAYSIZE(LitSkinnedShader::Vertex::ElementDesc);
 
+
 LitSkinnedShader::LitSkinnedShader(const DeviceResourcesPtr& DeviceResources)
-	: LitShader(DeviceResources, SystemSettings::GetShaderFile("LitSkinned.vs.cso"), SystemSettings::GetShaderFile("Lit.ps.cso"), Vertex::ElementDesc, Vertex::ElementCount) { }
+	: object(DeviceResources), material(DeviceResources), lighting(DeviceResources), vshader(), pshader()
+{
+	auto fp = ToWString(SystemSettings::GetShaderFile("LitSkinned.vs.cso"));
+	auto file = Sys::ReadFileAsync(fp).then([this, &DeviceResources](const Sys::FileData& Data)
+	{
+		vshader = VertexShader(DeviceResources, Data);
+		DeviceResources->GetD3DDevice()->CreateInputLayout(Vertex::ElementDesc, Vertex::ElementCount, Data.data(), Data.size(), inputLayout.GetAddressOf());
+	});
+	fp = ToWString(SystemSettings::GetShaderFile("Lit.ps.cso"));
+	file = Sys::ReadFileAsync(fp).then([this, &DeviceResources](const Sys::FileData& Data)
+	{
+		pshader = PixelShader(DeviceResources, Data);
+	});
+}

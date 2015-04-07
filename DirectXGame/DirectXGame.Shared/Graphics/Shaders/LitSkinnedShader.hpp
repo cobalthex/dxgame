@@ -2,9 +2,14 @@
 
 #include "LitShader.hpp"
 
+struct SkinnedObjectBufferDef : public ObjectBufferDef
+{
+	Matrix joints[MAX_JOINTS];
+};
+
 namespace Shaders
 {
-	class LitSkinnedShader : public LitShader
+	class LitSkinnedShader : public Shader
 	{
 	public:
 		struct Vertex
@@ -22,6 +27,34 @@ namespace Shaders
 			static const unsigned ElementCount;
 		};
 
+		ConstantBuffer<SkinnedObjectBufferDef> object;
+		ConstantBuffer<Materials::LitMaterial::BufferDef> material;
+		ConstantBuffer<LightBufferDef> lighting;
+
+		LitSkinnedShader() { }
 		LitSkinnedShader(const DeviceResourcesPtr& DeviceResources);
+
+		inline void Apply() override
+		{
+			object.BindVertex(0);
+			material.BindPixel(0);
+			lighting.BindPixel(1);
+
+			vshader.Apply();
+			pshader.Apply();
+		}
+		inline void Update() override
+		{
+			object.Update();
+			material.Update();
+			lighting.Update();
+		}
+
+		inline void SetInputLayout() const{ vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
+
+	protected:
+		VertexShader vshader;
+		PixelShader pshader;
+		InputLayout inputLayout;
 	};
 }

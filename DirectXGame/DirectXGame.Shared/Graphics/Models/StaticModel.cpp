@@ -19,21 +19,26 @@ meshes(Meshes)
 
 void StaticModel::Draw(unsigned Slot) const
 {
+	if (meshes.size() < 1)
+		return;
+
 	Bind(Slot);
+
+	auto sh = (Shaders::LitShader*)meshes[0].material.shader.get();
+	sh->Apply();
 
 	//Draw all of the meshes
 	for (auto& m : meshes)
 	{
 		if (m.material.shader != nullptr)
 		{
-			m.material.shader->material.data = m.material;
-			m.material.shader->Update();
-			m.material.shader->Apply();
+			sh->material.data = m.material;
+			sh->Update();
 		}
 		if (m.material.diffuseMap != nullptr)
 			m.material.diffuseMap->Apply();
 
-		//draw each mesh
+		//Draw the objects.
 		devContext->DrawIndexed((unsigned)m.IndexCount(), (unsigned)m.StartIndex(), 0);
 	}
 }

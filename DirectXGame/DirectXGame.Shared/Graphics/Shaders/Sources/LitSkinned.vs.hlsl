@@ -25,9 +25,9 @@ struct PixelShaderInput
 {
 	float4 position : SV_POSITION; //position in screen coordinates
 	float4 worldPosition : POSITION; //position in world coordinates
-	float4 color : COLOR;
 	float3 normal : NORMAL;
 	float2 texCoord : TEXCOORD0;
+	float4 color : COLOR;
 };
 
 //Simple shader to do vertex processing on the GPU

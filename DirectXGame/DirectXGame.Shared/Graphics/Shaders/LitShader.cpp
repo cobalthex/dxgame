@@ -17,25 +17,15 @@ const D3D11_INPUT_ELEMENT_DESC LitShader::Vertex::ElementDesc[] =
 const unsigned LitShader::Vertex::ElementCount = ARRAYSIZE(LitShader::Vertex::ElementDesc);
 
 LitShader::LitShader(const DeviceResourcesPtr& DeviceResources)
-	: LitShader(DeviceResources, SystemSettings::GetShaderFile("Lit.vs.cso"), SystemSettings::GetShaderFile("Lit.ps.cso"), Vertex::ElementDesc, Vertex::ElementCount) { }
-
-LitShader::LitShader
-(
-	const DeviceResourcesPtr& DeviceResources,
-	const std::string& VertexShaderFile,
-	const std::string& PixelShaderFile,
-	const D3D11_INPUT_ELEMENT_DESC* VertexElements,
-	unsigned VertexElementsCount
-)
 	: object(DeviceResources), material(DeviceResources), lighting(DeviceResources), vshader(), pshader()
 {
-	auto fp = ToWString(VertexShaderFile);
-	auto file = Sys::ReadFileAsync(fp).then([this, &DeviceResources, VertexElements, VertexElementsCount](const Sys::FileData& Data)
+	auto fp = ToWString(SystemSettings::GetShaderFile("Lit.vs.cso"));
+	auto file = Sys::ReadFileAsync(fp).then([this, &DeviceResources](const Sys::FileData& Data)
 	{
 		vshader = VertexShader(DeviceResources, Data);
-		DeviceResources->GetD3DDevice()->CreateInputLayout(VertexElements, VertexElementsCount, Data.data(), Data.size(), inputLayout.GetAddressOf());
+		DeviceResources->GetD3DDevice()->CreateInputLayout(Vertex::ElementDesc, Vertex::ElementCount, Data.data(), Data.size(), inputLayout.GetAddressOf());
 	});
-	fp = ToWString(PixelShaderFile);
+	fp = ToWString(SystemSettings::GetShaderFile("Lit.ps.cso"));
 	file = Sys::ReadFileAsync(fp).then([this, &DeviceResources](const Sys::FileData& Data)
 	{
 		pshader = PixelShader(DeviceResources, Data);
@@ -54,7 +44,7 @@ inline float OslValueToFloat(const Osl::Value& Value)
 }
 LitMaterial::LitMaterial(const std::shared_ptr<Shaders::LitShader>& Shader)
 	: Material(Shader) { }
-LitMaterial::LitMaterial(TextureCache& TexCache, const Osl::Object& MaterialObject, const std::shared_ptr<Shaders::LitShader>& Shader)
+LitMaterial::LitMaterial(TextureCache& TexCache, const Osl::Object& MaterialObject, const std::shared_ptr<Shader>& Shader)
 	: Material(Shader)
 {
 	float r, g, b, a;

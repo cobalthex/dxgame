@@ -27,8 +27,6 @@ struct ObjectBufferDef : public ConstantBufferDef
 	Matrix inverseTransposeWorld;
 	Matrix worldViewProjection;
 
-	Matrix joints[MAX_JOINTS];
-
 	//Calculate the inverse transpose world and world view projection matrix. Assumes ViewT and ProjectionT to be tranposed
 	inline void Calc(const Matrix& ViewT, const Matrix& ProjectionT)
 	{

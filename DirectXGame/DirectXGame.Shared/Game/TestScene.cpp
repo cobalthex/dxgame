@@ -136,8 +136,7 @@ void TestScene::CreateStage(float Radius)
 	static const std::vector<unsigned> indices = { 0, 1, 2, 3 };
 
 	std::vector<ModelMesh<Materials::LitMaterial>> meshes;
-	auto& sh = shCache.Load(ShaderType::Lit);
-	Materials::LitMaterial mat (std::static_pointer_cast<Shaders::LitShader>(sh));
+	Materials::LitMaterial mat(std::static_pointer_cast<Shaders::LitShader>(shCache.Load(ShaderType::Lit)));
 	meshes.emplace_back(0, 4, 0, 4, mat);
 
 	stage = StaticModel(deviceResources, verts, indices, PrimitiveTopology::TriangleStrip, meshes);
@@ -174,6 +173,10 @@ void TestScene::Rotate(float Radians)
 
 	lsShader->object.data.world = world.Transpose();
 	lsShader->object.data.Calc(cam.View(), cam.Projection());
+
+	auto sh = (Shaders::LitShader*)stage.meshes[0].material.shader.get();
+	sh->lighting = lsShader->lighting;
+	sh->object.data = lsShader->object.data;
 }
 
 void TestScene::StartTracking()
@@ -206,8 +209,6 @@ void TestScene::Render()
 	context->RSSetState(nullptr);
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	stage.meshes[0].material.shader->Apply();
-	stage.meshes[0].material.shader->Update();
 	stage.Draw();
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

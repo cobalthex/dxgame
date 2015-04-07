@@ -9,9 +9,9 @@ struct PixelShaderInput
 {
 	float4 position : SV_POSITION;
 	float4 worldPosition : POSITION; //position in world coordinates
-	float4 color : COLOR;
 	float3 normal : NORMAL;
 	float2 texCoord : TEXCOORD;
+	float4 color : COLOR;
 };
 
 //A pass-through function for the (interpolated) color data

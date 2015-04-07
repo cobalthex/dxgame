@@ -10,7 +10,7 @@ LitSkinnedShader Body.dds
 LitSkinnedShader Head.dds
 {
 	diffuse: 1 0.2 0 1;
-	ambient: 0 0 0 0;
+	ambient: 1 1 1 1;
 	emissive: 0.2 0.2 0.2 1;
 	specular: 1.0 1.0 1.0 1.0 500; //r g b a pow
 	diffmap: "Head.dds";
