@@ -50,7 +50,7 @@ namespace Shaders
 			lighting.Update();
 		}
 
-		inline void SetInputLayout() const{ vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
+		inline void SetInputLayout() const{ if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
 
 	protected:
 		VertexShader vshader;

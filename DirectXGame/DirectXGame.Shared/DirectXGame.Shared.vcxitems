@@ -37,6 +37,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\SimpleMath.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Input\InputHandler.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Sequence.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\SystemSettings.hpp" />
@@ -94,6 +95,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\DWriteFontCollectionLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\util.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Input\InputHandler.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\Console.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\TelnetConsole.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.hpp" />
@@ -150,6 +152,9 @@
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Head.dds">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Stage.dds">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.png">

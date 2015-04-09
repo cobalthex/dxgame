@@ -1,5 +1,6 @@
 ﻿#include "Pch.hpp"
 #include "App.hpp"
+#include "Input/InputHandler.hpp"
 
 #include <ppltasks.h>
 
@@ -91,6 +92,7 @@ void App::SetWindow(CoreWindow^ Window)
 #endif
 
 	deviceResources->SetWindow(Window);
+	InputHandler::Initialize(Window);
 }
 
 //Initializes scene resources, or loads a previously saved app state.
@@ -177,7 +179,7 @@ void App::OnWindowClosed(CoreWindow^ Sender, CoreWindowEventArgs^ Args)
 void App::OnWindowSizeChanged(CoreWindow^ Sender, WindowSizeChangedEventArgs^ Args)
 {
 	deviceResources->SetLogicalSize(Size(Sender->Bounds.Width, Sender->Bounds.Height));
-	main->CreateWindowSizeDependentResources();
+	main->CreateWindowResources();
 }
 #endif
 
@@ -193,12 +195,12 @@ void App::OnDisplayContentsInvalidated(DisplayInformation^ Sender, Object^ Args)
 void App::OnDpiChanged(DisplayInformation^ Sender, Object^ Args)
 {
 	deviceResources->SetDpi(Sender->LogicalDpi);
-	main->CreateWindowSizeDependentResources();
+	main->CreateWindowResources();
 }
 
 void App::OnOrientationChanged(DisplayInformation^ Sender, Object^ Args)
 {
 	deviceResources->SetCurrentOrientation(Sender->CurrentOrientation);
-	main->CreateWindowSizeDependentResources();
+	main->CreateWindowResources();
 }
 #endif

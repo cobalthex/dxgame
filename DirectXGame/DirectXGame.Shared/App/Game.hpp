@@ -13,7 +13,7 @@ namespace DirectXGame
 	public:
 		Game(const std::shared_ptr<DeviceResources>& DeviceResources);
 		~Game();
-		void CreateWindowSizeDependentResources();
+		void CreateWindowResources();
 		void Update();
 		bool Render();
 

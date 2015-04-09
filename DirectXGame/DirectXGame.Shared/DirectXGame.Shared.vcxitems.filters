@@ -21,7 +21,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\SimpleMath.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\Game.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\FpsRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Osl\Osl.cpp" />
@@ -34,6 +33,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\Helpers.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Input\InputHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
@@ -94,6 +95,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)App\SystemSettings.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Input\InputHandler.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />
@@ -108,6 +110,7 @@
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Ground.dds" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Head.dds" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.png" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Stage.dds" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf" />

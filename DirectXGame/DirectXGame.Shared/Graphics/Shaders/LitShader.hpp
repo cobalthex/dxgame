@@ -10,15 +10,14 @@
 #include "Graphics/Material.hpp"
 
 namespace Osl { class Object; };
-namespace Shaders { class LitShader; }
 
 namespace Materials
 {
-	class LitMaterial : public Material<Shader>
+	class LitMaterial : public Material
 	{
 	public:
-		LitMaterial() : Material(nullptr) { }
-		LitMaterial(const std::shared_ptr<Shaders::LitShader>& Shader);
+		LitMaterial() { }
+		LitMaterial(const std::shared_ptr<Shader>& Shader);
 		LitMaterial(TextureCache& TexCache, const Osl::Object& MaterialObject, const std::shared_ptr<Shader>& Shader);
 
 		Color emissive;
@@ -29,6 +28,8 @@ namespace Materials
 
 		bool useTexture;
 		std::shared_ptr<Texture2D> diffuseMap;
+
+		std::shared_ptr<Shader> shader;
 
 		//The constant buffer definition for the material that this shader uses
 		struct BufferDef : public ConstantBufferDef

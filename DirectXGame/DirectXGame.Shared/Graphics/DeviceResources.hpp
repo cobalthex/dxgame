@@ -29,6 +29,7 @@ public:
 	//Device Accessor.sM
 	inline Windows::Foundation::Size GetOutputSize() const						{ return outputSize; }
 	inline Windows::Foundation::Size GetLogicalSize() const						{ return logicalSize; }
+	inline Platform::Agile<Windows::UI::Core::CoreWindow> GetWindow() const		{ return window; }
 	Windows::Graphics::Display::DisplayOrientations	NativeOrientation() const	{ return currentOrientation; }
 	Windows::Graphics::Display::DisplayOrientations	CurrentOrientation() const	{ return currentOrientation; }
 	inline unsigned SapmMUleSize() const											{ return sampleSize; }

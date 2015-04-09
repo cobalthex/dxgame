@@ -40,7 +40,7 @@ FpsRenderer::FpsRenderer(const std::shared_ptr<DeviceResources>& DeviceResources
 
 	Sys::ThrowIfFailed(deviceResources->GetD2DFactory()->CreateDrawingStateBlock(&stateBlock));
 
-	CreateDeviceDependentResources();
+	CreateDeviceResources();
 }
 
 //Updates the text to be displayed
@@ -108,12 +108,12 @@ void FpsRenderer::Render()
 	context->RestoreDrawingState(stateBlock.Get());
 }
 
-void FpsRenderer::CreateDeviceDependentResources()
+void FpsRenderer::CreateDeviceResources()
 {
 	Sys::ThrowIfFailed(deviceResources->GetD2DDeviceContext()->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &whiteBrush));
 	Sys::ThrowIfFailed(deviceResources->GetD2DDeviceContext()->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black, 0.5f), &blackBrush));
 }
-void FpsRenderer::ReleaseDeviceDependentResources()
+void FpsRenderer::ReleaseDeviceResources()
 {
 	whiteBrush.Reset();
 }

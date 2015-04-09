@@ -4,13 +4,15 @@
 #include "Common/Helpers.hpp"
 #include "Graphics/Models/Formats/IQM/IqmLoader.hpp"
 #include "Graphics/Primitives.hpp"
-
+#include "Input/InputHandler.hpp"
 #include "Data/Formats/Osl/Osl.hpp"
+
 
 using namespace DirectXGame;
 
 using namespace DirectX;
 using namespace Windows::Foundation;
+using namespace Windows::UI::Core;
 
 //Loads vertex and pixel shaders from files and instantiates the cube geometry.
 TestScene::TestScene(const std::shared_ptr<DeviceResources>& DeviceResources) :
@@ -21,13 +23,13 @@ TestScene::TestScene(const std::shared_ptr<DeviceResources>& DeviceResources) :
 	shCache(DeviceResources),
 	texCache(DeviceResources)
 {
-	CreateDeviceDependentResources();
-	CreateWindowSizeDependentResources();
+	CreateDeviceResources();
+	CreateWindowResources(DeviceResources->GetWindow().Get());
 	
 }
 
 //Initializes view parameters when the window size changes.
-void TestScene::CreateWindowSizeDependentResources()
+void TestScene::CreateWindowResources(CoreWindow^ Window)
 {
 	Size outputSize = deviceResources->GetOutputSize();
 	float aspectRatio = outputSize.Width / outputSize.Height;
@@ -60,6 +62,7 @@ void TestScene::CreateWindowSizeDependentResources()
 	cam.farPlaneDistance = 1000;
 
 	cam.position = { 0, 10, 10 };
+	camRotation = { 0, 0, 10 };
 	cam.lookAt = { 0, 3, 0 };
 
 	cam.CalcMatrices();
@@ -73,7 +76,7 @@ void TestScene::CreateWindowSizeDependentResources()
 	Sys::ThrowIfFailed(deviceResources->GetD3DDevice()->CreateRasterizerState(&rastDesc, &wireRasterizer));
 }
 
-void TestScene::CreateDeviceDependentResources()
+void TestScene::CreateDeviceResources()
 {
 	lsShader = std::static_pointer_cast<Shaders::LitSkinnedShader>(shCache.Load(ShaderType::LitSkinned));
 	pcShader = std::static_pointer_cast<Shaders::PositionColorShader>(shCache.Load(ShaderType::PositionColor));
@@ -122,27 +125,34 @@ void TestScene::CreateStage(float Radius)
 	verts.push_back(v);
 	
 	v.position = Vector3(Radius, 0, -Radius);
-	v.texCoord = Vector2(0, 0);
+	v.texCoord = Vector2(1, 0);
 	v.normal = Vector3::Up;
+	verts.push_back(v);
 
 	v.position = Vector3(-Radius, 0, Radius);
-	v.texCoord = Vector2(0, 0);
+	v.texCoord = Vector2(0, 1);
 	v.normal = Vector3::Up;
+	verts.push_back(v);
 
 	v.position = Vector3(Radius, 0, Radius);
-	v.texCoord = Vector2(0, 0);
+	v.texCoord = Vector2(1, 1);
 	v.normal = Vector3::Up;
+	verts.push_back(v);
 
 	static const std::vector<unsigned> indices = { 0, 1, 2, 3 };
 
 	std::vector<ModelMesh<Materials::LitMaterial>> meshes;
+	
 	Materials::LitMaterial mat(std::static_pointer_cast<Shaders::LitShader>(shCache.Load(ShaderType::Lit)));
+	mat.diffuseMap = texCache.Load("Stage.dds");
+	mat.ambient = mat.diffuse = Color(1, 1, 1);
+
 	meshes.emplace_back(0, 4, 0, 4, mat);
 
 	stage = StaticModel(deviceResources, verts, indices, PrimitiveTopology::TriangleStrip, meshes);
 }
 
-void TestScene::ReleaseDeviceDependentResources()
+void TestScene::ReleaseDeviceResources()
 {
 	loadingComplete = false;
 }
@@ -150,53 +160,32 @@ void TestScene::ReleaseDeviceDependentResources()
 //Called once per frame, rotates the cube and calculates the model and view matrices.
 void TestScene::Update(const StepTimer& Timer)
 {
-	if (!tracking)
-	{
-		//Convert degrees to radians, then convert seconds to rotation angle
-		float radiansPerSecond = XMConvertToRadians(degreesPerSecond);
-		double totalRotation = Timer.GetTotalSeconds() * radiansPerSecond;
-		float radians = static_cast<float>(fmod(totalRotation, XM_2PI));
-
-		Rotate(radians);
-	}
-
-	timeline.Update();
-}
-
-//Rotate the 3D cube model a set amount of radians.
-void TestScene::Rotate(float Radians)
-{
 	Matrix world =
 		Matrix::CreateRotationX(-XM_PIDIV2) *
 		Matrix::CreateRotationY(-XM_PIDIV2);
-		//Matrix::CreateRotationY(-Radians);
+
+	cam.position = Vector3::Transform(Vector3::Backward, Matrix::CreateFromYawPitchRoll(camRotation.x, camRotation.y, 0));
+	cam.position *= camRotation.z;
+	cam.CalcMatrices();
 
 	lsShader->object.data.world = world.Transpose();
 	lsShader->object.data.Calc(cam.View(), cam.Projection());
 
 	auto sh = (Shaders::LitShader*)stage.meshes[0].material.shader.get();
 	sh->lighting = lsShader->lighting;
-	sh->object.data = lsShader->object.data;
-}
+	sh->object.data.world = Matrix::Identity;
+	sh->object.data.Calc(cam.View(), cam.Projection());
 
-void TestScene::StartTracking()
-{
-	tracking = true;
-}
-
-//When tracking, the 3D cube can be rotated around its Y axis by tracking pointer position relative to the output screen width.
-void TestScene::TrackingUpdate(float PositionX)
-{
-	if (tracking)
+	if (InputHandler::isLeftMousePressed)
 	{
-		float radians = XM_2PI * 2.0f * PositionX / deviceResources->GetOutputSize().Width;
-		Rotate(radians);
+		auto xy = InputHandler::cursor - InputHandler::lastCursor;
+		xy /= (deviceResources->GetLogicalSize().Width / 2);
+		camRotation.x += xy.x;
+		camRotation.y += xy.y;
+		//camRotation.z -= 
 	}
-}
 
-void TestScene::StopTracking()
-{
-	tracking = false;
+	timeline.Update();
 }
 
 //Renders one frame using the vertex and pixel shaders.
@@ -209,6 +198,11 @@ void TestScene::Render()
 	context->RSSetState(nullptr);
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+	auto sh = (Shaders::LitShader*)stage.meshes[0].material.shader.get();
+	sh->SetInputLayout();
+	sh->Apply();
+	sh->Update();
 	stage.Draw();
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

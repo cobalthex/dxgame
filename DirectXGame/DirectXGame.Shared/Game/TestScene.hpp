@@ -19,19 +19,14 @@ namespace DirectXGame
 	{
 	public:
 		TestScene(const DeviceResourcesPtr& DeviceResources);
-		void CreateDeviceDependentResources();
-		void CreateWindowSizeDependentResources();
-		void ReleaseDeviceDependentResources();
+		void CreateDeviceResources();
+		void CreateWindowResources(Windows::UI::Core::CoreWindow^ Window);
+		void ReleaseDeviceResources();
 		void Update(const StepTimer& Timer);
 		void Render();
-		void StartTracking();
-		void TrackingUpdate(float PositionX);
-		void StopTracking();
 		bool IsTracking() { return tracking; }
 
 	private:
-		void Rotate(float Radians);
-
 		TextureCache texCache;
 		ShaderCache shCache;
 
@@ -42,6 +37,7 @@ namespace DirectXGame
 		ComPtr<ID3D11RasterizerState> wireRasterizer;
 
 		Camera cam;
+		Vector3 camRotation;
 
 		Model iqm;
 		Mesh iqmSkel;
@@ -56,5 +52,8 @@ namespace DirectXGame
 		bool	loadingComplete;
 		float	degreesPerSecond;
 		bool	tracking;
+
+
+		bool isPointerPressed;
 	};
 }

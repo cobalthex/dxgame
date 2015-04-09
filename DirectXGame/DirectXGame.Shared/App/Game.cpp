@@ -33,10 +33,10 @@ Game::~Game()
 }
 
 //Updates application state when the window size changes (e.g. device orientation change)
-void Game::CreateWindowSizeDependentResources()
+void Game::CreateWindowResources()
 {
 	//TODO: Replace this with the size-dependent initialization of your app's content.
-	scene->CreateWindowSizeDependentResources();
+	scene->CreateWindowResources(deviceResources->GetWindow().Get());
 }
 
 //Updates the application state once per frame.
@@ -84,14 +84,14 @@ bool Game::Render()
 //Notifies renderers that device resources need to be released.
 void Game::OnDeviceLost()
 {
-	scene->ReleaseDeviceDependentResources();
-	fpsTextRenderer->ReleaseDeviceDependentResources();
+	scene->ReleaseDeviceResources();
+	fpsTextRenderer->ReleaseDeviceResources();
 }
 
 //Notifies renderers that device resources may now be recreated.
 void Game::OnDeviceRestored()
 {
-	scene->CreateDeviceDependentResources();
-	fpsTextRenderer->CreateDeviceDependentResources();
-	CreateWindowSizeDependentResources();
+	scene->CreateDeviceResources();
+	fpsTextRenderer->CreateDeviceResources();
+	CreateWindowResources();
 }

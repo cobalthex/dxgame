@@ -10,9 +10,9 @@ public:
 	Renderer(const DeviceResourcesPtr& DeviceResources) : deviceResources(DeviceResources) { }
 	virtual ~Renderer() { }
 
-	virtual void CreateDeviceDependentResources() { } //Create any resources that depend on the graphics device
-	virtual void CreateWindowSizeDependentResources() { } //Create any resources that depend on the size of the window
-	virtual void ReleaseDeviceDependentResources() { } //Release any resources that depended on the graphics device
+	virtual void CreateDeviceResources() { } //Create any resources that depend on the graphics device
+	virtual void CreateWindowResources(Windows::UI::Core::CoreWindow^ Window) { } //Create any resources that depend on the size of the window
+	virtual void ReleaseDeviceResources() { } //Release any resources that depended on the graphics device
 	virtual void Update(const StepTimer& Timer) { } //Update
 	virtual void Render() = 0; //Render
 
