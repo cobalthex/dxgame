@@ -6,20 +6,29 @@ Timeline::Timeline(bool DeleteOnDestroy, bool IsLooping, const TimeSpan& LoopSta
 {
 }
 
-Timeline::~Timeline()
+Timeline& Timeline::operator = (Timeline&& Other)
 {
-	if (deleteOnDestroy)
+	if (&Other != this)
 	{
-		for (auto& i : sequences)
-			delete i;
+		Animation::operator=(Other);
+		sequences = std::move(Other.sequences);
+		deleteOnDestroy = Other.deleteOnDestroy;
+		calledFinish = Other.calledFinish;
+		events = std::move(Other.events);
 	}
+	return *this;
 }
 
-void Timeline::Add(Sequence* const Sequence)
+Timeline::~Timeline()
+{
+	Clear(deleteOnDestroy);
+}
+
+void Timeline::Add(Sequence* Sequence)
 {
 	sequences.push_back(Sequence);
 }
-bool Timeline::Remove(Sequence* const Sequence, bool Delete)
+bool Timeline::Remove(Sequence* Sequence, bool Delete)
 {
 	auto fnd = std::find(sequences.begin(), sequences.end(), Sequence);
 	if (fnd != sequences.end())
@@ -34,12 +43,14 @@ bool Timeline::Remove(Sequence* const Sequence, bool Delete)
 void Timeline::Clear(bool Delete)
 {
 	if (Delete)
+	{
 		for (auto& i : sequences)
 			delete i;
+	}
 	sequences.clear();
 }
 
-size_t Timeline::GetCurrentKeyframe(Sequence* const Sequence) const
+size_t Timeline::GetCurrentKeyframe(Sequence* Sequence) const
 {
 	size_t nFr = Sequence->keyframes.size();
 	auto time = TimePoint(Time());
@@ -140,7 +151,7 @@ float Timeline::KeyframePercent(const Keyframe& CurrentFrame, const Keyframe& Ne
 
 	return (tc / (float)max);
 }
-float Timeline::AnimationPercent(Sequence* const Sequence) const
+float Timeline::AnimationPercent(Sequence* Sequence) const
 {
 	size_t cfr = GetCurrentKeyframe(Sequence);
 	Keyframe& cur = Sequence->keyframes[cfr];

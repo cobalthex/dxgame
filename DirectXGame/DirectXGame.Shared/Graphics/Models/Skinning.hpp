@@ -56,12 +56,14 @@ protected:
 class SkinnedSequence : public Sequence
 {
 public:
-	SkinnedSequence() : poses(), pose(), Sequence() { }
-	SkinnedSequence(const std::vector<Pose>& Poses) : poses(Poses), pose()
+	SkinnedSequence() = default;
+	SkinnedSequence(const std::vector<Pose>& Poses)
+		: poses(Poses), pose()
 	{
 		if (poses.size() > 0)
 			pose = poses.front();
 	}
+	virtual ~SkinnedSequence() = default;
 	SkinnedSequence& operator = (const SkinnedSequence& Sequence);
 
 	std::vector<Pose> poses; //all of the poses in this sequence, one for each keyframe

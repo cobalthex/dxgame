@@ -62,7 +62,6 @@ void TestScene::CreateWindowResources(CoreWindow^ Window)
 	cam.farPlaneDistance = 1000;
 
 	cam.position = { 0, 10, 10 };
-	camRotation = { 0, 0, 10 };
 	cam.lookAt = { 0, 3, 0 };
 
 	cam.CalcMatrices();
@@ -150,6 +149,8 @@ void TestScene::CreateStage(float Radius)
 	meshes.emplace_back(0, 4, 0, 4, mat);
 
 	stage = StaticModel(deviceResources, verts, indices, PrimitiveTopology::TriangleStrip, meshes);
+
+	camRotation = { 0, -0.4f, 12 };
 }
 
 void TestScene::ReleaseDeviceResources()
@@ -179,9 +180,9 @@ void TestScene::Update(const StepTimer& Timer)
 	if (InputHandler::isLeftMousePressed)
 	{
 		auto xy = InputHandler::cursor - InputHandler::lastCursor;
-		xy /= (deviceResources->GetLogicalSize().Width / 2);
-		camRotation.x += xy.x;
-		camRotation.y += xy.y;
+		xy /= deviceResources->GetDpi();
+		camRotation.x -= xy.x;
+		camRotation.y -= xy.y;
 		//camRotation.z -= 
 	}
 

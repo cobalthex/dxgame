@@ -8,6 +8,7 @@ class Animation
 public:
 	Animation(bool IsLooping = false, const ::TimeSpan& LoopStart = ::TimeSpan::zero()) //Create an animation
 		: start(Timer::now()), isLooping(IsLooping), loopStart(LoopStart) { }
+	virtual ~Animation() = default;
 
 	inline virtual void Start() { isRunning = true; start = Timer::now(); } //Start the animation
 	inline virtual void Restart() { Reset(); Start(); } //Restart the animation

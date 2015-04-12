@@ -13,7 +13,9 @@ public:
 	Timeline(bool DeleteOnDestroy = true, bool IsLooping = false, const TimeSpan& LoopStart = TimeType::zero());
 	~Timeline();
 
-	void Add(Sequence* const Sequence);
+	Timeline& operator = (Timeline&& Other);
+
+	void Add(Sequence* Sequence);
 	template <class SequenceType = Sequence>
 	SequenceType* const AddNew() //create a new sequence and add it to the stack (returns it for editing)
 	{
@@ -21,7 +23,7 @@ public:
 		Add(s);
 		return s;
 	}
-	bool Remove(Sequence* const Sequence, bool Delete = false);
+	bool Remove(Sequence* Sequence, bool Delete = false);
 
 	inline const std::vector<Sequence*>& Sequences() const { return sequences; }
 
@@ -30,9 +32,9 @@ public:
 
 	void Clear(bool Delete);
 
-	float AnimationPercent(Sequence* const Sequence) const; //Get the current frame (returns current frame # + 0-1)
+	float AnimationPercent(Sequence* Sequence) const; //Get the current frame (returns current frame # + 0-1)
 
-	EventQueue<TimelineEvent> events = EventQueue<TimelineEvent>(); //The event handler for the timeline
+	EventQueue<TimelineEvent> events; //The event handler for the timeline
 	bool processEvents = true; //should this timeline process events (defaults to true, use no for manual management)
 
 	bool AtEnd() const override;
@@ -42,9 +44,9 @@ public:
 protected:
 	bool calledFinish = false;
 
-	std::vector<Sequence*> sequences = std::vector<Sequence*>();
+	std::vector<Sequence*> sequences;
 
-	size_t GetCurrentKeyframe(Sequence* const Sequence) const;
+	size_t GetCurrentKeyframe(Sequence* Sequence) const;
 
 	TimeType Duration() const override;
 

@@ -18,6 +18,7 @@ public:
 	void SetLogicalSize(Windows::Foundation::Size LogicalSize);
 	void SetCurrentOrientation(Windows::Graphics::Display::DisplayOrientations currentOrientation);
 	void SetDpi(float Dpi = 0); //DPI of 0 uses system DPI
+	inline float GetDpi() const { return dpi; }
 	void ValidateDevice();
 	void HandleDeviceLost();
 	void RegisterDeviceNotify(IDeviceNotify* DeviceNotify);

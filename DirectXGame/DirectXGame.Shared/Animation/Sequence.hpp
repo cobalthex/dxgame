@@ -35,6 +35,7 @@ class Sequence
 {
 public:
 	Sequence() : keyframes(), lastKeyframe(0), calledComplete(false) { }
+	virtual ~Sequence() = default;
 
 	//Reset the sequence to its original state
 	inline virtual void Reset() { lastKeyframe = 0; calledComplete = false; }

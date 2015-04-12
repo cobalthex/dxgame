@@ -22,17 +22,14 @@ public:
 	}
 	EventQueue& operator = (EventQueue&& EventQueue)
 	{
-		if (this == &EventQueue)
-			return *this;
-
-		events = std::move(EventQueue.events);
-		handlers = std::move(EventQueue.handlers);
-		queueMutex = std::move(EventQueue.queueMutex);
-		popWait = std::move(EventQueue.popWait);
-
+		if (this != &EventQueue)
+		{
+			events = std::move(EventQueue.events);
+			handlers = std::move(EventQueue.handlers);
+		}
 		return *this;
 	}
-	virtual ~EventQueue() { }
+	virtual ~EventQueue() = default;
 
 	//Pass an event to the queue
 	inline void Enqueue(const EventType& Event)
@@ -109,8 +106,8 @@ protected:
 
 	//thread-safe operations for the queue
 
-	std::mutex queueMutex = std::mutex();
-	std::condition_variable popWait = std::condition_variable();
+	std::mutex queueMutex;
+	std::condition_variable popWait;
 
 	EventType DequeueSafe()
 	{
