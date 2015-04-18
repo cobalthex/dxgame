@@ -92,7 +92,7 @@ namespace Shaders
 			lighting.Update();
 		}
 
-		inline void SetInputLayout() const{ vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
+		inline void SetInputLayout() const{ if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
 
 		ConstantBuffer<ObjectBufferDef> object;
 		ConstantBuffer<Materials::LitMaterial::BufferDef> material;

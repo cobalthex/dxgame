@@ -29,18 +29,19 @@ PixelInput main(VertexInput Input)
 	PixelInput output;
 
 	float4 worldPosition;
+	float4 inputPos = float4(Input.position, 1);
 
 	// Calculate the position of the vertex against the world, view, and projection matrices.
-	output.position = mul(float4(Input.position, 1), WorldViewProjection);
+	output.position = mul(inputPos, WorldViewProjection);
 	// Store the texture coordinates for the pixel shader.
 	output.texCoord = Input.texCoord;
 	// Calculate the normal vector against the world matrix only.
 	output.normal = normalize(mul(Input.normal, (float3x3)World));
 	// Calculate the position of the vertex in the world.
-	worldPosition = mul(Input.position, World);
+	worldPosition = mul(inputPos, World);
 
 	// Calculate the position of the vertice as viewed by the light source.
-	output.lightViewPos = mul(Input.position, LightWvp);
+	output.lightViewPos = mul(inputPos, LightWvp);
 
 	// Determine the light position based on the position of the light and the position of the vertex in the world.
 	output.lightPos = normalize(LightPosition.xyz - worldPosition.xyz);

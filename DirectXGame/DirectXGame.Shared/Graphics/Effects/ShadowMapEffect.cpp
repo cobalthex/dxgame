@@ -9,7 +9,13 @@ ShadowMapEffect::ShadowMapEffect(const DeviceResourcesPtr& DeviceResources, Shad
 
 void ShadowMapEffect::Begin()
 {
+	//get depth texture
+	auto dsv = deviceResources->GetDepthStencilView();
 
+	shader->light.data.lightColor = light->color;
+	shader->world.data.LightPosition = light->position;
+	
+	shader->world.data.lightWvp =  camera->Projection()
 }
 void ShadowMapEffect::End()
 {

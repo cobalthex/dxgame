@@ -6,8 +6,8 @@
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\PositionColor.vs.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lit.vs.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lit.ps.hlsl" />
-    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\ShadowMap.vs.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\ShadowMap.ps.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\ShadowMap.vs.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Sequence.cpp" />
@@ -36,9 +36,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Input\InputHandler.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Common\Math.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\SimpleMath.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShadowMapShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Effects\ShadowMapEffect.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\Math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
@@ -99,13 +100,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Input\InputHandler.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Math.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Box.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShadowMapShader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\Skybox.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Effects\Effect.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Effects\ShadowMapEffect.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\Skybox.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture3D.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Box.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Math.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lighting.hlsli" />
@@ -113,7 +114,9 @@
     <None Include="$(MSBuildThisFileDirectory)Content\Models\mrfixit.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Content\Models\ship.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Content\Materials\mrfixit.matl" />
+    <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Consts.hlsli" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\sword.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Common\Math.inl" />
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +125,7 @@
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Head.dds" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.png" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Stage.dds" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\skybox.png" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf" />

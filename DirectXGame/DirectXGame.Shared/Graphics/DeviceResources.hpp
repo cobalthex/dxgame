@@ -62,26 +62,26 @@ private:
 	DXGI_MODE_ROTATION ComputeDisplayRotation();
 
 	//Direct3D objects.
-	Microsoft::WRL::ComPtr<ID3D11Device2>			d3dDevice;
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext2>	d3dContext;
-	Microsoft::WRL::ComPtr<IDXGISwapChain1>			swapChain;
+	ComPtr<ID3D11Device2>			d3dDevice;
+	ComPtr<ID3D11DeviceContext2>	d3dContext;
+	ComPtr<IDXGISwapChain1>			swapChain;
 
 	//Direct3D rendering objects. Required for 3D.
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>			offScreenSurface;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D>			backBuffer;
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	d3dRenderTargetView;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	d3dDepthStencilView;
+	ComPtr<ID3D11Texture2D>			offScreenSurface;
+	ComPtr<ID3D11Texture2D>			backBuffer;
+	ComPtr<ID3D11RenderTargetView>	d3dRenderTargetView;
+	ComPtr<ID3D11DepthStencilView>	d3dDepthStencilView;
 	D3D11_VIEWPORT									screenViewport;
 
 	//Direct2D drawing components.
-	Microsoft::WRL::ComPtr<ID2D1Factory2>		d2dFactory;
-	Microsoft::WRL::ComPtr<ID2D1Device1>		d2dDevice;
-	Microsoft::WRL::ComPtr<ID2D1DeviceContext1>	d2dContext;
-	Microsoft::WRL::ComPtr<ID2D1Bitmap1>		d2dTargetBitmap;
+	ComPtr<ID2D1Factory2>		d2dFactory;
+	ComPtr<ID2D1Device1>		d2dDevice;
+	ComPtr<ID2D1DeviceContext1>	d2dContext;
+	ComPtr<ID2D1Bitmap1>		d2dTargetBitmap;
 
 	//DirectWrite drawing components.
-	Microsoft::WRL::ComPtr<IDWriteFactory2>		dwriteFactory;
-	Microsoft::WRL::ComPtr<IWICImagingFactory2>	wicFactory;
+	ComPtr<IDWriteFactory2>		dwriteFactory;
+	ComPtr<IWICImagingFactory2>	wicFactory;
 
 	//Cached reference to the Window.
 	Platform::Agile<Windows::UI::Core::CoreWindow> window;

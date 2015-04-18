@@ -3,7 +3,10 @@
 #include "Effect.hpp"
 #include "Graphics/Shaders/ShaderCache.hpp"
 #include "Graphics/Shaders/ShadowMapShader.hpp"
+#include "Graphics/Lighting.hpp"
+#include "Graphics/Scene/Camera.hpp"
 
+//Create a shadow map and apply it. This uses the built in depth stencil view to render.
 class ShadowMapEffect : public Effect
 {
 public:
@@ -12,6 +15,9 @@ public:
 
 	virtual void Begin() override; //set up rendering for the shadow map
 	virtual void End() override; //apply the shadow map
+
+	Light* light; //the light to use as the shadow source
+	Camera* camera;
 
 protected:
 	std::shared_ptr<Shaders::ShadowMapShader> shader;
