@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Common/Box.hpp"
+
 //3D boundaries for models
 struct Bounds
 {
-	Vector3 boundingBoxMin;
-	Vector3 boundingBoxAxis;
+	Box3 box;
 	float xyRadius;
 	float radius;
 };
@@ -14,9 +15,9 @@ template <class MaterialType>
 class ModelMesh
 {
 public:
-	ModelMesh() : startVertex(0), vertexCount(0), startIndex(0), indexCount(0), material() { }
-	ModelMesh(size_t StartVertex, size_t VertexCount, size_t StartIndex, size_t IndexCount, const MaterialType& Material)
-		: startVertex(StartVertex), vertexCount(VertexCount), startIndex(StartIndex), indexCount(IndexCount), material(Material) { }
+	ModelMesh() : startVertex(0), vertexCount(0), startIndex(0), indexCount(0), material(), bounds() { }
+	ModelMesh(size_t StartVertex, size_t VertexCount, size_t StartIndex, size_t IndexCount, const MaterialType& Material, const Bounds& Bounds)
+		: startVertex(StartVertex), vertexCount(VertexCount), startIndex(StartIndex), indexCount(IndexCount), material(Material), bounds(Bounds) { }
 
 	inline size_t StartVertex() const { return startVertex; } //The first vertex of this mesh in the model which owns it
 	inline size_t VertexCount() const { return vertexCount; } //The number of vertices in this mesh
@@ -25,7 +26,11 @@ public:
 
 	MaterialType material;
 
+	inline Bounds Bounds() const { return bounds; }
+
 protected:
 	size_t startVertex, vertexCount;
 	size_t startIndex, indexCount;
+
+	::Bounds bounds;
 };

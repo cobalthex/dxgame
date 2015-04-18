@@ -1,4 +1,6 @@
-float4x3 Skin(matrix Joints[128], float4 Weights, uint4 Indices)
+#include "Consts.hlsli"
+
+float4x3 Skin(matrix Joints[MAX_JOINTS], float4 Weights, uint4 Indices)
 {
 	float4x3 result = Weights.x * (float4x3)Joints[Indices.x];
 	result = result + Weights.y * (float4x3)Joints[Indices.y];

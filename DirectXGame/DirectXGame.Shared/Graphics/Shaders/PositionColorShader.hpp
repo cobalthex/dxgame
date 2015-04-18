@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/SimpleMath.hpp"
+#include "Common/Math.hpp"
 #include "Graphics/DeviceResources.hpp"
 #include "Graphics/ConstantBuffer.hpp"
 #include "Graphics/Shaders/ShaderStructures.hpp"
@@ -13,8 +13,8 @@ namespace Shaders
 	public:
 		struct Vertex
 		{
-			DirectX::SimpleMath::Vector3 position;
-			DirectX::SimpleMath::Color color;
+			DirectX::Math::Vector3 position;
+			DirectX::Math::Color color;
 
 			static const D3D11_INPUT_ELEMENT_DESC ElementDesc[];
 			static const unsigned ElementCount;

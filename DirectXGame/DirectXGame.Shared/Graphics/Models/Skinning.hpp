@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Common/SimpleMath.hpp"
+#include "Common/Math.hpp"
 #include "Animation/Sequence.hpp"
 
-using namespace DirectX::SimpleMath;
+using namespace DirectX::Math;
 
 //A single joint in a skeleton of a mesh
 //Contains a pre-calculated matrix based on the rotation, scale, and translation

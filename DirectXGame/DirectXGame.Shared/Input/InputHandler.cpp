@@ -5,8 +5,8 @@ using namespace Windows::Foundation;
 using namespace Windows::UI::Core;
 using namespace Windows::UI::Xaml;
 
-DirectX::SimpleMath::Vector2 InputHandler::cursor;
-DirectX::SimpleMath::Vector2 InputHandler::lastCursor;
+DirectX::Math::Vector2 InputHandler::cursor;
+DirectX::Math::Vector2 InputHandler::lastCursor;
 
 bool InputHandler::isLeftMousePressed;
 bool InputHandler::isMiddleMousePressed;

@@ -1,10 +1,10 @@
 ﻿#pragma once
 
 #include "Pch.hpp"
-#include "Common/SimpleMath.hpp"
+#include "Common/Math.hpp"
 #include "Graphics/ConstantBuffer.hpp"
 
-using namespace DirectX::SimpleMath;
+using namespace DirectX::Math;
 
 #define MAX_JOINTS 128 //The maximum allowed number of joints per shader
 

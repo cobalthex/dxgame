@@ -8,8 +8,11 @@ enum class ShaderType
 {
 	Unknown,
 	PositionColor,
+	PositionTexture,
 	Lit,
-	LitSkinned
+	LitSkinned,
+
+	ShadowMap
 };
 
 class ShaderCache : public Cache<ShaderType, Shader>

@@ -7,11 +7,11 @@
 struct BaseEventArgs
 {
 	TimePoint time;
-	TimeSpan delay;
+	::TimeSpan delay;
 	unsigned repetitions;
 
-	BaseEventArgs() : delay(TimeSpan::zero()), repetitions(0), time(TimePoint()) { }
-	BaseEventArgs(const TimeSpan& Delay, unsigned Repetitions = 0, const TimePoint& Time = Timer::now())
+	BaseEventArgs() : delay(::TimeSpan::zero()), repetitions(0), time(TimePoint()) { }
+	BaseEventArgs(const ::TimeSpan& Delay, unsigned Repetitions = 0, const TimePoint& Time = Timer::now())
 		: time(Time), delay(Delay), repetitions(Repetitions) { }
 };
 
@@ -24,6 +24,6 @@ public:
 	virtual ~Event() { }
 
 	TimePoint time;
-	TimeSpan delay; //how long to delay this Event before calling; Works in conjunction with repetitions
+	::TimeSpan delay; //how long to delay this Event before calling; Works in conjunction with repetitions
 	int repetitions; //how many times should this Event be called before its removed
 };

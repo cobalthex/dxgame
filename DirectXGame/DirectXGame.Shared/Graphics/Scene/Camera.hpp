@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Common/SimpleMath.hpp"
+#include "Common/Math.hpp"
 #include "Graphics/ConstantBuffer.hpp"
 
-using namespace DirectX::SimpleMath;
+using namespace DirectX::Math;
 
 //A single camera that can view a scene. Defines a chase camera
 class Camera

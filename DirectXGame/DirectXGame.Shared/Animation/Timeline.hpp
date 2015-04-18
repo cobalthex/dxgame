@@ -10,7 +10,7 @@ class Timeline : public Animation
 {
 public:
 
-	Timeline(bool DeleteOnDestroy = true, bool IsLooping = false, const TimeSpan& LoopStart = TimeType::zero());
+	Timeline(bool DeleteOnDestroy = true, bool IsLooping = false, const ::TimeSpan& LoopStart = TimeType::zero());
 	~Timeline();
 
 	Timeline& operator = (Timeline&& Other);

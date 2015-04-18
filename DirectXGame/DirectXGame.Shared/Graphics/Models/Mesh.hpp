@@ -2,6 +2,7 @@
 
 #include "Pch.hpp"
 #include "Graphics/DeviceResources.hpp"
+#include "Common/Box.hpp"
 
 typedef ComPtr<ID3D11Buffer> VertexBuffer;
 typedef ComPtr<ID3D11Buffer> IndexBuffer;
@@ -140,7 +141,7 @@ public:
 			devContext->UpdateSubresource(vertices.Get(), 0, nullptr, Vertices.data(), (unsigned)(Vertices.size() * sizeof(VertexType)), 0);
 	}
 	//Update the all of the mesh's indices with new data
-	void UpdateIndices(const std::vector<IndexType>& Indices)
+	inline void UpdateIndices(const std::vector<IndexType>& Indices)
 	{
 		if (hasDynamicUsage)
 		{

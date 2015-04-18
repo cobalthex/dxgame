@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------------------
-//SimpleMath.cpp -- Simplified C++ Math wrapper for DirectXMath
+//Math.cpp -- Simplified C++ Math wrapper for DirectXMath
 //
 //THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
 //ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
@@ -12,11 +12,11 @@
 //-------------------------------------------------------------------------------------
 
 #include "pch.hpp"
-#include "SimpleMath.hpp"
+#include "Math.hpp"
 
 namespace DirectX
 {
-	namespace SimpleMath
+	namespace Math
 	{
 
 #if defined(_MSC_VER) && (_MSC_VER < 1800)

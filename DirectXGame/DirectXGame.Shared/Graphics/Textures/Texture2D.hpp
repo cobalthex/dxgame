@@ -63,7 +63,7 @@ public:
 
 	inline void Apply(unsigned Slot = 0) const { deviceResources->GetD3DDeviceContext()->PSSetShaderResources(Slot, 1, srv.GetAddressOf()); } //Apply this texture to the current pixel shader (Does not check if valid)
 
-	inline POINT Size() const { POINT p = { desc.Width, desc.Height }; return p; }
+	inline SIZE Size() const { SIZE p = { desc.Width, desc.Height }; return p; }
 	inline unsigned Width() const { return desc.Width; }
 	inline unsigned Height() const { return desc.Height; }
 	inline unsigned MipLevels() const { return desc.MipLevels; }

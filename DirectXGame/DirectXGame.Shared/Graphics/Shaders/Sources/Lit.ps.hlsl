@@ -5,7 +5,7 @@
 Texture2D Texture : register(t0);
 SamplerState Sampler : register(s0);
 
-struct PixelShaderInput
+struct PixelInput
 {
 	float4 position : SV_POSITION;
 	float4 worldPosition : POSITION; //position in world coordinates
@@ -15,9 +15,9 @@ struct PixelShaderInput
 };
 
 //A pass-through function for the (interpolated) color data
-float4 main(PixelShaderInput input) : SV_TARGET
+float4 main(PixelInput Input) : SV_TARGET
 {
-	LightCalc lit = ComputeLighting(input.worldPosition, normalize(input.normal));
+	LightCalc lit = ComputeLighting(Input.worldPosition, normalize(Input.normal));
 
 	float4 emissive = Emissive;
 	float4 ambient = Ambient * GlobalAmbience;
@@ -26,7 +26,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 
 	float4 texColor = { 1, 1, 1, 1 };
 	if (UseTexture)
-		texColor = Texture.Sample(Sampler, input.texCoord);
+		texColor = Texture.Sample(Sampler, Input.texCoord);
 
 	return (emissive + ambient + diffuse + specular) * texColor;
 }

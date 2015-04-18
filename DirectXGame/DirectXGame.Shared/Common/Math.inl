@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------------------
-//SimpleMath.inl -- Simplified C++ Math wrapper for DirectXMath
+//Math.inl -- Simplified C++ Math wrapper for DirectXMath
 //
 //THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
 //ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO

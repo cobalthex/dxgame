@@ -3,7 +3,7 @@
 #include "Common/StepTimer.hpp"
 #include "Graphics/DeviceResources.hpp"
 
-//An abstract class that implements the basic functions of a rendered component
+//An abstract class that implements the basic functions of a rendered component. (This is mainly for low level)
 class Renderer
 {
 public:

@@ -1,12 +1,12 @@
 #include "Pch.hpp"
 #include "util.hpp"
 #include "IqmLoader.hpp"
-#include "Common/SimpleMath.hpp"
+#include "Common/Math.hpp"
 #include "Graphics/Shaders/ShaderStructures.hpp"
 #include "Data/Formats/Osl/Osl.hpp"
 #include "App/SystemSettings.hpp"
 
-using namespace DirectX::SimpleMath;
+using namespace DirectX::Math;
 
 const float Iqm::DefaultFrameLength = (1000.f / 24.f);
 
@@ -163,8 +163,15 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 		std::string matStr (tmp.texts + m.material);
 		if (doc.Contains(matStr))
 			mat = Materials::LitMaterial(TexCache, doc[matStr], Shader);
-		
-		meshes.emplace_back(m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat);
+
+		::Bounds bnd;
+		if (tmp.bounds != nullptr)
+		{
+			bnd.box = Box3(tmp.bounds[i].bbMin, tmp.bounds[i].bbMin);
+			bnd.radius = tmp.bounds[i].radius;
+			bnd.xyRadius = tmp.bounds[i].xyRadius;
+		}
+		meshes.emplace_back(m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat, bnd);
 	}
 
 	std::map<std::string, ::SkinnedSequence> sequences;

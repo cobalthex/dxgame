@@ -146,7 +146,7 @@ void TestScene::CreateStage(float Radius)
 	mat.diffuseMap = texCache.Load("Stage.dds");
 	mat.ambient = mat.diffuse = Color(1, 1, 1);
 
-	meshes.emplace_back(0, 4, 0, 4, mat);
+	meshes.emplace_back(0, 4, 0, 4, mat, Bounds());
 
 	stage = StaticModel(deviceResources, verts, indices, PrimitiveTopology::TriangleStrip, meshes);
 

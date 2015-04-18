@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Pch.hpp"
-#include "Common/SimpleMath.hpp"
+#include "Common/Math.hpp"
 
 namespace InputHandler
 {
-	extern DirectX::SimpleMath::Vector2 cursor;
-	extern DirectX::SimpleMath::Vector2 lastCursor;
+	extern DirectX::Math::Vector2 cursor;
+	extern DirectX::Math::Vector2 lastCursor;
  
 	extern bool isLeftMousePressed;
 	extern bool isMiddleMousePressed;

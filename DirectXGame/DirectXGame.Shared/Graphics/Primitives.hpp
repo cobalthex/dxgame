@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Models/Mesh.hpp"
-#include "Common/SimpleMath.hpp"
+#include "Common/Math.hpp"
 #include "Graphics/Shaders/PositionColorShader.hpp"
 
-using namespace DirectX::SimpleMath;
+using namespace DirectX::Math;
 using PCSVertex = Shaders::PositionColorShader::Vertex;
 
 namespace Primitives

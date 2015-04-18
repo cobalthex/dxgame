@@ -6,7 +6,7 @@ cbuffer WorldBuffer : register(b0)
 }
 
 //Per-vertex data used as input to the vertex shader
-struct VertexShaderInput
+struct VertexInput
 {
 	float3 position : POSITION;
 	float3 normal : NORMAL;
@@ -16,7 +16,7 @@ struct VertexShaderInput
 };
 
 //Per-pixel color data passed through the pixel shader
-struct PixelShaderInput
+struct PixelInput
 {
 	float4 position : SV_POSITION; //position in screen coordinates
 	float4 worldPosition : POSITION; //position in world coordinates
@@ -25,11 +25,10 @@ struct PixelShaderInput
 	float4 color : COLOR;
 };
 
-//Simple shader to do vertex processing on the GPU
-PixelShaderInput main(VertexShaderInput input)
+PixelInput main(VertexInput Input)
 {
-	PixelShaderInput output;
-	float4 position = float4(input.position, 1.0f);
+	PixelInput output;
+	float4 position = float4(Input.position, 1.0f);
 
 	//Transform the vertex position into projected space
 
@@ -37,9 +36,9 @@ PixelShaderInput main(VertexShaderInput input)
 	output.position = mul(position, WorldViewProjection);
 
 	//Pass the color through without modification
-	output.color = input.color;
-	output.texCoord = input.texCoord;
-	output.normal = mul(input.normal, (float3x3)InverseTransposeWorld);
+	output.color = Input.color;
+	output.texCoord = Input.texCoord;
+	output.normal = mul(Input.normal, (float3x3)InverseTransposeWorld);
 
 	return output;
 }

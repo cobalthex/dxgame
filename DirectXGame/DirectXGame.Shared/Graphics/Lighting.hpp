@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Pch.hpp"
-#include "Common/SimpleMath.hpp"
+#include "Common/Math.hpp"
 #include "ConstantBuffer.hpp"
 
-using namespace DirectX::SimpleMath;
+using namespace DirectX::Math;
 
 #define MAX_LIGHTS 4
 

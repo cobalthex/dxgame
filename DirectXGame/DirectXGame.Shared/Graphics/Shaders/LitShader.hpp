@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/SimpleMath.hpp"
+#include "Common/Math.hpp"
 #include "Graphics/DeviceResources.hpp"
 #include "Graphics/ConstantBuffer.hpp"
 #include "Graphics/Shaders/ShaderStructures.hpp"
