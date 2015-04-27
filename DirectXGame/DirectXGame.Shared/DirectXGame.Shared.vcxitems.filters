@@ -8,6 +8,8 @@
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lit.ps.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\ShadowMap.ps.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\ShadowMap.vs.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\PositionTexture.vs.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\PositionTexture.ps.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Sequence.cpp" />
@@ -31,15 +33,18 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitSkinnedShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\SystemSettings.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Common\Helpers.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\LitShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Input\InputHandler.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Common\SimpleMath.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShadowMapShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Effects\ShadowMapEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\Math.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Scene\Skybox.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionTextureShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\OBJ\ObjLoader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\StreamOps.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\StringOps.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
@@ -50,7 +55,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Timeline.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\TimelineEvents.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Helpers.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\ISerializable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\ModelMesh.hpp" />
@@ -107,6 +111,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Effects\ShadowMapEffect.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Box.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Math.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture3D.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionTextureShader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\OBJ\ObjLoader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\StreamOps.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\StringOps.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\Union.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lighting.hlsli" />
@@ -118,6 +128,8 @@
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Consts.hlsli" />
     <None Include="$(MSBuildThisFileDirectory)Content\Models\sword.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Common\Math.inl" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\tower.mtl" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\tower.obj" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Body.dds" />

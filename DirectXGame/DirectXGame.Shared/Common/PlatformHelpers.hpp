@@ -2,7 +2,7 @@
 
 #include <ppltasks.h>	// For create_task
 #include <cwctype>
-#include "Helpers.hpp"
+#include "StringOps.hpp"
 
 namespace Sys
 {
@@ -61,7 +61,7 @@ namespace Sys
 		auto folder = Windows::ApplicationModel::Package::Current->InstalledLocation;
 
 		auto fn = Filename;
-		StringReplace(fn, L"/", L"\\"); //for some reason, folder->GetFileAsync does not accept forward slashes
+		StringOps::Replace(fn, L"/", L"\\"); //folder->GetFileAsync does not accept forward slashes
 		return create_task(folder->GetFileAsync(Platform::StringReference(fn.c_str()))).then([](StorageFile^ file)
 		{
 			return FileIO::ReadBufferAsync(file);

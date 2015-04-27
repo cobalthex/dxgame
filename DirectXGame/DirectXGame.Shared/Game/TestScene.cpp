@@ -1,8 +1,9 @@
 ﻿#include "Pch.hpp"
 #include "TestScene.hpp"
 #include "Common/PlatformHelpers.hpp"
-#include "Common/Helpers.hpp"
+#include "Common/StringOps.hpp"
 #include "Graphics/Models/Formats/IQM/IqmLoader.hpp"
+#include "Graphics/Models/Formats/OBJ/ObjLoader.hpp"
 #include "Graphics/Primitives.hpp"
 #include "Input/InputHandler.hpp"
 #include "Data/Formats/Osl/Osl.hpp"
@@ -146,9 +147,11 @@ void TestScene::CreateStage(float Radius)
 	mat.diffuseMap = texCache.Load("Stage.dds");
 	mat.ambient = mat.diffuse = Color(1, 1, 1);
 
-	meshes.emplace_back(0, 4, 0, 4, mat, Bounds());
+	meshes.emplace_back("stage", 0, 4, 0, 4, mat, Bounds());
 
 	stage = StaticModel(deviceResources, verts, indices, PrimitiveTopology::TriangleStrip, meshes);
+
+	Obj::Load(deviceResources, "Content/Models/tower.obj", texCache, shCache.Load<Shaders::LitShader>(ShaderType::Lit), tower);
 
 	camRotation = { 0, -0.4f, 12 };
 }
@@ -213,8 +216,9 @@ void TestScene::Render()
 	iqm.Skin(lsShader->object.data.joints);
 	lsShader->object.Update();
 
+	
 	iqm.Draw();
-
+	
 	context->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1, 0);
 
 	auto skel = iqm.CreateSkeletalMesh(Color(1, 0.6f, 0, 0));

@@ -46,6 +46,8 @@ namespace DirectXGame
 		StaticModel stage;
 		void CreateStage(float Radius = 10);
 
+		StaticModel tower;
+
 		Timeline timeline;
 
 		// Variables used with the rendering loop.

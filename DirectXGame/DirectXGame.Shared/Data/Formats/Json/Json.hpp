@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Pch.hpp"
-#include "Common/Helpers.hpp"
+#include "Common/Union.hpp"
 #include "Data/ISerializable.hpp"
 
 //Basic JSON IO. Limited Error handling. Supports all standard JSON types (Including Integers and Floats separately)
@@ -113,7 +113,7 @@ namespace Json
 
 	protected:
 		Types type;
-		VariantBuffer<std::nullptr_t, bool, integer, decimal, std::string, Object, Array> value;
+		Union<std::nullptr_t, bool, integer, decimal, std::string, Object, Array> value;
 
 		//Delete any old values and reset it to the default
 		void Reset();

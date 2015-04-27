@@ -27,6 +27,8 @@ public:
 
 	std::vector<MeshType> meshes; //All of the model meshes that make up this model
 
+	inline MeshType& FindMesh(const std::string& Mesh) { return *std::find_if(meshes.begin(), meshes.end(), [&Mesh](const MeshType& M) { return (Mesh == M.name); }); }
+
 	void Draw(unsigned Slot = 0) const; //Draws only the basic mesh without any materials or skinning
 
 protected:

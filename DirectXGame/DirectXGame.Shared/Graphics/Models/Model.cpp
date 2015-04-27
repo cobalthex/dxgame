@@ -29,7 +29,8 @@ void Model::Draw(unsigned Slot) const
 	Bind(Slot);
 
 	auto sh = (Shaders::LitSkinnedShader*)meshes[0].material.shader.get();
-	sh->Apply();
+	if (sh != nullptr)
+		sh->Apply();
 
 	//Draw all of the meshes
 	for (auto& m : meshes)

@@ -1,6 +1,7 @@
 #include "Pch.hpp"
 #include "Osl.hpp"
 #include <ctime>
+#include "Common/StringOps.hpp"
 
 using namespace Osl;
 
@@ -575,7 +576,7 @@ bool Value::Read(std::istream& Stream)
 	{
 		Stream.get(); //skip $
 		s = ReadWord(Stream);
-		StringToLower(s);
+		StringOps::ToLower(s);
 		Types t;
 
 		if (s == "null" || s == "nil") t = Types::Null;

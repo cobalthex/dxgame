@@ -14,8 +14,16 @@ void ShadowMapEffect::Begin()
 
 	shader->light.data.lightColor = light->color;
 	shader->world.data.LightPosition = light->position;
+
+	lightCam = *camera;
+	lightCam.position = light->position.XYZ();
+	lightCam.lookAt = light->direction.XYZ();
+	lightCam.CalcMatrices();
 	
-	shader->world.data.lightWvp =  camera->Projection()
+	shader->world.data.world = Matrix::CreateWorld(lightCam.position, light->direction.XYZ(), Vector3::Up);
+	shader->world.data.LightPosition = light->position;
+	lightCam.CalcMatrices();
+	//shader->world.data.lightWvp = 
 }
 void ShadowMapEffect::End()
 {

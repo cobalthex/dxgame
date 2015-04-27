@@ -262,6 +262,8 @@ namespace DirectX
 
 			operator XMVECTOR() const { return XMLoadFloat4(this); }
 
+			inline Vector3 XYZ() const { return Vector3(x, y, z); }
+
 			//Comparision operators
 			bool operator == (const Vector4& V) const;
 			bool operator != (const Vector4& V) const;

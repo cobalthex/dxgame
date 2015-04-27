@@ -7,7 +7,7 @@ std::shared_ptr<Texture2D> TextureCache::Load(const std::string& Key)
 	if (Key.length() < 1)
 		return nullptr;
 
-	auto key = StringToLower(Key);
+	auto key = StringOps::ToLower(Key);
 
 	if (Has(key))
 		return cache[key];

@@ -15,13 +15,13 @@ const unsigned ShadowMapShader::Vertex::ElementCount = ARRAYSIZE(ShadowMapShader
 ShadowMapShader::ShadowMapShader(const DeviceResourcesPtr& DeviceResources)
 	: world(DeviceResources), light(DeviceResources), vshader(), pshader()
 {
-	auto fp = ToWString(SystemSettings::GetShaderFile("ShadowMap.vs.cso"));
+	auto fp = StringOps::ToWString(SystemSettings::GetShaderFile("ShadowMap.vs.cso"));
 	auto file = Sys::ReadFileAsync(fp).then([this, &DeviceResources](const Sys::FileData& Data)
 	{
 		vshader = VertexShader(DeviceResources, Data);
 		DeviceResources->GetD3DDevice()->CreateInputLayout(Vertex::ElementDesc, Vertex::ElementCount, Data.data(), Data.size(), inputLayout.GetAddressOf());
 	});
-	fp = ToWString(SystemSettings::GetShaderFile("ShadowMap.ps.cso"));
+	fp = StringOps::ToWString(SystemSettings::GetShaderFile("ShadowMap.ps.cso"));
 	file = Sys::ReadFileAsync(fp).then([this, &DeviceResources](const Sys::FileData& Data)
 	{
 		pshader = PixelShader(DeviceResources, Data);

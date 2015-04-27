@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/Helpers.hpp"
+#include "Common/Union.hpp"
 #include "Data/ISerializable.hpp"
 
 //Basic OSL (Object serialization Language) IO. Limited Error handling. Supports all standard OSL types
@@ -197,7 +197,7 @@ namespace Osl
 
 	protected:
 		Types type;
-		VariantBuffer<std::nullptr_t, bool, integer, decimal, std::string, Date, Time, Tuple, Object, Reference, Types> value;
+		Union<std::nullptr_t, bool, integer, decimal, std::string, Date, Time, Tuple, Object, Reference, Types> value;
 
 		//Delete any old values and reset it to the default
 		void Reset();

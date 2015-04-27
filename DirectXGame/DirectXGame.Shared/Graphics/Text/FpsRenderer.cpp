@@ -14,7 +14,7 @@ FpsRenderer::FpsRenderer(const std::shared_ptr<DeviceResources>& DeviceResources
 
 	ComPtr<IDWriteFactory> dwFactory = deviceResources->GetDWriteFactory();
 
-	auto fontFilename = CombinePaths(Sys::GetWorkingDirectory(), ToWString(StringReplace(SystemSettings::GetFontFile("DebugFixed/DebugFixed.ttf"), "/", "\\")));
+	auto fontFilename = StringOps::CombinePaths(Sys::GetWorkingDirectory(), StringOps::ToWString(StringOps::Replace(SystemSettings::GetFontFile("DebugFixed/DebugFixed.ttf"), "/", "\\")));
 
 	ComPtr<IDWriteFontCollectionLoader> pCollectionLoader = new DWriteFontCollectionLoader(fontFilename.data());
 	Sys::ThrowIfFailed(dwFactory->RegisterFontCollectionLoader(pCollectionLoader.Get()));

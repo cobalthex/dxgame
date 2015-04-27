@@ -15,15 +15,15 @@ template <class MaterialType>
 class ModelMesh
 {
 public:
-	ModelMesh() : startVertex(0), vertexCount(0), startIndex(0), indexCount(0), material(), bounds() { }
-	ModelMesh(size_t StartVertex, size_t VertexCount, size_t StartIndex, size_t IndexCount, const MaterialType& Material, const Bounds& Bounds)
-		: startVertex(StartVertex), vertexCount(VertexCount), startIndex(StartIndex), indexCount(IndexCount), material(Material), bounds(Bounds) { }
+	ModelMesh(const std::string& Name, size_t StartVertex, size_t VertexCount, size_t StartIndex, size_t IndexCount, const MaterialType& Material, const Bounds& Bounds)
+		: name(Name), startVertex(StartVertex), vertexCount(VertexCount), startIndex(StartIndex), indexCount(IndexCount), material(Material), bounds(Bounds) { }
 
 	inline size_t StartVertex() const { return startVertex; } //The first vertex of this mesh in the model which owns it
 	inline size_t VertexCount() const { return vertexCount; } //The number of vertices in this mesh
 	inline size_t StartIndex() const { return startIndex; } //The first index of this mesh in the model which owns it
 	inline size_t IndexCount() const { return indexCount; } //The number of indices in this mesh
 
+	std::string name;
 	MaterialType material;
 
 	inline Bounds Bounds() const { return bounds; }

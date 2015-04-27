@@ -17,11 +17,13 @@ public:
 	virtual void End() override; //apply the shadow map
 
 	Light* light; //the light to use as the shadow source
-	Camera* camera;
+	Camera* camera; //the scene camera
 
 protected:
 	std::shared_ptr<Shaders::ShadowMapShader> shader;
 	ComPtr<ID3D11DepthStencilView> shadowDepth;
 	ComPtr<ID3D11Texture2D> shadowMap;
 	ComPtr<ID3D11ShaderResourceView> shadowSRV;
+
+	Camera lightCam;
 };

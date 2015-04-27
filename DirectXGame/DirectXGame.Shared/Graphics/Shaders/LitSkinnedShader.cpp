@@ -22,13 +22,13 @@ const unsigned LitSkinnedShader::Vertex::ElementCount = ARRAYSIZE(LitSkinnedShad
 LitSkinnedShader::LitSkinnedShader(const DeviceResourcesPtr& DeviceResources)
 	: object(DeviceResources), material(DeviceResources), lighting(DeviceResources), vshader(), pshader()
 {
-	auto fp = ToWString(SystemSettings::GetShaderFile("LitSkinned.vs.cso"));
+	auto fp = StringOps::ToWString(SystemSettings::GetShaderFile("LitSkinned.vs.cso"));
 	auto file = Sys::ReadFileAsync(fp).then([this, &DeviceResources](const Sys::FileData& Data)
 	{
 		vshader = VertexShader(DeviceResources, Data);
 		DeviceResources->GetD3DDevice()->CreateInputLayout(Vertex::ElementDesc, Vertex::ElementCount, Data.data(), Data.size(), inputLayout.GetAddressOf());
 	});
-	fp = ToWString(SystemSettings::GetShaderFile("Lit.ps.cso"));
+	fp = StringOps::ToWString(SystemSettings::GetShaderFile("Lit.ps.cso"));
 	file = Sys::ReadFileAsync(fp).then([this, &DeviceResources](const Sys::FileData& Data)
 	{
 		pshader = PixelShader(DeviceResources, Data);

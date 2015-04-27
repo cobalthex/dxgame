@@ -22,6 +22,8 @@ public:
 	virtual ~ShaderCache() { }
 
 	virtual std::shared_ptr<Shader> Load(const ShaderType& Key) override;
+	template <class ShType>
+	inline std::shared_ptr<ShType> Load(const ShaderType& Key) { return std::static_pointer_cast<ShType>(Load(Key)); }
 
 protected:
 	DeviceResourcesPtr deviceResources;

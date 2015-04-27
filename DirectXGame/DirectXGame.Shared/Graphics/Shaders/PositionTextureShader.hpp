@@ -8,20 +8,22 @@
 
 namespace Shaders
 {
-	class PositionColorShader : public Shader
+	class PositionTextureShader : public Shader
 	{
 	public:
 		struct Vertex
 		{
 			DirectX::Math::Vector3 position;
-			DirectX::Math::Color color;
+			DirectX::Math::Vector2 texCoord;
+
+			Vertex(const DirectX::Math::Vector3& Position, const DirectX::Math::Vector2& TexCoord) : position(Position), texCoord(TexCoord) { }
 
 			static const D3D11_INPUT_ELEMENT_DESC ElementDesc[];
 			static const unsigned ElementCount;
 		};
 
-		PositionColorShader() { }
-		PositionColorShader(const DeviceResourcesPtr& DeviceResources);
+		PositionTextureShader() { }
+		PositionTextureShader(const DeviceResourcesPtr& DeviceResources);
 
 		inline void Apply() override
 		{
@@ -36,7 +38,7 @@ namespace Shaders
 		}
 
 		inline void SetInputLayout() const{ if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
-		
+
 		ConstantBuffer<WVPBufferDef> wvp; //world view projection buffer
 
 	protected:
