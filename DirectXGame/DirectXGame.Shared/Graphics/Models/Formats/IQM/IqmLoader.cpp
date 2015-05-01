@@ -106,7 +106,8 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 	auto matFile = StringOps::CombinePaths(SystemSettings::BaseContentFolder, SystemSettings::BaseMaterialsFolder, Filename.substr(fp, Filename.find_last_of('.') - fp) + ".matl");
 	Osl::Document doc(matFile);
 
-	std::vector<::ModelMesh<Materials::LitMaterial>> meshes; meshes.reserve(tmp.header.numMeshes);
+	std::map<std::string, Model::MeshType> meshes;
+	//meshes.reserve(tmp.header.numMeshes);
 	std::vector<::Model::VertexType> vertices;
 	std::vector<unsigned> indices;
 	for (unsigned i = 0; i < tmp.header.numMeshes; i++)
@@ -171,7 +172,8 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 			bnd.radius = tmp.bounds[i].radius;
 			bnd.xyRadius = tmp.bounds[i].xyRadius;
 		}
-		meshes.emplace_back(std::string(tmp.texts + m.name), m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat, bnd);
+		std::string mname = std::string(tmp.texts + m.name);
+		meshes[mname] = { mname, m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat, bnd };
 	}
 
 	std::map<std::string, ::SkinnedSequence> sequences;

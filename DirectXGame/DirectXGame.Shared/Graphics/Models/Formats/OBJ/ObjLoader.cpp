@@ -1,6 +1,11 @@
 #include "Pch.hpp"
 #include "ObjLoader.hpp"
 #include "Common/StreamOps.hpp"
+#include "Graphics/Models/MeshOps.hpp"
+#include "App/SystemSettings.hpp"
+
+typedef std::vector<StaticModel::VertexType> VList;
+typedef std::vector<StaticModel::IndexType> IList;
 
 bool LoadMaterials(const std::string& LibFile, TextureCache& TexCache, std::map<std::string, Materials::LitMaterial>& Materials, const std::shared_ptr<Shaders::LitShader>& Shader); //load a list of materials from a file into the materials list
 
@@ -10,15 +15,15 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 	std::vector<Vector3> normals;
 	std::vector<Vector2> texcoords;
 
-	std::vector<StaticModel::VertexType> vertices;
-	std::vector<StaticModel::IndexType> indices;
+	VList vertices;
+	IList indices;
 
 	std::map<std::string, Materials::LitMaterial> materials;
 
 	std::string curMaterial; //currently selected material
 	std::string name; //current object name
 
-	std::vector<StaticModel::MeshType> meshes;
+	std::map<std::string, StaticModel::MeshType> meshes;
 	unsigned nextVertex = 0, nextIndex = 0;
 
 	std::ifstream fin(Filename);
@@ -48,9 +53,8 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 				else
 					mtl.shader = Shader;
 
-				StaticModel::MeshType m(name, nextVertex, (unsigned)vertices.size() - nextVertex, nextIndex, (unsigned)indices.size() - nextIndex, mtl, Bounds());
-
-				meshes.push_back(m);
+				meshes[name] = { name, nextVertex, (unsigned)vertices.size() - nextVertex, nextIndex, (unsigned)indices.size() - nextIndex, mtl, Bounds() };
+				
 				nextVertex = (unsigned)vertices.size();
 				nextIndex = (unsigned)indices.size();
 			}
@@ -63,11 +67,10 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 		}
 		else if (ty == "mtllib")
 		{
+			StreamOps::SkipWhitespace(fin);
 			getline(fin, ty);
-			int i;
-			for (i = 0; i < ty.length() && ty[i] < 33; i++); //remove leading whitespace
-
-			LoadMaterials(ty.substr(i - 1), TexCache, materials, Shader);
+			ty = SystemSettings::GetMaterialFile(ty);
+			LoadMaterials(ty, TexCache, materials, Shader);
 		}
 		else if (ty == "v")
 		{
@@ -92,8 +95,11 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 			int v = 0, t = 0, n = 0;
 			bool isT = false, isN = false;
 
+			size_t fc = 0;
 			while (!fin.eof() && fin.peek() != '\n')
 			{
+				fc++;
+
 				StreamOps::SkipWhitespace(fin);
 
 				v = StreamOps::ReadInt(fin);
@@ -126,19 +132,35 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 				vertices.push_back(vtx);
 				indices.push_back((unsigned)vertices.size() - 1);
 			}
+
+			if (fc > 3)
+			{
+
+			}
 		}
 		else if (ty == "usemtl")
 		{
+			StreamOps::SkipWhitespace(fin);
 			getline(fin, ty);
-			int i;
-			for (i = 0; i < ty.length() && ty[i] < 33; i++); //remove leading whitespace
-			curMaterial = ty.substr(i - 1);
+			curMaterial = ty;
 		}
 		else //unused types
 			std::getline(fin, ty);
 	}
 
 	fin.close();
+
+	//last mesh
+	if (vertices.size() > 0)
+	{
+		Materials::LitMaterial mtl;
+		if (materials.find(curMaterial) != materials.end())
+			mtl = materials[curMaterial];
+		else
+			mtl.shader = Shader;
+
+		meshes[name] = { name, nextVertex, (unsigned)vertices.size() - nextVertex, nextIndex, (unsigned)indices.size() - nextIndex, mtl, Bounds() };
+	}
 
 	Model = StaticModel(DeviceResources, vertices, indices, PrimitiveTopology::TriangleList, meshes);
 
@@ -223,8 +245,21 @@ bool LoadMaterials(const std::string& LibFile, TextureCache& TexCache, std::map<
 		else //all others unused
 			std::getline(fin, ty);
 	}
-
-
 	fin.close();
+
+	//last material
+	if (name.length() > 0)
+	{
+		Materials[name] = Materials::LitMaterial(Shader);
+		auto& mtl = Materials[name];
+		mtl.ambient = ambient;
+		mtl.diffuse = diffuse;
+		mtl.diffuseMap = diffMap;
+		mtl.useTexture = (diffMap != nullptr && diffMap->IsValid());
+		mtl.emissive = emissive;
+		mtl.specular = specular;
+		mtl.specularPower = specPower;
+	}
+
 	return true;
 }

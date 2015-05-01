@@ -15,6 +15,7 @@ template <class MaterialType>
 class ModelMesh
 {
 public:
+	ModelMesh() { }
 	ModelMesh(const std::string& Name, size_t StartVertex, size_t VertexCount, size_t StartIndex, size_t IndexCount, const MaterialType& Material, const Bounds& Bounds)
 		: name(Name), startVertex(StartVertex), vertexCount(VertexCount), startIndex(StartIndex), indexCount(IndexCount), material(Material), bounds(Bounds) { }
 

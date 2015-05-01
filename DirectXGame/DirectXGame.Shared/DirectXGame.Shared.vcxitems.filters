@@ -45,6 +45,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\OBJ\ObjLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\StreamOps.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\StringOps.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\MeshOps.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
@@ -117,6 +118,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StreamOps.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StringOps.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Union.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\MeshOps.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lighting.hlsli" />
@@ -128,8 +130,9 @@
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Consts.hlsli" />
     <None Include="$(MSBuildThisFileDirectory)Content\Models\sword.iqm" />
     <None Include="$(MSBuildThisFileDirectory)Common\Math.inl" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Models\tower.mtl" />
     <None Include="$(MSBuildThisFileDirectory)Content\Models\tower.obj" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Materials\tower.mtl" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Materials\sword.mtl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Body.dds" />
@@ -145,5 +148,8 @@
   <ItemGroup>
     <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\license.txt" />
     <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="$(MSBuildThisFileDirectory)Content\Models\sword.obj" />
   </ItemGroup>
 </Project>

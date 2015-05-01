@@ -141,17 +141,17 @@ void TestScene::CreateStage(float Radius)
 
 	static const std::vector<unsigned> indices = { 0, 1, 2, 3 };
 
-	std::vector<ModelMesh<Materials::LitMaterial>> meshes;
+	std::map<std::string, StaticModel::MeshType> meshes;
 	
 	Materials::LitMaterial mat(std::static_pointer_cast<Shaders::LitShader>(shCache.Load(ShaderType::Lit)));
 	mat.diffuseMap = texCache.Load("Stage.dds");
 	mat.ambient = mat.diffuse = Color(1, 1, 1);
 
-	meshes.emplace_back("stage", 0, 4, 0, 4, mat, Bounds());
+	meshes["stage"] = { "stage", 0, 4, 0, 4, mat, Bounds() };
 
 	stage = StaticModel(deviceResources, verts, indices, PrimitiveTopology::TriangleStrip, meshes);
 
-	Obj::Load(deviceResources, "Content/Models/tower.obj", texCache, shCache.Load<Shaders::LitShader>(ShaderType::Lit), tower);
+	Obj::Load(deviceResources, "Content/Models/sword.obj", texCache, shCache.Load<Shaders::LitShader>(ShaderType::Lit), sword);
 
 	camRotation = { 0, -0.4f, 12 };
 }
@@ -175,7 +175,7 @@ void TestScene::Update(const StepTimer& Timer)
 	lsShader->object.data.world = world.Transpose();
 	lsShader->object.data.Calc(cam.View(), cam.Projection());
 
-	auto sh = (Shaders::LitShader*)stage.meshes[0].material.shader.get();
+	auto sh = (Shaders::LitShader*)(stage.meshes.begin()->second.material.shader.get());
 	sh->lighting = lsShader->lighting;
 	sh->object.data.world = Matrix::Identity;
 	sh->object.data.Calc(cam.View(), cam.Projection());
@@ -203,12 +203,14 @@ void TestScene::Render()
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-	auto sh = (Shaders::LitShader*)stage.meshes[0].material.shader.get();
+	auto sh = (Shaders::LitShader*)(stage.meshes.begin()->second.material.shader.get());
 	sh->SetInputLayout();
 	sh->Apply();
 	sh->Update();
 	stage.Draw();
 
+	sword.Draw();
+	/*
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	lsShader->SetInputLayout();
 	lsShader->Apply();
@@ -216,7 +218,6 @@ void TestScene::Render()
 	iqm.Skin(lsShader->object.data.joints);
 	lsShader->object.Update();
 
-	
 	iqm.Draw();
 	
 	context->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1, 0);
@@ -233,5 +234,5 @@ void TestScene::Render()
 	pcShader->Apply();
 
 	iqmSkel.Draw();
-	context->RSSetState(nullptr);
+	context->RSSetState(nullptr);*/
 }

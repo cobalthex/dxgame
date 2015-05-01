@@ -22,12 +22,10 @@ public:
 		const std::vector<VertexType>& Vertices,
 		const std::vector<IndexType>& Indices,
 		PrimitiveTopology Topology,
-		const std::vector<MeshType>& Meshes
+		const std::map<std::string, MeshType>& Meshes
 		);
 
-	std::vector<MeshType> meshes; //All of the model meshes that make up this model
-
-	inline MeshType& FindMesh(const std::string& Mesh) { return *std::find_if(meshes.begin(), meshes.end(), [&Mesh](const MeshType& M) { return (Mesh == M.name); }); }
+	std::map<std::string, MeshType> meshes; //All of the model meshes that make up this model
 
 	void Draw(unsigned Slot = 0) const; //Draws only the basic mesh without any materials or skinning
 

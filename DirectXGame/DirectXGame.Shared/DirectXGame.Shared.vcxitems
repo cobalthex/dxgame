@@ -26,6 +26,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Effects\ShadowMapEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\IqmLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\OBJ\ObjLoader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\MeshOps.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\Skinning.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.cpp" />
@@ -70,6 +71,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Effects\ShadowMapEffect.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\OBJ\ObjLoader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\MeshOps.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\ModelMesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\StaticModel.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Primitives.hpp" />
@@ -180,9 +182,11 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Common\Math.inl" />
     <None Include="$(MSBuildThisFileDirectory)Common\SimpleMath.inl" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Models\tower.mtl">
+    <None Include="$(MSBuildThisFileDirectory)Content\Materials\sword.mtl">
       <DeploymentContent>true</DeploymentContent>
-      <FileType>Document</FileType>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Content\Materials\tower.mtl">
+      <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\sword.iqm">
       <DeploymentContent>true</DeploymentContent>
@@ -236,6 +240,13 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\tower.obj">
       <DeploymentContent>true</DeploymentContent>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\sword.obj">
+      <DeploymentContent>true</DeploymentContent>
+      <ExcludedFromBuild>false</ExcludedFromBuild>
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

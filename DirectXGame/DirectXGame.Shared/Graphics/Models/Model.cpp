@@ -8,7 +8,7 @@ Model::Model
 	const std::vector<VertexType>& Vertices,
 	const std::vector<IndexType>& Indices,
 	PrimitiveTopology Topology,
-	const std::vector<MeshType>& Meshes,
+	const std::map<std::string, MeshType>& Meshes,
 	const std::vector<Joint>& Joints,
 	const std::map<std::string, SkinnedSequence> Poses
 	) :
@@ -28,23 +28,23 @@ void Model::Draw(unsigned Slot) const
 
 	Bind(Slot);
 
-	auto sh = (Shaders::LitSkinnedShader*)meshes[0].material.shader.get();
+	auto sh = (Shaders::LitSkinnedShader*)meshes.begin()->second.material.shader.get();
 	if (sh != nullptr)
 		sh->Apply();
 
 	//Draw all of the meshes
 	for (auto& m : meshes)
 	{
-		if (m.material.shader != nullptr)
+		if (m.second.material.shader != nullptr)
 		{
-			sh->material.data = m.material;
+			sh->material.data = m.second.material;
 			sh->Update();
 		}
-		if (m.material.diffuseMap != nullptr)
-			m.material.diffuseMap->Apply();
+		if (m.second.material.diffuseMap != nullptr)
+			m.second.material.diffuseMap->Apply();
 
 		//Draw the objects.
-		devContext->DrawIndexed((unsigned)m.IndexCount(), (unsigned)m.StartIndex(), 0);
+		devContext->DrawIndexed((unsigned)m.second.IndexCount(), (unsigned)m.second.StartIndex(), 0);
 	}
 }
 

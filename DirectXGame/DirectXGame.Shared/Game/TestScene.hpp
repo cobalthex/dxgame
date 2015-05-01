@@ -46,7 +46,7 @@ namespace DirectXGame
 		StaticModel stage;
 		void CreateStage(float Radius = 10);
 
-		StaticModel tower;
+		StaticModel sword;
 
 		Timeline timeline;
 
