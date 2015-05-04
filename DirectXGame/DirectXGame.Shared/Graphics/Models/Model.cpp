@@ -23,28 +23,22 @@ Model::Model
 
 void Model::Draw(unsigned Slot) const
 {
-	if (meshes.size() < 1)
-		return;
+	BeginDraw(Slot);
 
-	Bind(Slot);
-
-	auto sh = (Shaders::LitSkinnedShader*)meshes.begin()->second.material.shader.get();
-	if (sh != nullptr)
-		sh->Apply();
+	std::shared_ptr<Shader> lastShader = nullptr;
 
 	//Draw all of the meshes
 	for (auto& m : meshes)
 	{
-		if (m.second.material.shader != nullptr)
-		{
-			sh->material.data = m.second.material;
-			sh->Update();
-		}
-		if (m.second.material.diffuseMap != nullptr)
-			m.second.material.diffuseMap->Apply();
+		if (m.second.material.shader.get() != Shader::ActiveShader)
+			m.second.material.shader->Apply();
+
+		m.second.material.Apply();
+		m.second.material.shader->Update();
+
 
 		//Draw the objects.
-		devContext->DrawIndexed((unsigned)m.second.IndexCount(), (unsigned)m.second.StartIndex(), 0);
+		m.second.Draw(devContext);
 	}
 }
 

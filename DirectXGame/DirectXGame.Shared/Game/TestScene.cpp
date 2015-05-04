@@ -8,7 +8,6 @@
 #include "Input/InputHandler.hpp"
 #include "Data/Formats/Osl/Osl.hpp"
 
-
 using namespace DirectXGame;
 
 using namespace DirectX;
@@ -78,8 +77,9 @@ void TestScene::CreateWindowResources(CoreWindow^ Window)
 
 void TestScene::CreateDeviceResources()
 {
-	lsShader = std::static_pointer_cast<Shaders::LitSkinnedShader>(shCache.Load(ShaderType::LitSkinned));
-	pcShader = std::static_pointer_cast<Shaders::PositionColorShader>(shCache.Load(ShaderType::PositionColor));
+	lsShader = shCache.Load<Shaders::LitSkinnedShader>(ShaderType::LitSkinned);
+	ulShader = shCache.Load<Shaders::UnlitShader>(ShaderType::Unlit);
+	pcShader = shCache.Load<Shaders::PositionColorShader>(ShaderType::PositionColor);
 
 	Light li;
 	li.color = Color(1, 1, 1, 1);
@@ -145,6 +145,7 @@ void TestScene::CreateStage(float Radius)
 	
 	Materials::LitMaterial mat(std::static_pointer_cast<Shaders::LitShader>(shCache.Load(ShaderType::Lit)));
 	mat.diffuseMap = texCache.Load("Stage.dds");
+	mat.useTexture = mat.diffuseMap->IsValid();
 	mat.ambient = mat.diffuse = Color(1, 1, 1);
 
 	meshes["stage"] = { "stage", 0, 4, 0, 4, mat, Bounds() };
@@ -209,7 +210,18 @@ void TestScene::Render()
 	sh->Update();
 	stage.Draw();
 
-	sword.Draw();
+	//sword.Draw();
+
+	
+	ulShader->Apply();
+	ulShader->Update();
+	ulShader->object = sh->object;
+	sword.BeginDraw();
+	for (auto& m : sword.meshes)
+	{
+		m.second.material.diffuseMap->Apply();
+		m.second.Draw(context);
+	}
 	/*
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	lsShader->SetInputLayout();

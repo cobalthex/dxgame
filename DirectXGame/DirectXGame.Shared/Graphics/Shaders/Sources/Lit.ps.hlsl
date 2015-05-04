@@ -1,21 +1,11 @@
-//Per-pixel color data passed through the pixel shader
-
+#include "Inputs.hlsli"
 #include "Lighting.hlsli"
 
 Texture2D Texture : register(t0);
 SamplerState Sampler : register(s0);
 
-struct PixelInput
-{
-	float4 position : SV_POSITION;
-	float4 worldPosition : POSITION; //position in world coordinates
-	float3 normal : NORMAL;
-	float2 texCoord : TEXCOORD;
-	float4 color : COLOR;
-};
-
 //A pass-through function for the (interpolated) color data
-float4 main(PixelInput Input) : SV_TARGET
+float4 main(LitPixel Input) : SV_TARGET
 {
 	LightCalc lit = ComputeLighting(Input.worldPosition, normalize(Input.normal));
 

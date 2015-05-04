@@ -36,6 +36,8 @@ namespace Shaders
 
 		inline void Apply() override
 		{
+			ActiveShader = this;
+
 			object.BindVertex(0);
 			material.BindPixel(0);
 			lighting.BindPixel(1);
@@ -49,6 +51,8 @@ namespace Shaders
 			material.Update();
 			lighting.Update();
 		}
+
+		virtual inline ShaderType Type() const { return ShaderType::LitSkinned; }
 
 		inline void SetInputLayout() const{ if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
 

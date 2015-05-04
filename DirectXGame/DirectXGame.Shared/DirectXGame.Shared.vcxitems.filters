@@ -10,6 +10,7 @@
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\ShadowMap.vs.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\PositionTexture.vs.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\PositionTexture.ps.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Unlit.ps.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Sequence.cpp" />
@@ -46,6 +47,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\StreamOps.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\StringOps.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\MeshOps.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\UnlitShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
@@ -119,6 +121,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StringOps.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Union.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\MeshOps.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\UnlitShader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lighting.hlsli" />
@@ -133,14 +136,16 @@
     <None Include="$(MSBuildThisFileDirectory)Content\Models\tower.obj" />
     <None Include="$(MSBuildThisFileDirectory)Content\Materials\tower.mtl" />
     <None Include="$(MSBuildThisFileDirectory)Content\Materials\sword.mtl" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\sword.obj" />
+    <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Inputs.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Body.dds" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Ground.dds" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Head.dds" />
-    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.png" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Stage.dds" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\skybox.png" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.dds" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf" />
@@ -148,8 +153,5 @@
   <ItemGroup>
     <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\license.txt" />
     <Text Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="$(MSBuildThisFileDirectory)Content\Models\sword.obj" />
   </ItemGroup>
 </Project>

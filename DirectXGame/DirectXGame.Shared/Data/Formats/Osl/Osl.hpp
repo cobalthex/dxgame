@@ -185,6 +185,17 @@ namespace Osl
 		inline Value& operator = (float Value) { return operator=(float(Value)); }
 		inline Value& operator = (const char* Value) { return operator=(std::string(Value)); }
 
+		//Retrieve an OSL value as a float. Defaults to zero if invalid type
+		inline float ToFloat() const
+		{
+			switch (type)
+			{
+			case Osl::Types::Integer: return (float)(*(integer*)value);
+			case Osl::Types::Decimal: return (float)(*(decimal*)value);
+			default: return 0;
+			}
+		}
+
 		//Get operators
 
 		template <typename T>

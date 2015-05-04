@@ -27,6 +27,8 @@ namespace Shaders
 
 		inline void Apply() override
 		{
+			ActiveShader = this;
+
 			wvp.BindVertex(0);
 
 			vshader.Apply();
@@ -36,6 +38,8 @@ namespace Shaders
 		{
 			wvp.Update();
 		}
+
+		virtual inline ShaderType Type() const { return ShaderType::PositionTexture; }
 
 		inline void SetInputLayout() const{ if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
 

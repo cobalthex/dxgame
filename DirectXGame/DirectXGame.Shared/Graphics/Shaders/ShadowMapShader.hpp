@@ -44,6 +44,8 @@ namespace Shaders
 
 		inline void Apply() override
 		{
+			ActiveShader = this;
+
 			world.BindVertex(0);
 			light.BindPixel(0);
 
@@ -55,6 +57,8 @@ namespace Shaders
 			world.Update();
 			light.Update();
 		}
+
+		virtual inline ShaderType Type() const { return ShaderType::ShadowMap; }
 
 		inline void SetInputLayout() const{ if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
 

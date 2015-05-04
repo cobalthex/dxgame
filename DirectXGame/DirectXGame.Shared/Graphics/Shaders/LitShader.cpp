@@ -32,19 +32,9 @@ LitShader::LitShader(const DeviceResourcesPtr& DeviceResources)
 	});
 }
 
-//Retrieve an OSL value as a float. Defaults to zero if invalid type
-inline float OslValueToFloat(const Osl::Value& Value)
-{
-	switch (Value.Type())
-	{
-	case Osl::Types::Integer: return (float)((Osl::integer)Value);
-	case Osl::Types::Decimal: return (float)((Osl::decimal)Value);
-	default: return 0;
-	}
-}
-LitMaterial::LitMaterial(const std::shared_ptr<Shader>& Shader) : shader(Shader) { }
+LitMaterial::LitMaterial(const std::shared_ptr<Shader>& Shader) : Material(Shader) { }
 LitMaterial::LitMaterial(TextureCache& TexCache, const Osl::Object& MaterialObject, const std::shared_ptr<Shader>& Shader)
-	: shader(Shader)
+	: Material(Shader)
 {
 	float r, g, b, a;
 
@@ -53,38 +43,38 @@ LitMaterial::LitMaterial(TextureCache& TexCache, const Osl::Object& MaterialObje
 	if (MaterialObject.Contains("diffuse"))
 	{
 		col = MaterialObject["ambient"];
-		r = (float)(col.size() > 0 ? OslValueToFloat(col[0]) : 0);
-		g = (float)(col.size() > 1 ? OslValueToFloat(col[1]) : 0);
-		b = (float)(col.size() > 2 ? OslValueToFloat(col[2]) : 0);
-		a = (float)(col.size() > 3 ? OslValueToFloat(col[3]) : 1);
+		r = (float)(col.size() > 0 ? col[0].ToFloat() : 0);
+		g = (float)(col.size() > 1 ? col[1].ToFloat() : 0);
+		b = (float)(col.size() > 2 ? col[2].ToFloat() : 0);
+		a = (float)(col.size() > 3 ? col[3].ToFloat() : 1);
 		ambient = Color(r, g, b, a);
 	}
 	if (MaterialObject.Contains("diffuse"))
 	{
 		col = MaterialObject["diffuse"];
-		r = (float)(col.size() > 0 ? OslValueToFloat(col[0]) : 0);
-		g = (float)(col.size() > 1 ? OslValueToFloat(col[1]) : 0);
-		b = (float)(col.size() > 2 ? OslValueToFloat(col[2]) : 0);
-		a = (float)(col.size() > 3 ? OslValueToFloat(col[3]) : 1);
+		r = (float)(col.size() > 0 ? col[0].ToFloat() : 0);
+		g = (float)(col.size() > 1 ? col[1].ToFloat() : 0);
+		b = (float)(col.size() > 2 ? col[2].ToFloat() : 0);
+		a = (float)(col.size() > 3 ? col[3].ToFloat() : 1);
 		diffuse = Color(r, g, b, a);
 	}
 	if (MaterialObject.Contains("diffuse"))
 	{
 		col = MaterialObject["specular"];
-		r = (float)(col.size() > 0 ? OslValueToFloat(col[0]) : 0);
-		g = (float)(col.size() > 1 ? OslValueToFloat(col[1]) : 0);
-		b = (float)(col.size() > 2 ? OslValueToFloat(col[2]) : 0);
-		a = (float)(col.size() > 3 ? OslValueToFloat(col[3]) : 1);
+		r = (float)(col.size() > 0 ? col[0].ToFloat() : 0);
+		g = (float)(col.size() > 1 ? col[1].ToFloat() : 0);
+		b = (float)(col.size() > 2 ? col[2].ToFloat() : 0);
+		a = (float)(col.size() > 3 ? col[3].ToFloat() : 1);
 		specular = Color(r, g, b, a);
-		specularPower = (float)(col.size() > 4 ? OslValueToFloat(col[4]) : 0);
+		specularPower = (float)(col.size() > 4 ? col[4].ToFloat() : 0);
 	}
 	if (MaterialObject.Contains("diffuse"))
 	{
 		col = MaterialObject["emissive"];
-		r = (float)(col.size() > 0 ? OslValueToFloat(col[0]) : 0);
-		g = (float)(col.size() > 1 ? OslValueToFloat(col[1]) : 0);
-		b = (float)(col.size() > 2 ? OslValueToFloat(col[2]) : 0);
-		a = (float)(col.size() > 3 ? OslValueToFloat(col[3]) : 1);
+		r = (float)(col.size() > 0 ? col[0].ToFloat() : 0);
+		g = (float)(col.size() > 1 ? col[1].ToFloat() : 0);
+		b = (float)(col.size() > 2 ? col[2].ToFloat() : 0);
+		a = (float)(col.size() > 3 ? col[3].ToFloat() : 1);
 		emissive = Color(r, g, b, a);
 	}
 	if (MaterialObject.Contains("diffmap") && MaterialObject["diffmap"].size() > 0)

@@ -36,6 +36,13 @@ public:
 	inline void Skin(Matrix* PoseArray, size_t MaxPoses = MAX_JOINTS) const { Skin(pose, PoseArray, MaxPoses); } //bind the current pose to a constant buffer
 	void Skin(const std::string& Pose, Matrix* PoseArray, size_t MaxPoses = MAX_JOINTS) const; //Bind a pose to a constant buffer (uses bind pose if doesn't exist)
 
+	inline void BeginDraw(unsigned Slot = 0) const //Apply the model but do not draw any of the meshes
+	{
+		if (meshes.size() < 1)
+			return;
+
+		Bind(Slot);
+	}
 	void Draw(unsigned Slot = 0) const; //Draws only the basic mesh without any materials or skinning
 
 	inline BasicMesh<Shaders::PositionColorShader::Vertex, unsigned> CreateSkeletalMesh(const Color& VertexColor = Color(255, 0, 0)) const { return CreateSkeletalMesh(pose, VertexColor); }

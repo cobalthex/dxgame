@@ -1,3 +1,4 @@
+#include "Inputs.hlsli"
 #include "Skinning.hlsli"
 
 cbuffer WorldBuffer : register(b0)
@@ -8,32 +9,10 @@ cbuffer WorldBuffer : register(b0)
 	matrix joints[MAX_JOINTS];
 }
 
-//Per-vertex data used as input to the vertex shader
-struct VertexInput
-{
-	float3 position : POSITION;
-	float3 normal : NORMAL;
-	float4 tangent : TANGENT;
-	float2 texCoord : TEXCOORD;
-	float4 color : COLOR;
-	uint4 blendIndices : BLENDINDICES;
-	float4 blendWeights : BLENDWEIGHT;
-};
-
-//Per-pixel color data passed through the pixel shader
-struct PixelInput
-{
-	float4 position : SV_POSITION; //position in screen coordinates
-	float4 worldPosition : POSITION; //position in world coordinates
-	float3 normal : NORMAL;
-	float2 texCoord : TEXCOORD0;
-	float4 color : COLOR;
-};
-
 //Simple shader to do vertex processing on the GPU
-PixelInput main(VertexInput Input)
+LitPixel main(SkinnedVertex Input)
 {
-	PixelInput output;
+	LitPixel output;
 	float4 position = float4(Input.position, 1.0f);
 	float4x3 skin = Skin(joints, Input.blendWeights, Input.blendIndices);
 

@@ -1,18 +1,6 @@
 #include "Pch.hpp"
 #include "StreamOps.hpp"
 
- int StreamOps::ReadInt(std::istream& Stream, int DecimalSeparator)
- {
-	std::string s;
-	SkipWhitespace(Stream);
-
-	char ch;
-	while (!Stream.eof() && (((ch = Stream.peek()) >= '0' && ch <= '9') || ch == '-' || ch == DecimalSeparator))
-		s += Stream.get();
-
-	return atoi(s.data());
-}
-
 bool StreamOps::IsSequenceNext(std::istream& Stream, const std::string& Sequence)
 {
 	for (size_t i = 0; !Stream.eof() && i < Sequence.length(); i++)

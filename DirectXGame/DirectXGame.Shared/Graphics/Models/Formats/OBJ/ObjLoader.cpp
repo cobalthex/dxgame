@@ -7,6 +7,22 @@
 typedef std::vector<StaticModel::VertexType> VList;
 typedef std::vector<StaticModel::IndexType> IList;
 
+//triangle for obj vertex indices
+struct VertexIndex
+{
+	int v, t, n;
+	inline bool operator < (const VertexIndex& Other) const
+	{
+		if (v != Other.v)
+			return (v < Other.v);
+		if (t != Other.t)
+			return (t < Other.t);
+		if (n != Other.n)
+			return (n < Other.n);
+		return false;
+	}
+};
+
 bool LoadMaterials(const std::string& LibFile, TextureCache& TexCache, std::map<std::string, Materials::LitMaterial>& Materials, const std::shared_ptr<Shaders::LitShader>& Shader); //load a list of materials from a file into the materials list
 
 bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Filename, TextureCache& TexCache, const std::shared_ptr<Shaders::LitShader>& Shader, __out StaticModel& Model)
@@ -14,6 +30,8 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 	std::vector<Vector3> positions;
 	std::vector<Vector3> normals;
 	std::vector<Vector2> texcoords;
+
+	std::map<VertexIndex, unsigned> uVerts;
 
 	VList vertices;
 	IList indices;
@@ -29,7 +47,7 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 	std::ifstream fin(Filename);
 	if (!fin.is_open())
 		return false;
-
+	unsigned t = 0;
 	std::string ty;
 	while (!fin.eof())
 	{
@@ -92,7 +110,7 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 		}
 		else if (ty == "f")
 		{
-			int v = 0, t = 0, n = 0;
+			VertexIndex vi;
 			bool isT = false, isN = false;
 
 			size_t fc = 0;
@@ -102,40 +120,49 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 
 				StreamOps::SkipWhitespace(fin);
 
-				v = StreamOps::ReadInt(fin);
+				fin >> vi.v;
 				if (fin.peek() == '/')
 				{
-					fin.get();
-					t = StreamOps::ReadInt(fin);
+					fin.ignore();
+					fin >> vi.t;
 					isT = true;
 				}
 				if (fin.peek() == '/')
 				{
-					fin.get();
-					n = StreamOps::ReadInt(fin);
+					fin.ignore();
+					fin >> vi.n;
 					isN = true;
 				}
 
-				v--;
-				t--;
-				n--;
+				//vertex already exists
+				auto uvi = uVerts.find(vi);
+				if (uvi != uVerts.end())
+					indices.push_back(uvi->second);
+				else
+				{
+					auto idx = (unsigned)vertices.size();
+					indices.push_back(idx);
+					uVerts[vi] = idx;
 
-				StaticModel::VertexType vtx;
+					//obj is 1 based
+					vi.v--;
+					vi.t--;
+					vi.n--;
 
-				if (positions.size() > v)
-					vtx.position = positions[v < 0 ? positions.size() - v : v];
-				if (isN && normals.size() > n)
-					vtx.normal = normals[n < 0 ? normals.size() - n : n];
-				if (isT && texcoords.size() > t)
-					vtx.texCoord = texcoords[t < 0 ? texcoords.size() - t : t];
+					vi.v = vi.v < 0 ? (int)positions.size() - vi.v : vi.v;
+					vi.n = vi.n < 0 ? (int)normals.size() - vi.n : vi.n;
+					vi.t = vi.t < 0 ? (int)texcoords.size() - vi.t : vi.t;
 
-				vertices.push_back(vtx);
-				indices.push_back((unsigned)vertices.size() - 1);
-			}
+					StaticModel::VertexType vtx;
+					if (positions.size() > vi.v)
+						vtx.position = positions[vi.v];
+					if (isN && normals.size() > vi.n)
+						vtx.normal = normals[vi.n];
+					if (isT && texcoords.size() > vi.t)
+						vtx.texCoord = texcoords[vi.t];
 
-			if (fc > 3)
-			{
-
+					vertices.push_back(vtx);
+				}
 			}
 		}
 		else if (ty == "usemtl")

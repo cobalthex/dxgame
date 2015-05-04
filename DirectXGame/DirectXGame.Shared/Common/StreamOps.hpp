@@ -19,12 +19,6 @@ namespace StreamOps
 		return sz;
 	}
 
-	//reads an int from a stream. Returns 0 if an invalid read
-	//Differs from istream's as it only reads until a non-numeric is found
-	//Skips whitespace ahead of numeric
-	//Does not handle digit grouping
-	int ReadInt(std::istream& Stream, int DecimalSeparator = '.');
-
 	//Are the next characters in the stream the sequence?
 	//If no, position is rewound, otherwise, true is returned and the stream is at oldpos + Sequence.length
 	bool IsSequenceNext(std::istream& Stream, const std::string& Sequence);

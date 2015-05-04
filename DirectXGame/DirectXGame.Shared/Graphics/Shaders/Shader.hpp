@@ -123,10 +123,33 @@ typedef ShaderProgram<ShaderProgramType::Domain>		DomainShader;
 typedef ShaderProgram<ShaderProgramType::Geometry>		GeometryShader;
 typedef ShaderProgram<ShaderProgramType::Pixel>			PixelShader;
 
+
+
+
+
+
+
+
+enum class ShaderType
+{
+	Unknown,
+	PositionColor,
+	PositionTexture,
+	Lit,
+	Unlit,
+	LitSkinned,
+
+	ShadowMap
+};
+
 //The abstract parent for composite shaders (can contain multiple shader bases, constant buffers, vertex types, etc)
 class Shader
 {
 public:
 	virtual void Apply() = 0; //Apply the shaders/etc in this implementation
 	virtual void Update() = 0; //Update any buffers/etc in this implementation
+
+	virtual inline ShaderType Type() const = 0;
+
+	static Shader* ActiveShader; //the currently set shader. Useful for not rebinding the same shader
 };

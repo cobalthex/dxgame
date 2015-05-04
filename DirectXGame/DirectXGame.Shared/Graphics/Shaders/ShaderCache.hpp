@@ -4,17 +4,6 @@
 #include "Data/Cache.hpp"
 #include "Shader.hpp"
 
-enum class ShaderType
-{
-	Unknown,
-	PositionColor,
-	PositionTexture,
-	Lit,
-	LitSkinned,
-
-	ShadowMap
-};
-
 class ShaderCache : public Cache<ShaderType, Shader>
 {
 public:

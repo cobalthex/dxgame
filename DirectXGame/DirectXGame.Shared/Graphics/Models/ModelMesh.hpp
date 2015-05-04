@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common/Box.hpp"
+#include "Pch.hpp"
 
 //3D boundaries for models
 struct Bounds
@@ -28,6 +29,11 @@ public:
 	MaterialType material;
 
 	inline Bounds Bounds() const { return bounds; }
+
+	inline void Draw(const ComPtr<ID3D11DeviceContext>& DeviceContext, unsigned BaseVertexLocation = 0) const
+	{
+		DeviceContext->DrawIndexed((unsigned)indexCount, (unsigned)startIndex, BaseVertexLocation);
+	}
 
 protected:
 	size_t startVertex, vertexCount;

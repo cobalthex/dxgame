@@ -135,7 +135,7 @@ LightCalc ComputeLighting(float4 P, float3 N)
 	[unroll]
 	for (int i = 0; i < MAX_LIGHTS; i++)
 	{
-		LightCalc result = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+		LightCalc result = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }; //note: this can be modified to give a colored shadow effect
 
 		if (!Lights[i].isEnabled)
 			continue;

@@ -27,6 +27,13 @@ public:
 
 	std::map<std::string, MeshType> meshes; //All of the model meshes that make up this model
 
+	inline void BeginDraw(unsigned Slot = 0) const //Apply the model but do not draw any of the meshes
+	{
+		if (meshes.size() < 1)
+			return;
+
+		Bind(Slot);
+	}
 	void Draw(unsigned Slot = 0) const; //Draws only the basic mesh without any materials or skinning
 
 protected:

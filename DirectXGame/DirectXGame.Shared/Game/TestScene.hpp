@@ -5,6 +5,7 @@
 #include "Graphics/Models/StaticModel.hpp"
 #include "Graphics/Textures/TextureCache.hpp"
 #include "Graphics/Textures/Texture2D.hpp"
+#include "Graphics/Shaders/UnlitShader.hpp"
 #include "Graphics/ConstantBuffer.hpp"
 #include "Graphics/Lighting.hpp"
 #include "Graphics/Scene/Camera.hpp"
@@ -31,6 +32,7 @@ namespace DirectXGame
 		ShaderCache shCache;
 
 		std::shared_ptr<Shaders::LitSkinnedShader> lsShader;
+		std::shared_ptr<Shaders::UnlitShader> ulShader;
 		std::shared_ptr<Shaders::PositionColorShader> pcShader;
 
 		ComPtr<ID3D11SamplerState>	sampler;

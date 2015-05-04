@@ -29,7 +29,7 @@ namespace Materials
 		bool useTexture;
 		std::shared_ptr<Texture2D> diffuseMap;
 
-		std::shared_ptr<Shader> shader;
+		inline virtual void Apply() const override;
 
 		//The constant buffer definition for the material that this shader uses
 		struct BufferDef : public ConstantBufferDef
@@ -78,6 +78,8 @@ namespace Shaders
 
 		inline void Apply() override
 		{
+			ActiveShader = this;
+
 			object.BindVertex(0);
 			material.BindPixel(0);
 			lighting.BindPixel(1);
@@ -92,6 +94,8 @@ namespace Shaders
 			lighting.Update();
 		}
 
+		virtual inline ShaderType Type() const { return ShaderType::Lit; }
+
 		inline void SetInputLayout() const{ if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
 
 		ConstantBuffer<ObjectBufferDef> object;
@@ -103,4 +107,12 @@ namespace Shaders
 		PixelShader pshader;
 		InputLayout inputLayout;
 	};
+}
+
+void Materials::LitMaterial::Apply() const
+{
+	auto sh = std::static_pointer_cast<Shaders::LitShader>(shader);
+	sh->material.data = *this;
+	if (useTexture)
+		diffuseMap->Apply();
 }

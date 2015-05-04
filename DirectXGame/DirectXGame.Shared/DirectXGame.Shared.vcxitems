@@ -36,6 +36,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionTextureShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShadowMapShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\UnlitShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
@@ -99,6 +100,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\iqm.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColorShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShadowMapShader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\UnlitShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDS.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\StbImage.hpp">
@@ -175,6 +177,10 @@
       <ShaderModel>4.0</ShaderModel>
       <EnableDebuggingInformation>true</EnableDebuggingInformation>
     </FxCompile>
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Unlit.ps.hlsl">
+      <ShaderType>Pixel</ShaderType>
+      <ShaderModel>4.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
@@ -194,6 +200,9 @@
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Consts.hlsli" />
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lighting.hlsli" />
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Skinning.hlsli" />
+    <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Inputs.hlsli">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Body.dds">
@@ -211,7 +220,7 @@
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Stage.dds">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.png">
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.dds">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\ship.iqm">

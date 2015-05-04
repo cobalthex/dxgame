@@ -1,3 +1,5 @@
+#include "Inputs.hlsli"
+
 cbuffer WorldBuffer : register(b0)
 {
 	matrix World;
@@ -5,29 +7,9 @@ cbuffer WorldBuffer : register(b0)
 	matrix WorldViewProjection;
 }
 
-//Per-vertex data used as input to the vertex shader
-struct VertexInput
+LitPixel main(StaticVertex Input)
 {
-	float3 position : POSITION;
-	float3 normal : NORMAL;
-	float4 tangent : TANGENT;
-	float2 texCoord : TEXCOORD;
-	float4 color : COLOR;
-};
-
-//Per-pixel color data passed through the pixel shader
-struct PixelInput
-{
-	float4 position : SV_POSITION; //position in screen coordinates
-	float4 worldPosition : POSITION; //position in world coordinates
-	float3 normal : NORMAL;
-	float2 texCoord : TEXCOORD0;
-	float4 color : COLOR;
-};
-
-PixelInput main(VertexInput Input)
-{
-	PixelInput output;
+	LitPixel output;
 	float4 position = float4(Input.position, 1.0f);
 
 	//Transform the vertex position into projected space
