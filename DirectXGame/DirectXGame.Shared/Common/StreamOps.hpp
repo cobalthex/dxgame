@@ -19,6 +19,21 @@ namespace StreamOps
 		return sz;
 	}
 
+	//Read an entire file into a string (optionally in binary mode)
+	inline std::string ReadFile(const std::string& File, bool IsBinary = true)
+	{
+		std::string str;
+		std::ifstream input(File.data(), (IsBinary ? std::ios::binary : 0) | std::ios::ate);
+		if (input.is_open())
+		{
+			str.resize(input.tellg());
+			input.seekg(0, std::ios::beg);
+			input.read(&str[0], str.size());
+			input.close();
+		}
+		return str;
+	}
+
 	//Are the next characters in the stream the sequence?
 	//If no, position is rewound, otherwise, true is returned and the stream is at oldpos + Sequence.length
 	bool IsSequenceNext(std::istream& Stream, const std::string& Sequence);

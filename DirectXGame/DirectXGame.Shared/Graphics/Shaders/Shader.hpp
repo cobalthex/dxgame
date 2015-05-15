@@ -135,6 +135,7 @@ enum class ShaderType
 	Unknown,
 	PositionColor,
 	PositionTexture,
+	Text,
 	Lit,
 	Unlit,
 	LitSkinned,

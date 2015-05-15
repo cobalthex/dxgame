@@ -6,7 +6,9 @@
 #include "Graphics/Shaders/ShaderStructures.hpp"
 #include "Graphics/Shaders/Shader.hpp"
 #include "Graphics/Textures/TextureCache.hpp"
+#include "Graphics/Shaders/LitShader.hpp"
 #include "Graphics/Material.hpp"
+#include "../DeviceResources.hpp"
 
 namespace Osl { class Object; };
 
@@ -30,6 +32,8 @@ namespace Shaders
 	class UnlitShader : public Shader
 	{
 	public:
+		typedef LitShader::Vertex Vertex;
+
 		UnlitShader() { }
 		UnlitShader(const DeviceResourcesPtr& DeviceResources);
 

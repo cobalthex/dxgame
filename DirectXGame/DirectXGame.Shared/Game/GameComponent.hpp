@@ -2,20 +2,25 @@
 
 #include "Common/StepTimer.hpp"
 #include "Graphics/DeviceResources.hpp"
+#include "Game.hpp"
 
-//An abstract class that implements the basic functions of a rendered component. (This is mainly for low level)
-class Renderer
+//The base for game components (renderables mainly)
+class GameComponent
 {
 public:
-	Renderer(const DeviceResourcesPtr& DeviceResources) : deviceResources(DeviceResources) { }
-	virtual ~Renderer() { }
+	GameComponent(Game& Game, const DeviceResourcesPtr& DeviceResources) : game(Game), deviceResources(DeviceResources), isEnabled(true), isVisible(true) { }
+	virtual ~GameComponent() { }
 
 	virtual void CreateDeviceResources() { } //Create any resources that depend on the graphics device
 	virtual void CreateWindowResources(Windows::UI::Core::CoreWindow^ Window) { } //Create any resources that depend on the size of the window
 	virtual void ReleaseDeviceResources() { } //Release any resources that depended on the graphics device
 	virtual void Update(const StepTimer& Timer) { } //Update
-	virtual void Render() = 0; //Render
+	virtual void Render() { }; //Render
+
+	bool isEnabled;
+	bool isVisible;
 
 protected:
-	DeviceResourcesPtr deviceResources; //A pointer to the device resources that this renderer should use
+	Game& game;
+	DeviceResourcesPtr deviceResources;
 };

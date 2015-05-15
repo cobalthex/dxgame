@@ -11,6 +11,7 @@
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\PositionTexture.vs.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\PositionTexture.ps.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Unlit.ps.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Text.ps.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Animation\Sequence.cpp" />
@@ -23,10 +24,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)App\Game.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\DeviceResources.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\FpsRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Data\Formats\Osl\Osl.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PositionColorShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ShaderCache.cpp" />
@@ -48,6 +46,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\StringOps.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Models\MeshOps.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\UnlitShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\FpsRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\TextShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Game.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Text\Formats\StbFreetype.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Animation\Animation.hpp" />
@@ -61,7 +63,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\ISerializable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Data\Formats\Json\Json.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\ModelMesh.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Renderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\Camera.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\ConstantBuffer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Lighting.hpp" />
@@ -70,7 +71,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Mesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Model.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Scene\ChaseCamera.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)App\Game.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\iqm.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDS.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\DDSTextureLoader.hpp" />
@@ -78,8 +78,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Formats\WICTextureLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\DWriteFontCollectionLoader.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\TextRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Formats\IQM\util.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\Console.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\TelnetConsole.hpp" />
@@ -122,6 +120,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\Union.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\MeshOps.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\UnlitShader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Text\Formats\StbFreetype.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\StbRectPack.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\TextShader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Game.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\GameComponent.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Lighting.hlsli" />
@@ -138,6 +141,8 @@
     <None Include="$(MSBuildThisFileDirectory)Content\Materials\sword.mtl" />
     <None Include="$(MSBuildThisFileDirectory)Content\Models\sword.obj" />
     <None Include="$(MSBuildThisFileDirectory)Graphics\Shaders\Sources\Inputs.hlsli" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Materials\cube.mtl" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\cube.obj" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Body.dds" />

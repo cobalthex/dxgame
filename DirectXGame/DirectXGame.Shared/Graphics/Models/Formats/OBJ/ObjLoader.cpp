@@ -4,9 +4,6 @@
 #include "Graphics/Models/MeshOps.hpp"
 #include "App/SystemSettings.hpp"
 
-typedef std::vector<StaticModel::VertexType> VList;
-typedef std::vector<StaticModel::IndexType> IList;
-
 //triangle for obj vertex indices
 struct VertexIndex
 {
@@ -33,8 +30,8 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 
 	std::map<VertexIndex, unsigned> uVerts;
 
-	VList vertices;
-	IList indices;
+	std::vector<StaticModel::VertexType> vertices;
+	std::vector<StaticModel::IndexType> indices;
 
 	std::map<std::string, Materials::LitMaterial> materials;
 
@@ -117,6 +114,11 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 			while (!fin.eof() && fin.peek() != '\n')
 			{
 				fc++;
+				if (fc > 3)
+				{
+					std::getline(fin, ty);
+					break; //todo
+				}
 
 				StreamOps::SkipWhitespace(fin);
 
@@ -133,36 +135,28 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 					fin >> vi.n;
 					isN = true;
 				}
-
-				//vertex already exists
-				auto uvi = uVerts.find(vi);
-				if (uvi != uVerts.end())
-					indices.push_back(uvi->second);
-				else
+				
+				//invalid vertices, skip this face
+				if (vi.v > positions.size() || vi.n > normals.size() || vi.t > texcoords.size())
 				{
-					auto idx = (unsigned)vertices.size();
-					indices.push_back(idx);
-					uVerts[vi] = idx;
-
-					//obj is 1 based
-					vi.v--;
-					vi.t--;
-					vi.n--;
-
-					vi.v = vi.v < 0 ? (int)positions.size() - vi.v : vi.v;
-					vi.n = vi.n < 0 ? (int)normals.size() - vi.n : vi.n;
-					vi.t = vi.t < 0 ? (int)texcoords.size() - vi.t : vi.t;
-
-					StaticModel::VertexType vtx;
-					if (positions.size() > vi.v)
-						vtx.position = positions[vi.v];
-					if (isN && normals.size() > vi.n)
-						vtx.normal = normals[vi.n];
-					if (isT && texcoords.size() > vi.t)
-						vtx.texCoord = texcoords[vi.t];
-
-					vertices.push_back(vtx);
+					std::getline(fin, ty);
+					break;
 				}
+
+				auto uvi = uVerts.find(vi);
+				if (uvi == uVerts.end()) //not found
+				{
+					StaticModel::VertexType vtx;
+					vtx.position = positions[vi.v < 0 ? positions.size() + vi.v : vi.v - 1];
+					vtx.normal = normals[vi.n < 0 ? normals.size() + vi.n : vi.n - 1];
+					vtx.texCoord = texcoords[vi.t < 0 ? texcoords.size() + vi.t : vi.t - 1];
+
+					uVerts[vi] = (unsigned)vertices.size();
+					vertices.push_back(vtx);
+					//indices.push_back(uVerts[vi]);
+				}
+				else
+					indices.push_back(uvi->second);
 			}
 		}
 		else if (ty == "usemtl")

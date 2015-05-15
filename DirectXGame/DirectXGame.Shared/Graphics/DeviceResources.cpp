@@ -2,7 +2,6 @@
 #include "DeviceResources.hpp"
 #include "Common/PlatformHelpers.hpp"
 
-using namespace D2D1;
 using namespace DirectX;
 using namespace Microsoft::WRL;
 using namespace Windows::Foundation;
@@ -68,43 +67,6 @@ DeviceResources::DeviceResources() :
 //Configures resources that don't depend on the Direct3D device.
 void DeviceResources::CreateDeviceIndependentResources()
 {
-	//Initialize Direct2D resources.
-	D2D1_FACTORY_OPTIONS options;
-	ZeroMemory(&options, sizeof(D2D1_FACTORY_OPTIONS));
-
-#if defined(_DEBUG)
-	//If the project is in a debug build, enable Direct2D debugging via SDK Layers.
-	options.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
-#endif
-
-	//Initialize the Direct2D Factory.
-	Sys::ThrowIfFailed(
-		D2D1CreateFactory(
-			D2D1_FACTORY_TYPE_SINGLE_THREADED,
-			__uuidof(ID2D1Factory2),
-			&options,
-			&d2dFactory
-			)
-		);
-
-	//Initialize the DirectWrite Factory.
-	Sys::ThrowIfFailed(
-		DWriteCreateFactory(
-			DWRITE_FACTORY_TYPE_SHARED,
-			__uuidof(IDWriteFactory2),
-			&dwriteFactory
-			)
-		);
-
-	//Initialize the Windows Imaging Component (WIC) Factory.
-	Sys::ThrowIfFailed(
-		CoCreateInstance(
-			CLSID_WICImagingFactory2,
-			nullptr,
-			CLSCTX_INPROC_SERVER,
-			IID_PPV_ARGS(&wicFactory)
-			)
-		);
 }
 
 //Configures the Direct3D device, and stores handles to it and the device context.
@@ -183,15 +145,6 @@ void DeviceResources::CreateDeviceResources()
 	//Create the Direct2D device object and a corresponding context.
 	ComPtr<IDXGIDevice3> dxgiDevice;
 	Sys::ThrowIfFailed(d3dDevice.As(&dxgiDevice));
-
-	Sys::ThrowIfFailed(d2dFactory->CreateDevice(dxgiDevice.Get(), &d2dDevice));
-
-	Sys::ThrowIfFailed(
-		d2dDevice->CreateDeviceContext(
-			D2D1_DEVICE_CONTEXT_OPTIONS_NONE,
-			&d2dContext
-			)
-		);
 }
 
 //These resources need to be recreated every time the window size is changed.
@@ -204,8 +157,6 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	ID3D11RenderTargetView* nullViews[] = {nullptr};
 	d3dContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
 	d3dRenderTargetView = nullptr;
-	d2dContext->SetTarget(nullptr);
-	d2dTargetBitmap = nullptr;
 	d3dDepthStencilView = nullptr;
 	d3dContext->Flush();
 
@@ -319,28 +270,18 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	switch (displayRotation)
 	{
 	case DXGI_MODE_ROTATION_IDENTITY:
-		orientationTransform2D = Matrix3x2F::Identity();
 		orientationTransform3D = ScreenRotation::Rotation0;
 		break;
 
 	case DXGI_MODE_ROTATION_ROTATE90:
-		orientationTransform2D = 
-			Matrix3x2F::Rotation(90.0f) *
-			Matrix3x2F::Translation(logicalSize.Height, 0.0f);
 		orientationTransform3D = ScreenRotation::Rotation270;
 		break;
 
 	case DXGI_MODE_ROTATION_ROTATE180:
-		orientationTransform2D = 
-			Matrix3x2F::Rotation(180.0f) *
-			Matrix3x2F::Translation(logicalSize.Width, logicalSize.Height);
 		orientationTransform3D = ScreenRotation::Rotation180;
 		break;
 
 	case DXGI_MODE_ROTATION_ROTATE270:
-		orientationTransform2D = 
-			Matrix3x2F::Rotation(270.0f) *
-			Matrix3x2F::Translation(0.0f, logicalSize.Width);
 		orientationTransform3D = ScreenRotation::Rotation90;
 		break;
 
@@ -424,34 +365,6 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	);
 
 	d3dContext->RSSetViewports(1, &screenViewport);
-
-	//Create a Direct2D target bitmap associated with the
-	//swap chain back buffer and set it as the current target.
-	D2D1_BITMAP_PROPERTIES1 bitmapProperties = 
-		D2D1::BitmapProperties1(
-			D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
-			D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
-			dpi,
-			dpi
-			);
-
-	ComPtr<IDXGISurface2> dxgiBackBuffer;
-	Sys::ThrowIfFailed(
-		swapChain->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer))
-		);
-
-	Sys::ThrowIfFailed(
-		d2dContext->CreateBitmapFromDxgiSurface(
-			dxgiBackBuffer.Get(),
-			&bitmapProperties,
-			&d2dTargetBitmap
-			)
-		);
-
-	d2dContext->SetTarget(d2dTargetBitmap.Get());
-
-	//Grayscale text anti-aliasing is recommended for all Windows Store apps.
-	d2dContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
 }
 
 //This method is called when the CoreWindow is created (or re-created).
@@ -464,7 +377,6 @@ void DeviceResources::SetWindow(CoreWindow^ Window)
 	nativeOrientation = currentDisplayInformation->NativeOrientation;
 	currentOrientation = currentDisplayInformation->CurrentOrientation;
 	dpi = currentDisplayInformation->LogicalDpi;
-	d2dContext->SetDpi(dpi, dpi);
 
 	CreateWindowSizeDependentResources();
 }
@@ -489,7 +401,6 @@ void DeviceResources::SetDpi(float Dpi)
 		//When the display DPI changes, the logical size of the window (measured in Dips) also changes and needs to be updated.
 		logicalSize = Windows::Foundation::Size(window->Bounds.Width, window->Bounds.Height);
 
-		d2dContext->SetDpi(dpi, dpi);
 		CreateWindowSizeDependentResources();
 	}
 }
@@ -567,7 +478,6 @@ void DeviceResources::HandleDeviceLost()
 	}
 
 	CreateDeviceResources();
-	d2dContext->SetDpi(dpi, dpi);
 	CreateWindowSizeDependentResources();
 
 	if (deviceNotify != nullptr)

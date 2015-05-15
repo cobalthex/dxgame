@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Graphics/Renderer.hpp"
+#include "App/GameComponent.hpp"
 #include "Graphics/Models/Model.hpp"
 #include "Graphics/Models/StaticModel.hpp"
 #include "Graphics/Textures/TextureCache.hpp"
@@ -16,10 +16,10 @@
 namespace DirectXGame
 {
 	// This sample renderer instantiates a basic rendering pipeline.
-	class TestScene : public AlignedStorage<16>, public Renderer
+	class TestScene : public AlignedStorage<16>, public GameComponent
 	{
 	public:
-		TestScene(const DeviceResourcesPtr& DeviceResources);
+		TestScene(Game& Game, const DeviceResourcesPtr& DeviceResources);
 		void CreateDeviceResources();
 		void CreateWindowResources(Windows::UI::Core::CoreWindow^ Window);
 		void ReleaseDeviceResources();
@@ -29,7 +29,6 @@ namespace DirectXGame
 
 	private:
 		TextureCache texCache;
-		ShaderCache shCache;
 
 		std::shared_ptr<Shaders::LitSkinnedShader> lsShader;
 		std::shared_ptr<Shaders::UnlitShader> ulShader;

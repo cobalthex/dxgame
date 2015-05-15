@@ -20,7 +20,17 @@ public:
 		: Texture2D(DeviceResources, std::wstring(File), AllowWrites) { }
 
 	Texture2D& operator=(const Texture2D& Copy); //Copies shader resource view pointer (does not copy resource)
-	Texture2D() : Texture(), desc({ 0 }) {  }
+	inline Texture2D() : Texture(), desc({ 0 }) {  }
+
+	virtual inline ~Texture2D() { Destroy(); }
+
+	//Destroys this texture and any references it holds
+	inline virtual void Destroy()
+	{
+		ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
+		srv = nullptr;
+		deviceResources = nullptr;
+	}
 
 	//Set texture data (returns false if incorrect bounds)
 	//Returns false on error
@@ -39,14 +49,14 @@ public:
 		if ((desc.CPUAccessFlags & D3D11_CPU_ACCESS_WRITE) > 0 && desc.Usage == D3D11_USAGE_DYNAMIC)
 		{
 			D3D11_MAPPED_SUBRESOURCE map;
-			HRESULT hr = deviceResources->GetD3DDeviceContext()->Map(res, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+			HRESULT hr = deviceResources->GetD3DDeviceContext()->Map(res.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
 			if (SUCCEEDED(hr))
 			{
 				unsigned wid = (Bounds.right - Bounds.left) * sizeof(T);
-				for (unsigned y = 0; y < (Bounds.bottom - Bounds.top); y++)
-					CopyMemory((void*)map.pData + y * map.RowPitch, (void*)Data + y * wid, wid);
+				for (int y = 0; y < (Bounds.bottom - Bounds.top); y++)
+					CopyMemory((byte*)map.pData + y * map.RowPitch, (byte*)Data + y * wid, wid);
 
-				deviceResources->GetD3DDeviceContext()->Unmap(res, 0);
+				deviceResources->GetD3DDeviceContext()->Unmap(res.Get(), 0);
 			}
 			else
 				return false;
@@ -55,7 +65,7 @@ public:
 		{
 			//update a region in the texture; requires USAGE_DEFAULT and no CPU_ACCESS
 			D3D11_BOX box = { Bounds.left, Bounds.top, 0, Bounds.right, Bounds.bottom, 1 };
-			deviceResources->GetD3DDeviceContext()->UpdateSubresource(res, 0, &box, (void*)Data, (Bounds.right - Bounds.left) * sizeof(T), 0);
+			deviceResources->GetD3DDeviceContext()->UpdateSubresource(res.Get(), 0, &box, (void*)Data, (Bounds.right - Bounds.left) * sizeof(T), 0);
 		}
 
 		return true;

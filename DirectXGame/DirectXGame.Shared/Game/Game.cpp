@@ -2,7 +2,7 @@
 #include "Game.hpp"
 #include "Common/PlatformHelpers.hpp"
 
-using namespace DirectXGame;
+#include "Graphics/Text/FpsRenderer.hpp"
 
 using namespace Windows::Foundation;
 using namespace Windows::System::Threading;
@@ -10,14 +10,14 @@ using namespace Concurrency;
 
 //Loads and initializes application assets when the application is loaded.
 Game::Game(const std::shared_ptr<DeviceResources>& DeviceResources) :
-	deviceResources(DeviceResources)
+	deviceResources(DeviceResources), shaderCache(DeviceResources)
 {
 	//Register to be notified if the Device is lost or recreated
 	deviceResources->RegisterDeviceNotify(this);
 
 	//TODO: Replace this with your app's content initialization.
-	scene = std::unique_ptr<TestScene>(new TestScene(deviceResources));
-	fpsTextRenderer = std::unique_ptr<FpsRenderer>(new FpsRenderer(deviceResources));
+	//components.push_back(TestScene(*this, deviceResources));
+	components.push_back(std::make_shared<FpsRenderer>(*this, deviceResources));
 	
 	//Set the timer settings to other than the default variable timestep mode.
 	//e.g. for 60 FPS fixed timestep update logic, call:
@@ -33,10 +33,10 @@ Game::~Game()
 }
 
 //Updates application state when the window size changes (e.g. device orientation change)
-void Game::CreateWindowResources()
+void Game::CreateWindowResources(Windows::UI::Core::CoreWindow^ Window)
 {
-	//TODO: Replace this with the size-dependent initialization of your app's content.
-	scene->CreateWindowResources(deviceResources->GetWindow().Get());
+	for (auto& c : components)
+		c->CreateWindowResources(Window);
 }
 
 //Updates the application state once per frame.
@@ -45,9 +45,11 @@ void Game::Update()
 	//Update scene objects.
 	timer.Tick([&]()
 	{
-		//TODO: Replace this with your app's content update functions.
-		scene->Update(timer);
-		fpsTextRenderer->Update(timer);
+		for (auto& c : components)
+		{
+			if (c->isEnabled)
+				c->Update(timer);
+		}
 	});
 }
 
@@ -73,10 +75,11 @@ bool Game::Render()
 	context->ClearRenderTargetView(deviceResources->GetBackBufferRenderTargetView(), DirectX::Colors::CornflowerBlue);
 	context->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	//Render the scene objects.
-	//TODO: Replace this with your app's content rendering functions.
-	scene->Render();
-	fpsTextRenderer->Render();
+	for (auto& c : components)
+	{
+		if (c->isVisible)
+			c->Render();
+	}
 
 	return true;
 }
@@ -84,14 +87,14 @@ bool Game::Render()
 //Notifies renderers that device resources need to be released.
 void Game::OnDeviceLost()
 {
-	scene->ReleaseDeviceResources();
-	fpsTextRenderer->ReleaseDeviceResources();
+	for (auto& c : components)
+		c->ReleaseDeviceResources();
 }
 
 //Notifies renderers that device resources may now be recreated.
 void Game::OnDeviceRestored()
 {
-	scene->CreateDeviceResources();
-	fpsTextRenderer->CreateDeviceResources();
-	CreateWindowResources();
+	for (auto& c : components)
+		c->CreateDeviceResources();
+	CreateWindowResources(deviceResources->GetWindow().Get());
 }

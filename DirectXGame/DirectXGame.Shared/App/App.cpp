@@ -4,8 +4,6 @@
 
 #include <ppltasks.h>
 
-using namespace DirectXGame;
-
 using namespace concurrency;
 using namespace Windows::ApplicationModel;
 using namespace Windows::ApplicationModel::Core;
@@ -179,7 +177,7 @@ void App::OnWindowClosed(CoreWindow^ Sender, CoreWindowEventArgs^ Args)
 void App::OnWindowSizeChanged(CoreWindow^ Sender, WindowSizeChangedEventArgs^ Args)
 {
 	deviceResources->SetLogicalSize(Size(Sender->Bounds.Width, Sender->Bounds.Height));
-	main->CreateWindowResources();
+	main->CreateWindowResources(deviceResources->GetWindow().Get());
 }
 #endif
 
@@ -195,12 +193,12 @@ void App::OnDisplayContentsInvalidated(DisplayInformation^ Sender, Object^ Args)
 void App::OnDpiChanged(DisplayInformation^ Sender, Object^ Args)
 {
 	deviceResources->SetDpi(Sender->LogicalDpi);
-	main->CreateWindowResources();
+	main->CreateWindowResources(deviceResources->GetWindow().Get());
 }
 
 void App::OnOrientationChanged(DisplayInformation^ Sender, Object^ Args)
 {
 	deviceResources->SetCurrentOrientation(Sender->CurrentOrientation);
-	main->CreateWindowResources();
+	main->CreateWindowResources(deviceResources->GetWindow().Get());
 }
 #endif

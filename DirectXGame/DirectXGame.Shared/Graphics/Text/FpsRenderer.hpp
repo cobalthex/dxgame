@@ -1,30 +1,43 @@
 ﻿#pragma once
 
 #include "Pch.hpp"
-#include "Graphics/Renderer.hpp"
+#include "Game/GameComponent.hpp"
+#include "Graphics/Textures/Texture2D.hpp"
+#include "Common/Math.hpp"
+#include "Graphics/Shaders/TextShader.hpp"
+#include "Formats/StbFreetype.hpp"
 
-namespace DirectXGame
+//Renders the current FPS value in the bottom right corner of the screen using Direct2D and DirectWrite
+class FpsRenderer : public GameComponent
 {
-	//Renders the current FPS value in the bottom right corner of the screen using Direct2D and DirectWrite
-	class FpsRenderer : public Renderer
-	{
-	public:
-		FpsRenderer(const std::shared_ptr<DeviceResources>& DeviceResources);
-		void CreateDeviceResources();
-		void ReleaseDeviceResources();
-		void Update(const StepTimer& Timer);
-		void Render();
+public:
+	FpsRenderer(Game& Game, const std::shared_ptr<DeviceResources>& DeviceResources);
+	~FpsRenderer();
+	void CreateDeviceResources();
+	void ReleaseDeviceResources();
+	void Update(const StepTimer& Timer);
+	void Render();
 
-	protected:
-		//Resources related to text rendering
-		std::wstring                    text;
-		DWRITE_TEXT_METRICS	            textMetrics;
-		ComPtr<ID2D1SolidColorBrush>    whiteBrush;
-		ComPtr<ID2D1SolidColorBrush>    blackBrush;
+	std::string prefix; //prefix before fps
+	std::string suffix; //suffix after fps
 
-		ComPtr<ID2D1DrawingStateBlock>  stateBlock;
-		ComPtr<IDWriteTextLayout>       textLayout;
-		ComPtr<IDWriteTextFormat>		textFormat;
-		size_t lastFps; //the last fps (for caching)
-	};
-}
+	unsigned LastFps() const { return lastFps; } //the last recorded FPS
+
+	Color textColor;
+
+protected:
+	unsigned lastFps;
+
+	std::string fontBuffer;
+	Texture2D tex;
+	unsigned width, height;
+	ComPtr<ID3D11Buffer> vertices;
+
+	stbtt_fontinfo fontInfo;
+	byte* buffer; //render buffer for Stb
+	float scale;
+	int ascent, descent, lineGap;
+
+	std::shared_ptr<Shaders::TextShader> shader;
+	DirectX::Math::Matrix worldViewProjection;
+};

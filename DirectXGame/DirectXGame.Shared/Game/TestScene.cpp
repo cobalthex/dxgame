@@ -7,6 +7,7 @@
 #include "Graphics/Primitives.hpp"
 #include "Input/InputHandler.hpp"
 #include "Data/Formats/Osl/Osl.hpp"
+#include "../Graphics/Shaders/Shader.hpp"
 
 using namespace DirectXGame;
 
@@ -15,13 +16,12 @@ using namespace Windows::Foundation;
 using namespace Windows::UI::Core;
 
 //Loads vertex and pixel shaders from files and instantiates the cube geometry.
-TestScene::TestScene(const std::shared_ptr<DeviceResources>& DeviceResources) :
+TestScene::TestScene(Game& Game, const std::shared_ptr<DeviceResources>& DeviceResources) :
 	loadingComplete(false),
 	degreesPerSecond(45),
 	tracking(false),
-	Renderer(DeviceResources),
-	shCache(DeviceResources),
-	texCache(DeviceResources)
+	texCache(DeviceResources),
+	GameComponent(Game, DeviceResources)
 {
 	CreateDeviceResources();
 	CreateWindowResources(DeviceResources->GetWindow().Get());
@@ -77,9 +77,9 @@ void TestScene::CreateWindowResources(CoreWindow^ Window)
 
 void TestScene::CreateDeviceResources()
 {
-	lsShader = shCache.Load<Shaders::LitSkinnedShader>(ShaderType::LitSkinned);
-	ulShader = shCache.Load<Shaders::UnlitShader>(ShaderType::Unlit);
-	pcShader = shCache.Load<Shaders::PositionColorShader>(ShaderType::PositionColor);
+	lsShader = game.LoadShader<Shaders::LitSkinnedShader>(ShaderType::LitSkinned);
+	ulShader = game.LoadShader<Shaders::UnlitShader>(ShaderType::Unlit);
+	pcShader = game.LoadShader<Shaders::PositionColorShader>(ShaderType::PositionColor);
 
 	Light li;
 	li.color = Color(1, 1, 1, 1);
@@ -108,6 +108,9 @@ void TestScene::CreateDeviceResources()
 		timeline.Add(&iqm.poses[iqm.pose]);
 		timeline.isLooping = true;
 		timeline.Start();
+		
+		Obj::Load(deviceResources, "Content/Models/sword.obj", texCache, game.LoadShader<Shaders::LitShader>(ShaderType::Lit), sword);
+
 	}).then([this]()
 	{
 		loadingComplete = true;
@@ -143,7 +146,7 @@ void TestScene::CreateStage(float Radius)
 
 	std::map<std::string, StaticModel::MeshType> meshes;
 	
-	Materials::LitMaterial mat(std::static_pointer_cast<Shaders::LitShader>(shCache.Load(ShaderType::Lit)));
+	Materials::LitMaterial mat(game.LoadShader<Shaders::LitShader>(ShaderType::Lit));
 	mat.diffuseMap = texCache.Load("Stage.dds");
 	mat.useTexture = mat.diffuseMap->IsValid();
 	mat.ambient = mat.diffuse = Color(1, 1, 1);
@@ -151,8 +154,6 @@ void TestScene::CreateStage(float Radius)
 	meshes["stage"] = { "stage", 0, 4, 0, 4, mat, Bounds() };
 
 	stage = StaticModel(deviceResources, verts, indices, PrimitiveTopology::TriangleStrip, meshes);
-
-	Obj::Load(deviceResources, "Content/Models/sword.obj", texCache, shCache.Load<Shaders::LitShader>(ShaderType::Lit), sword);
 
 	camRotation = { 0, -0.4f, 12 };
 }
@@ -172,6 +173,7 @@ void TestScene::Update(const StepTimer& Timer)
 	cam.position = Vector3::Transform(Vector3::Backward, Matrix::CreateFromYawPitchRoll(camRotation.x, camRotation.y, 0));
 	cam.position *= camRotation.z;
 	cam.CalcMatrices();
+	
 
 	lsShader->object.data.world = world.Transpose();
 	lsShader->object.data.Calc(cam.View(), cam.Projection());
@@ -199,11 +201,13 @@ void TestScene::Render()
 	if (!loadingComplete)
 		return;
 
+	
+
 	auto context = deviceResources->GetD3DDeviceContext();
 	context->RSSetState(nullptr);
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-
+	
 	auto sh = (Shaders::LitShader*)(stage.meshes.begin()->second.material.shader.get());
 	sh->SetInputLayout();
 	sh->Apply();
@@ -222,6 +226,7 @@ void TestScene::Render()
 		m.second.material.diffuseMap->Apply();
 		m.second.Draw(context);
 	}
+
 	/*
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	lsShader->SetInputLayout();
@@ -230,6 +235,8 @@ void TestScene::Render()
 	iqm.Skin(lsShader->object.data.joints);
 	lsShader->object.Update();
 
+	iqm.BeginDraw();
+	context->DrawAuto();
 	iqm.Draw();
 	
 	context->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1, 0);
@@ -246,5 +253,6 @@ void TestScene::Render()
 	pcShader->Apply();
 
 	iqmSkel.Draw();
-	context->RSSetState(nullptr);*/
+	context->RSSetState(nullptr);
+	*/
 }
