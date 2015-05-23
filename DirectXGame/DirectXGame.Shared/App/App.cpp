@@ -1,6 +1,6 @@
 ﻿#include "Pch.hpp"
 #include "App.hpp"
-#include "Input/InputHandler.hpp"
+#include "Engine/Input/InputHandler.hpp"
 
 #include <ppltasks.h>
 
@@ -21,7 +21,7 @@ int main(Platform::Array<Platform::String^>^)
 	//enable memory debugging
 #if defined(DEBUG) || defined(_DEBUG)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif 
+#endif
 
 	auto direct3DApplicationSource = ref new Direct3DApplicationSource();
 	CoreApplication::Run(direct3DApplicationSource);
@@ -111,7 +111,7 @@ void App::Run()
 
 			main->Update();
 
-			if (main->Render())
+			if (main->Draw())
 				deviceResources->Present();
 		}
 		else

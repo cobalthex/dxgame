@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "Pch.hpp"
-#include "Graphics/DeviceResources.hpp"
+#include "Engine/Graphics/DeviceResources.hpp"
 #include "Game/Game.hpp"
 
 ref class App sealed : public Windows::ApplicationModel::Core::IFrameworkView

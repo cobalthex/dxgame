@@ -1,17 +1,17 @@
 ﻿#pragma once
 
 #include "App/GameComponent.hpp"
-#include "Graphics/Models/Model.hpp"
-#include "Graphics/Models/StaticModel.hpp"
-#include "Graphics/Textures/TextureCache.hpp"
-#include "Graphics/Textures/Texture2D.hpp"
-#include "Graphics/Shaders/UnlitShader.hpp"
-#include "Graphics/ConstantBuffer.hpp"
-#include "Graphics/Lighting.hpp"
-#include "Graphics/Scene/Camera.hpp"
-#include "Common/AlignedStorage.hpp"
-#include "Animation/Timeline.hpp"
-#include "Graphics/Shaders/ShaderCache.hpp"
+#include "Engine/Graphics/Models/Model.hpp"
+#include "Engine/Graphics/Models/StaticModel.hpp"
+#include "Engine/Graphics/Textures/TextureCache.hpp"
+#include "Engine/Graphics/Textures/Texture2D.hpp"
+#include "Engine/Graphics/Shaders/UnlitShader.hpp"
+#include "Engine/Graphics/ConstantBuffer.hpp"
+#include "Engine/Graphics/Lighting.hpp"
+#include "Engine/Graphics/Scene/Camera.hpp"
+#include "Engine/Common/AlignedStorage.hpp"
+#include "Engine/Animation/Timeline.hpp"
+#include "Engine/Graphics/Shaders/ShaderCache.hpp"
 
 namespace DirectXGame
 {

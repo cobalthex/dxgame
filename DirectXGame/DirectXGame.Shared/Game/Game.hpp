@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include "Common/StepTimer.hpp"
-#include "Graphics/DeviceResources.hpp"
-#include "Graphics/Shaders/ShaderCache.hpp"
+#include "Engine/Common/StepTimer.hpp"
+#include "Engine/Graphics/DeviceResources.hpp"
+#include "Engine/Graphics/Shaders/ShaderCache.hpp"
+#include "Engine/Graphics/Text/FpsRenderer.hpp"
 
 class GameComponent;
 
@@ -13,7 +14,7 @@ public:
 	~Game();
 	void CreateWindowResources(Windows::UI::Core::CoreWindow^ Window);
 	void Update();
-	bool Render();
+	bool Draw();
 
 	//IDeviceNotify
 	virtual void OnDeviceLost();
@@ -33,4 +34,5 @@ private:
 	StepTimer timer;
 
 	ShaderCache shaderCache;
+	FpsRenderer fpsRenderer;
 };

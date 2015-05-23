@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Pch.hpp"
-#include "Common/StringOps.hpp"
+#include "Engine/Common/StringOps.hpp"
 
 //A collection of all of the sytem settings for this game
 namespace SystemSettings

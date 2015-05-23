@@ -1,12 +1,12 @@
 ﻿#include "Pch.hpp"
 #include "TestScene.hpp"
-#include "Common/PlatformHelpers.hpp"
-#include "Common/StringOps.hpp"
-#include "Graphics/Models/Formats/IQM/IqmLoader.hpp"
-#include "Graphics/Models/Formats/OBJ/ObjLoader.hpp"
-#include "Graphics/Primitives.hpp"
+#include "Engine/Common/PlatformHelpers.hpp"
+#include "Engine/Common/StringOps.hpp"
+#include "Engine/Graphics/Models/Formats/IQM/IqmLoader.hpp"
+#include "Engine/Graphics/Models/Formats/OBJ/ObjLoader.hpp"
+#include "Engine/Graphics/Primitives.hpp"
 #include "Input/InputHandler.hpp"
-#include "Data/Formats/Osl/Osl.hpp"
+#include "Engine/Data/Formats/Osl/Osl.hpp"
 #include "../Graphics/Shaders/Shader.hpp"
 
 using namespace DirectXGame;

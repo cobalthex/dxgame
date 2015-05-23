@@ -1,8 +1,9 @@
 ﻿#include "pch.hpp"
 #include "Game.hpp"
-#include "Common/PlatformHelpers.hpp"
+#include "Engine/Common/PlatformHelpers.hpp"
+#include "GameComponent.hpp"
 
-#include "Graphics/Text/FpsRenderer.hpp"
+#include "Engine/Graphics/Text/FpsRenderer.hpp"
 
 using namespace Windows::Foundation;
 using namespace Windows::System::Threading;
@@ -10,14 +11,13 @@ using namespace Concurrency;
 
 //Loads and initializes application assets when the application is loaded.
 Game::Game(const std::shared_ptr<DeviceResources>& DeviceResources) :
-	deviceResources(DeviceResources), shaderCache(DeviceResources)
+	deviceResources(DeviceResources), shaderCache(DeviceResources), fpsRenderer(DeviceResources, shaderCache.Load<Shaders::TextShader>(ShaderType::Text))
 {
 	//Register to be notified if the Device is lost or recreated
 	deviceResources->RegisterDeviceNotify(this);
 
 	//TODO: Replace this with your app's content initialization.
 	//components.push_back(TestScene(*this, deviceResources));
-	components.push_back(std::make_shared<FpsRenderer>(*this, deviceResources));
 	
 	//Set the timer settings to other than the default variable timestep mode.
 	//e.g. for 60 FPS fixed timestep update logic, call:
@@ -37,6 +37,8 @@ void Game::CreateWindowResources(Windows::UI::Core::CoreWindow^ Window)
 {
 	for (auto& c : components)
 		c->CreateWindowResources(Window);
+
+	fpsRenderer.CreateWindowResources(Window);
 }
 
 //Updates the application state once per frame.
@@ -55,7 +57,7 @@ void Game::Update()
 
 //Renders the current frame according to the current application state.
 //Returns true if the frame was rendered and is ready to be displayed.
-bool Game::Render()
+bool Game::Draw()
 {
 	//Don't try to render anything before the first Update.
 	if (timer.GetFrameCount() == 0)
@@ -78,8 +80,10 @@ bool Game::Render()
 	for (auto& c : components)
 	{
 		if (c->isVisible)
-			c->Render();
+			c->Draw(timer);
 	}
+
+	fpsRenderer.Draw(timer);
 
 	return true;
 }
@@ -89,12 +93,19 @@ void Game::OnDeviceLost()
 {
 	for (auto& c : components)
 		c->ReleaseDeviceResources();
+
+	fpsRenderer.ReleaseDeviceResources();
 }
 
 //Notifies renderers that device resources may now be recreated.
 void Game::OnDeviceRestored()
 {
+	//recreate shaders?
+
+
 	for (auto& c : components)
 		c->CreateDeviceResources();
+	fpsRenderer.CreateDeviceResources();
+
 	CreateWindowResources(deviceResources->GetWindow().Get());
 }
