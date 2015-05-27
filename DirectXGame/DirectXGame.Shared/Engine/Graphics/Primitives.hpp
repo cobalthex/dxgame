@@ -4,7 +4,7 @@
 #include "Engine/Common/Math.hpp"
 #include "Engine/Graphics/Shaders/PositionColorShader.hpp"
 
-using namespace DirectX::Math;
+using namespace Math;
 using PCSVertex = Shaders::PositionColorShader::Vertex;
 
 namespace Primitives

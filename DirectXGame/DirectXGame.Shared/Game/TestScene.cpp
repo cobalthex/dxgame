@@ -5,11 +5,8 @@
 #include "Engine/Graphics/Models/Formats/IQM/IqmLoader.hpp"
 #include "Engine/Graphics/Models/Formats/OBJ/ObjLoader.hpp"
 #include "Engine/Graphics/Primitives.hpp"
-#include "Input/InputHandler.hpp"
+#include "Engine/Input/InputHandler.hpp"
 #include "Engine/Data/Formats/Osl/Osl.hpp"
-#include "../Graphics/Shaders/Shader.hpp"
-
-using namespace DirectXGame;
 
 using namespace DirectX;
 using namespace Windows::Foundation;
@@ -147,8 +144,8 @@ void TestScene::CreateStage(float Radius)
 	std::map<std::string, StaticModel::MeshType> meshes;
 	
 	Materials::LitMaterial mat(game.LoadShader<Shaders::LitShader>(ShaderType::Lit));
-	mat.diffuseMap = texCache.Load("Stage.dds");
-	mat.useTexture = mat.diffuseMap->IsValid();
+	mat.diffuseMap = texCache.Load("ground.png");
+	mat.useTexture = (mat.diffuseMap != nullptr && mat.diffuseMap->IsValid());
 	mat.ambient = mat.diffuse = Color(1, 1, 1);
 
 	meshes["stage"] = { "stage", 0, 4, 0, 4, mat, Bounds() };
@@ -156,6 +153,11 @@ void TestScene::CreateStage(float Radius)
 	stage = StaticModel(deviceResources, verts, indices, PrimitiveTopology::TriangleStrip, meshes);
 
 	camRotation = { 0, -0.4f, 12 };
+
+	unsigned s = 128;
+	unsigned* cmap = new unsigned[s * s];
+	FillMemory(cmap, s * s * sizeof(unsigned), 0xff00ff00);
+	mat.diffuseMap->SetData(cmap, 10, 10, s, s);
 }
 
 void TestScene::ReleaseDeviceResources()
@@ -196,12 +198,10 @@ void TestScene::Update(const StepTimer& Timer)
 }
 
 //Renders one frame using the vertex and pixel shaders.
-void TestScene::Render()
+void TestScene::Draw(const StepTimer& Timer)
 {
 	if (!loadingComplete)
 		return;
-
-	
 
 	auto context = deviceResources->GetD3DDeviceContext();
 	context->RSSetState(nullptr);

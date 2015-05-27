@@ -39,5 +39,5 @@ protected:
 	int ascent, descent, lineGap, baseline;
 
 	std::shared_ptr<Shaders::TextShader> shader;
-	DirectX::Math::Matrix worldViewProjection;
+	Math::Matrix worldViewProjection;
 };

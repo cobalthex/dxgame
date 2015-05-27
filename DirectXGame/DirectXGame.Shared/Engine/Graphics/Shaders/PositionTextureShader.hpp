@@ -13,11 +13,11 @@ namespace Shaders
 	public:
 		struct Vertex
 		{
-			DirectX::Math::Vector3 position;
-			DirectX::Math::Vector2 texCoord;
+			Math::Vector3 position;
+			Math::Vector2 texCoord;
 
 			Vertex() { }
-			Vertex(const DirectX::Math::Vector3& Position, const DirectX::Math::Vector2& TexCoord) : position(Position), texCoord(TexCoord) { }
+			Vertex(const Math::Vector3& Position, const Math::Vector2& TexCoord) : position(Position), texCoord(TexCoord) { }
 
 			static const D3D11_INPUT_ELEMENT_DESC ElementDesc[];
 			static const unsigned ElementCount;

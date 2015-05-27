@@ -34,8 +34,9 @@ public:
 		/*if (!isLooping && time >= d)
 			return d;*/
 
-		if (isLooping)
-			return ::TimeSpan(((size_t)(time.count() * speed) % d.count()));
+		auto dc = d.count();
+		if (isLooping && dc > 0)
+			return ::TimeSpan(((size_t)(time.count() * speed) % dc));
 		
 		return ::TimeSpan((size_t)(time.count() * speed));
 	}

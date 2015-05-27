@@ -6,7 +6,7 @@
 #include "Engine/Graphics/ConstantBuffer.hpp"
 #include "ShaderStructures.hpp"
 
-using namespace DirectX::Math;
+using namespace Math;
 
 struct ShadowBufferDef : public ConstantBufferDef
 {

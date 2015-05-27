@@ -10,9 +10,9 @@ public:
 	virtual ~Drawable() { }
 
 	virtual void CreateDeviceResources() { } //Create any resources that depend on the graphics device
-	virtual void CreateWindowResources(Windows::UI::Core::CoreWindow^ Window) { } //Create any resources that depend on the size of the window
+	virtual void CreateWindowResources(Windows::UI::Core::CoreWindow^ Window) { } //Create any resources that depend on the size of the window. Called after CreateDeviceResources()
 	virtual void ReleaseDeviceResources() { } //Release any resources that depended on the graphics device
-	virtual void Draw(const StepTimer& Timer) { } //SeQ
+	virtual void Draw(const StepTimer& Timer) { } //Draw
 
 	bool isVisible;
 

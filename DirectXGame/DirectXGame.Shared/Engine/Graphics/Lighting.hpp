@@ -4,7 +4,7 @@
 #include "Engine/Common/Math.hpp"
 #include "ConstantBuffer.hpp"
 
-using namespace DirectX::Math;
+using namespace Math;
 
 #define MAX_LIGHTS 4
 

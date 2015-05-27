@@ -24,11 +24,19 @@ public:
 	template <typename ShaderTy>
 	inline std::shared_ptr<ShaderTy> LoadShader(const ShaderType& Type) { return shaderCache.Load<ShaderTy>(Type); } //Load a shade from the game wide cache
 
+	template <class T, typename Arg, typename... Args>
+	inline void AddComponent(Arg&& Arg, Args&&... Args) { PushComponent(std::make_shared<T>(*this, deviceResources, Arg, Args...)); }
+	template <class T>
+	inline void AddComponent() { PushComponent(std::make_shared<T>(*this, deviceResources)); }
+
+	void PushComponent(const std::shared_ptr<GameComponent>& GComponent); //Push a component onto the stack
+	std::shared_ptr<GameComponent> PopComponent(); //remove the top most component and deactivate it (Returns nullptr if no components)
+
 private:
+	std::vector<std::shared_ptr<GameComponent>> components; //all of the game compoinents managed by this game
+
 	//Cached pointer to device resources.
 	DeviceResourcesPtr deviceResources;
-
-	std::vector<std::shared_ptr<GameComponent>> components; //all of the game compoinents managed by this game
 
 	//Rendering loop timer
 	StepTimer timer;

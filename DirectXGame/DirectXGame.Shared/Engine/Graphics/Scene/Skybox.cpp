@@ -2,7 +2,7 @@
 #include "Skybox.hpp"
 #include "Engine/Graphics/Shaders/PositionTextureShader.hpp"
 
-using namespace DirectX::Math;
+using namespace Math;
 
 using V = Shaders::PositionTextureShader::Vertex;
 

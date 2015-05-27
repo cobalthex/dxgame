@@ -15,5 +15,5 @@ protected:
 	std::shared_ptr<Texture2D> cubeMap;
 	//std::shared_ptr<PositionTextureShader> shader;
 
-	DirectX::Math::Matrix world;
+	Math::Matrix world;
 };

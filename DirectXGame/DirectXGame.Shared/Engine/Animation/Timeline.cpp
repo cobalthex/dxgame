@@ -138,7 +138,7 @@ TimeSpan Timeline::Duration() const
 	TimePoint max = TimePoint();
 	for (auto& i : sequences)
 	{
-		if (i->keyframes.back().start > max)
+		if (i->keyframes.size() > 0 && i->keyframes.back().start > max)
 			max = i->keyframes.back().start;
 	}
 	return std::chrono::duration_cast<TimeType>(max - TimePoint()); //convert to duration

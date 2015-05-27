@@ -15,7 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\SystemSettings.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Game.cpp" />
@@ -51,13 +50,13 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\DeviceResources.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Input\InputHandler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImage.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\Console.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\TelnetConsole.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\SystemSettings.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
@@ -128,6 +127,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Input\InputHandler.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Drawable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImageWrite.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\mrfixit.iqm" />
@@ -154,6 +154,7 @@
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Stage.dds" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\skybox.png" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.dds" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Ground.png" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf" />

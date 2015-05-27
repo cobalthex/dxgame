@@ -6,7 +6,7 @@
 #include "Engine/Data/Formats/Osl/Osl.hpp"
 #include "App/SystemSettings.hpp"
 
-using namespace DirectX::Math;
+using namespace Math;
 
 const float Iqm::DefaultFrameLength = (1000.f / 24.f);
 

@@ -48,6 +48,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\StbFreetype.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Input\InputHandler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Scene\Skybox.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Animation\Animation.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Animation\Sequence.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\SystemSettings.hpp" />
@@ -89,6 +90,7 @@
       <FileType>CppHeader</FileType>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Formats\IQM\IqmLoader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Mesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Model.hpp" />
@@ -132,13 +134,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\DeviceResources.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Common\StepTimer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsRenderer.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsRenderer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +222,9 @@
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Ground.dds">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Ground.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Head.dds">

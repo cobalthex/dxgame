@@ -13,8 +13,8 @@ namespace Shaders
 	public:
 		struct Vertex
 		{
-			DirectX::Math::Vector3 position;
-			DirectX::Math::Color color;
+			Math::Vector3 position;
+			Math::Color color;
 
 			static const D3D11_INPUT_ELEMENT_DESC ElementDesc[];
 			static const unsigned ElementCount;

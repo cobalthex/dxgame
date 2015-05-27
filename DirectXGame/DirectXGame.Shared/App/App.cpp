@@ -1,6 +1,7 @@
 ﻿#include "Pch.hpp"
 #include "App.hpp"
 #include "Engine/Input/InputHandler.hpp"
+#include "Game/TestScene.hpp"
 
 #include <ppltasks.h>
 
@@ -97,7 +98,11 @@ void App::SetWindow(CoreWindow^ Window)
 void App::Load(Platform::String^ EntryPoint)
 {
 	if (main == nullptr)
+	{
 		main = std::unique_ptr<Game>(new Game(deviceResources));
+
+		main->AddComponent<TestScene>();
+	}
 }
 
 //This method is called after the window becomes active.

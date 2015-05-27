@@ -2,8 +2,8 @@
 
 #include "Math.hpp"
 
-using DirectX::Math::Vector2;
-using DirectX::Math::Vector3;
+using Math::Vector2;
+using Math::Vector3;
 
 #pragma push_macro("min")
 #pragma push_macro("max")

@@ -4,7 +4,7 @@
 #include "Engine/Common/Math.hpp"
 #include "Engine/Graphics/ConstantBuffer.hpp"
 
-using namespace DirectX::Math;
+using namespace Math;
 
 #define MAX_JOINTS 128 //The maximum allowed number of joints per shader
 

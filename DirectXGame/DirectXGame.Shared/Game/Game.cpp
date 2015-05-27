@@ -109,3 +109,21 @@ void Game::OnDeviceRestored()
 
 	CreateWindowResources(deviceResources->GetWindow().Get());
 }
+
+void Game::PushComponent(const std::shared_ptr<GameComponent>& GComponent)
+{
+	components.push_back(GComponent);
+	GComponent->CreateDeviceResources();
+	GComponent->CreateWindowResources(deviceResources->GetWindow().Get());
+}
+
+std::shared_ptr<GameComponent> Game::PopComponent()
+{
+	if (components.size() < 1)
+		return nullptr;
+
+	auto gcomp = components.back();
+	components.pop_back();
+	gcomp->ReleaseDeviceResources();
+	return gcomp;
+}

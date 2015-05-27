@@ -5,8 +5,8 @@
 
 namespace InputHandler
 {
-	extern DirectX::Math::Vector2 cursor;
-	extern DirectX::Math::Vector2 lastCursor;
+	extern Math::Vector2 cursor;
+	extern Math::Vector2 lastCursor;
  
 	extern bool isLeftMousePressed;
 	extern bool isMiddleMousePressed;

@@ -34,15 +34,16 @@ public:
 		deviceResources = nullptr;
 	}
 
-	//Set texture data (returns false if incorrect bounds)
+	//Set texture data (bounds will be clipped if necessary
 	//Returns false on error
 	template <class T>
-	bool SetData(T* Data, const RECT& Bounds)
+	bool SetData(T* Data, unsigned X, unsigned Y, unsigned Width, unsigned Height)
 	{
 		//make sure inside texture bounds
-		if (!(Bounds.left < Bounds.right && Bounds.top < Bounds.bottom &&
-			Bounds.left >= 0 && (unsigned)Bounds.right < desc.Width && Bounds.top >= 0 && (unsigned)Bounds.bottom < desc.Height))
-			return false;
+		ClampRef<unsigned>(X, 0, desc.Width);
+		ClampRef<unsigned>(Y, 0, desc.Height);
+		ClampRef<unsigned>(Width, 0, desc.Width - X);
+		ClampRef<unsigned>(Height, 0, desc.Height - Y);
 
 		ComPtr<ID3D11Resource> res;
 		srv->GetResource(&res);
@@ -54,9 +55,9 @@ public:
 			HRESULT hr = deviceResources->GetD3DDeviceContext()->Map(res.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
 			if (SUCCEEDED(hr))
 			{
-				unsigned wid = (Bounds.right - Bounds.left) * sizeof(T);
-				for (int y = 0; y < (Bounds.bottom - Bounds.top); y++)
-					CopyMemory((byte*)map.pData + y * map.RowPitch, (byte*)Data + y * wid, wid);
+				unsigned rw = Width * sizeof(T);
+				for (unsigned y = 0; y < Height; y++)
+					CopyMemory((byte*)map.pData + y * map.RowPitch, (byte*)Data + y * rw, rw);
 
 				deviceResources->GetD3DDeviceContext()->Unmap(res.Get(), 0);
 			}
@@ -66,8 +67,8 @@ public:
 		else
 		{
 			//update a region in the texture; requires USAGE_DEFAULT and no CPU_ACCESS
-			D3D11_BOX box = { Bounds.left, Bounds.top, 0, Bounds.right, Bounds.bottom, 1 };
-			deviceResources->GetD3DDeviceContext()->UpdateSubresource(res.Get(), 0, &box, (void*)Data, (Bounds.right - Bounds.left) * sizeof(T), 0);
+			D3D11_BOX box = { X, Y, 0, X + Width - 1, Y + Height - 1, 1 };
+			deviceResources->GetD3DDeviceContext()->UpdateSubresource(res.Get(), 0, &box, (void*)Data, Width * sizeof(T), 0);
 		}
 
 		return true;

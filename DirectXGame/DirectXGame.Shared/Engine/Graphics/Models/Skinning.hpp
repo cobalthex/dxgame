@@ -3,7 +3,7 @@
 #include "Engine/Common/Math.hpp"
 #include "Engine/Animation/Sequence.hpp"
 
-using namespace DirectX::Math;
+using namespace Math;
 
 //A single joint in a skeleton of a mesh
 //Contains a pre-calculated matrix based on the rotation, scale, and translation

@@ -14,11 +14,11 @@ FpsRenderer::FpsRenderer(const std::shared_ptr<DeviceResources>& DeviceResources
 	if (stbtt_InitFont(&fontInfo, fontData.data(), 0))
 	{
 		textBuffer = new byte[width * height];
-		ZeroMemory(textBuffer, width * height);
+		ZeroMemory(textBuffer, sizeof(byte) * width * height);
 		scale = stbtt_ScaleForPixelHeight(&fontInfo, 12);
 
 		stbtt_GetFontVMetrics(&fontInfo, &ascent, &descent, &lineGap);
-		baseline = (int)(ascent * scale);
+		ascent = (int)(ascent * scale);
 	}
 
 	shader = Shader;
@@ -89,27 +89,29 @@ void FpsRenderer::Draw(const StepTimer& Timer)
 
 		for (size_t i = 0; i < text.length(); i++)
 		{
-			int advance, lsb, x0, y0, x1, y1;
-			float x_shift = x - (float)floor(x);
-			stbtt_GetCodepointHMetrics(&fontInfo, text[i], &advance, &lsb);
-			stbtt_GetCodepointBitmapBoxSubpixel(&fontInfo, text[i], scale, scale, x_shift, 0, &x0, &y0, &x1, &y1);
-			stbtt_MakeCodepointBitmapSubpixel(&fontInfo, textBuffer + (width * (baseline + y0) + (x  + x0)), x1 - x0, y1 - y0, 79, scale, scale, x_shift, 0, text[i]);
+			//get bounding box for character (may be offset to account for chars that dip above or below the line
+			int c_x1, c_y1, c_x2, c_y2;
+			stbtt_GetCodepointBitmapBox(&fontInfo, text[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
-			// note that this stomps the old data, so where character boxes overlap (e.g. 'lj') it's wrong
-			// because this API is really for baking character bitmaps into textures. if you want to render
-			// a sequence of characters, you really need to render each bitmap to a temp buffer, then
-			// "alpha blend" that into the working buffer
-			x += (int)(advance * scale);
-			if (text[i + 1])
-				x += (int)(scale * stbtt_GetCodepointKernAdvance(&fontInfo, text[i], text[i + 1]));
+			//compute y (different characters have different heights */
+			int y = ascent + c_y1;
+
+			//render character (stride and offset is important here) */
+			int byteOffset = x + (y  * width);
+			stbtt_MakeCodepointBitmap(&fontInfo, textBuffer + byteOffset, c_x2 - c_x1, c_y2 - c_y1, width, scale, scale, text[i]);
+
+			//how wide is this character
+			int ax;
+			stbtt_GetCodepointHMetrics(&fontInfo, text[i], &ax, 0);
+			x += (int)(ax * scale);
+
+			//add kerning
+			int kern;
+			kern = stbtt_GetCodepointKernAdvance(&fontInfo, text[i], text[i + 1]);
+			x += (int)(kern * scale);
 		}
 
-		RECT rct;
-		rct.left = 0;
-		rct.top = 0;
-		rct.right = width;
-		rct.bottom = height;
-		tex.SetData(textBuffer, rct);
+		tex.SetData(textBuffer, 0, 0, width, height);
 	}
 	lastFps = fps;
 

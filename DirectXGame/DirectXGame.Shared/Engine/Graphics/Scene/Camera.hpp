@@ -3,7 +3,7 @@
 #include "Engine/Common/Math.hpp"
 #include "Engine/Graphics/ConstantBuffer.hpp"
 
-using namespace DirectX::Math;
+using namespace Math;
 
 //A single camera that can view a scene. Defines a chase camera
 class Camera
