@@ -133,8 +133,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\DeviceResources.hpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\DeviceResources.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Common\StepTimer.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsRenderer.hpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsRenderer.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.hpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
   </ItemGroup>
   <ItemGroup>

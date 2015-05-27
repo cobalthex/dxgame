@@ -42,7 +42,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\TextShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\UnlitShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\StbFreetype.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\WICTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Texture2D.cpp" />
@@ -51,6 +50,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Input\InputHandler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImage.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp" />
@@ -110,7 +110,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\TextShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\UnlitShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\StbFreetype.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\DDS.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\DDSTextureLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImage.hpp" />
@@ -128,6 +127,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Drawable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImageWrite.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\mrfixit.iqm" />

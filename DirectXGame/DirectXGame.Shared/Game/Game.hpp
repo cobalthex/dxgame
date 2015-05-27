@@ -3,7 +3,7 @@
 #include "Engine/Common/StepTimer.hpp"
 #include "Engine/Graphics/DeviceResources.hpp"
 #include "Engine/Graphics/Shaders/ShaderCache.hpp"
-#include "Engine/Graphics/Text/FpsRenderer.hpp"
+#include "Engine/Graphics/Text/FpsDisplay.hpp"
 
 class GameComponent;
 
@@ -42,5 +42,5 @@ private:
 	StepTimer timer;
 
 	ShaderCache shaderCache;
-	FpsRenderer fpsRenderer;
+	FpsDisplay FpsDisplay;
 };

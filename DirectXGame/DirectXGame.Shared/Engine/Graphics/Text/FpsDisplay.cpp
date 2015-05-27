@@ -1,13 +1,13 @@
 ﻿#include "Pch.hpp"
 
-#include "FpsRenderer.hpp"
+#include "FpsDisplay.hpp"
 #include "Engine/Common/PlatformHelpers.hpp"
 #include "App/SystemSettings.hpp"
 #include "Engine/Graphics/Textures/Formats/StbImageWrite.hpp"
 
 //Initializes D2D resources used for text rendering
-FpsRenderer::FpsRenderer(const std::shared_ptr<DeviceResources>& DeviceResources, const std::shared_ptr<Shaders::TextShader>& Shader)
-	: lastFps(0), textBuffer(nullptr), Drawable(DeviceResources), width(128), height(16), textColor(Color(1, 1, 1, 1.f))
+FpsDisplay::FpsDisplay(const std::shared_ptr<DeviceResources>& DeviceResources, const std::shared_ptr<Shaders::TextShader>& Shader)
+	: lastFps(0), textBuffer(nullptr), Drawable(DeviceResources), width(64), height(14), textColor(Color(1, 1, 1, 1.f))
 {
 	fontData = Sys::ReadFile(SystemSettings::GetFontFile("OCRAExt.ttf"));
 	
@@ -24,30 +24,33 @@ FpsRenderer::FpsRenderer(const std::shared_ptr<DeviceResources>& DeviceResources
 	shader = Shader;
 	CreateDeviceResources();
 }
-FpsRenderer::~FpsRenderer()
+FpsDisplay::~FpsDisplay()
 {
 	if (textBuffer != nullptr)
 		delete[] textBuffer;
 }
 
-void FpsRenderer::CreateDeviceResources()
+void FpsDisplay::CreateDeviceResources()
 {
-	tex = Texture2D(deviceResources, 128, 16, DXGI_FORMAT_R8_UINT, 1, true);
+	tex = Texture2D(deviceResources, width, height, DXGI_FORMAT_R8_UINT, 1, true);
 
 	std::vector<Shaders::TextShader::Vertex> verts;
-	//create quad to display
 	Shaders::TextShader::Vertex v;
+
 	v.position = Vector3(0, 0, 0);
 	v.texCoord = Vector2(0, 0);
 	verts.push_back(v);
-	v.position.x += width;
-	v.texCoord.x = 1;
+
+	v.position = Vector3(width, 0, 0);
+	v.texCoord = Vector2(1, 0);
 	verts.push_back(v);
-	v.position = Vector3(0, (float)height, 0);
+
+	v.position = Vector3(0, height, 0);
 	v.texCoord = Vector2(0, 1);
 	verts.push_back(v);
-	v.position.x += width;
-	v.texCoord.x = 1;
+
+	v.position = Vector3(width, height, 0);
+	v.texCoord = Vector2(1, 1);
 	verts.push_back(v);
 
 	//create vertex buffer
@@ -69,13 +72,13 @@ void FpsRenderer::CreateDeviceResources()
 		* Matrix::CreateOrthographicOffCenter(0, sz.Width, sz.Height, 0, -1, 1);
 }
 
-void FpsRenderer::ReleaseDeviceResources()
+void FpsDisplay::ReleaseDeviceResources()
 {
 	tex.Destroy();
 }
 
 //Renders a frame to the screen
-void FpsRenderer::Draw(const StepTimer& Timer)
+void FpsDisplay::Draw(const StepTimer& Timer)
 {
 	//Update display text
 	unsigned fps = Timer.GetFramesPerSecond();

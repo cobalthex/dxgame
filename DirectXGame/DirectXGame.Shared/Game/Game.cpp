@@ -3,7 +3,7 @@
 #include "Engine/Common/PlatformHelpers.hpp"
 #include "GameComponent.hpp"
 
-#include "Engine/Graphics/Text/FpsRenderer.hpp"
+#include "Engine/Graphics/Text/FpsDisplay.hpp"
 
 using namespace Windows::Foundation;
 using namespace Windows::System::Threading;
@@ -11,7 +11,7 @@ using namespace Concurrency;
 
 //Loads and initializes application assets when the application is loaded.
 Game::Game(const std::shared_ptr<DeviceResources>& DeviceResources) :
-	deviceResources(DeviceResources), shaderCache(DeviceResources), fpsRenderer(DeviceResources, shaderCache.Load<Shaders::TextShader>(ShaderType::Text))
+	deviceResources(DeviceResources), shaderCache(DeviceResources), FpsDisplay(DeviceResources, shaderCache.Load<Shaders::TextShader>(ShaderType::Text))
 {
 	//Register to be notified if the Device is lost or recreated
 	deviceResources->RegisterDeviceNotify(this);
@@ -38,7 +38,7 @@ void Game::CreateWindowResources(Windows::UI::Core::CoreWindow^ Window)
 	for (auto& c : components)
 		c->CreateWindowResources(Window);
 
-	fpsRenderer.CreateWindowResources(Window);
+	FpsDisplay.CreateWindowResources(Window);
 }
 
 //Updates the application state once per frame.
@@ -83,7 +83,7 @@ bool Game::Draw()
 			c->Draw(timer);
 	}
 
-	fpsRenderer.Draw(timer);
+	FpsDisplay.Draw(timer);
 
 	return true;
 }
@@ -94,7 +94,7 @@ void Game::OnDeviceLost()
 	for (auto& c : components)
 		c->ReleaseDeviceResources();
 
-	fpsRenderer.ReleaseDeviceResources();
+	FpsDisplay.ReleaseDeviceResources();
 }
 
 //Notifies renderers that device resources may now be recreated.
@@ -105,7 +105,7 @@ void Game::OnDeviceRestored()
 
 	for (auto& c : components)
 		c->CreateDeviceResources();
-	fpsRenderer.CreateDeviceResources();
+	FpsDisplay.CreateDeviceResources();
 
 	CreateWindowResources(deviceResources->GetWindow().Get());
 }

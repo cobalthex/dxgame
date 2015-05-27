@@ -8,11 +8,11 @@
 #include "Engine/Graphics/Drawable.hpp"
 
 //Renders the current FPS value in the bottom right corner of the screen using Direct2D and DirectWrite
-class FpsRenderer : public Drawable
+class FpsDisplay : public Drawable
 {
 public:
-	FpsRenderer(const std::shared_ptr<DeviceResources>& DeviceResources, const std::shared_ptr<Shaders::TextShader>& Shader);
-	virtual ~FpsRenderer();
+	FpsDisplay(const std::shared_ptr<DeviceResources>& DeviceResources, const std::shared_ptr<Shaders::TextShader>& Shader);
+	virtual ~FpsDisplay();
 
 	void CreateDeviceResources();
 	void ReleaseDeviceResources();

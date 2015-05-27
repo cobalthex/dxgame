@@ -14,15 +14,15 @@ using namespace Windows::UI::Core;
 
 //Loads vertex and pixel shaders from files and instantiates the cube geometry.
 TestScene::TestScene(Game& Game, const std::shared_ptr<DeviceResources>& DeviceResources) :
-	loadingComplete(false),
-	degreesPerSecond(45),
-	tracking(false),
-	texCache(DeviceResources),
-	GameComponent(Game, DeviceResources)
+loadingComplete(false),
+degreesPerSecond(45),
+tracking(false),
+texCache(DeviceResources),
+GameComponent(Game, DeviceResources)
 {
 	CreateDeviceResources();
 	CreateWindowResources(DeviceResources->GetWindow().Get());
-	
+
 }
 
 //Initializes view parameters when the window size changes.
@@ -105,7 +105,7 @@ void TestScene::CreateDeviceResources()
 		timeline.Add(&iqm.poses[iqm.pose]);
 		timeline.isLooping = true;
 		timeline.Start();
-		
+
 		Obj::Load(deviceResources, "Content/Models/sword.obj", texCache, game.LoadShader<Shaders::LitShader>(ShaderType::Lit), sword);
 
 	}).then([this]()
@@ -123,7 +123,7 @@ void TestScene::CreateStage(float Radius)
 	v.color = DirectX::PackedVector::XMUBYTEN4(0.5f, 0.5f, 0.5f, 1);
 	v.normal = Vector3::Up;
 	verts.push_back(v);
-	
+
 	v.position = Vector3(Radius, 0, -Radius);
 	v.texCoord = Vector2(1, 0);
 	v.normal = Vector3::Up;
@@ -142,9 +142,9 @@ void TestScene::CreateStage(float Radius)
 	static const std::vector<unsigned> indices = { 0, 1, 2, 3 };
 
 	std::map<std::string, StaticModel::MeshType> meshes;
-	
+
 	Materials::LitMaterial mat(game.LoadShader<Shaders::LitShader>(ShaderType::Lit));
-	mat.diffuseMap = texCache.Load("ground.png");
+	mat.diffuseMap = texCache.Load("ground.dds");
 	mat.useTexture = (mat.diffuseMap != nullptr && mat.diffuseMap->IsValid());
 	mat.ambient = mat.diffuse = Color(1, 1, 1);
 
@@ -154,10 +154,10 @@ void TestScene::CreateStage(float Radius)
 
 	camRotation = { 0, -0.4f, 12 };
 
-	unsigned s = 128;
+	/*unsigned s = 128;
 	unsigned* cmap = new unsigned[s * s];
 	FillMemory(cmap, s * s * sizeof(unsigned), 0xff00ff00);
-	mat.diffuseMap->SetData(cmap, 10, 10, s, s);
+	mat.diffuseMap->SetData(cmap, 10, 10, s, s);*/
 }
 
 void TestScene::ReleaseDeviceResources()
@@ -175,7 +175,7 @@ void TestScene::Update(const StepTimer& Timer)
 	cam.position = Vector3::Transform(Vector3::Backward, Matrix::CreateFromYawPitchRoll(camRotation.x, camRotation.y, 0));
 	cam.position *= camRotation.z;
 	cam.CalcMatrices();
-	
+
 
 	lsShader->object.data.world = world.Transpose();
 	lsShader->object.data.Calc(cam.View(), cam.Projection());
@@ -207,7 +207,7 @@ void TestScene::Draw(const StepTimer& Timer)
 	context->RSSetState(nullptr);
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-	
+
 	auto sh = (Shaders::LitShader*)(stage.meshes.begin()->second.material.shader.get());
 	sh->SetInputLayout();
 	sh->Apply();
@@ -216,14 +216,15 @@ void TestScene::Draw(const StepTimer& Timer)
 
 	//sword.Draw();
 
-	
+
 	ulShader->Apply();
 	ulShader->Update();
 	ulShader->object = sh->object;
 	sword.BeginDraw();
 	for (auto& m : sword.meshes)
 	{
-		m.second.material.diffuseMap->Apply();
+		if (m.second.material.useTexture)
+			m.second.material.diffuseMap->Apply();
 		m.second.Draw(context);
 	}
 
@@ -238,12 +239,12 @@ void TestScene::Draw(const StepTimer& Timer)
 	iqm.BeginDraw();
 	context->DrawAuto();
 	iqm.Draw();
-	
+
 	context->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1, 0);
 
 	auto skel = iqm.CreateSkeletalMesh(Color(1, 0.6f, 0, 0));
 	iqmSkel.UpdateVertices(skel.vertices);
-	
+
 	//Draw skeleton
 	context->RSSetState(wireRasterizer.Get());
 
