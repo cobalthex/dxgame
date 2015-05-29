@@ -45,7 +45,9 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Texture2D.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\TextureCache.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\BitmapTextMesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\StbFreetype.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Input\InputHandler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Scene\Skybox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
@@ -74,6 +76,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Data\Formats\Json\Json.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Drawable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImageWrite.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\BitmapTextMesh.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\TextRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\GameComponent.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Effects\Effect.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Effects\ShadowMapEffect.hpp" />
@@ -133,8 +138,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\DeviceResources.hpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\DeviceResources.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Common\StepTimer.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.hpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -4,7 +4,7 @@
 #include "Engine/Graphics/Textures/Texture2D.hpp"
 #include "Engine/Common/Math.hpp"
 #include "Engine/Graphics/Shaders/TextShader.hpp"
-#include "Formats/StbFreetype.hpp"
+#include "Engine/Graphics/Text/BitmapTextMesh.hpp"
 #include "Engine/Graphics/Drawable.hpp"
 
 //Renders the current FPS value in the bottom right corner of the screen using Direct2D and DirectWrite
@@ -27,10 +27,8 @@ public:
 
 protected:
 	unsigned lastFps;
-
-	Texture2D tex;
-	unsigned width, height;
-	ComPtr<ID3D11Buffer> vertices;
+	 
+	BitmapTextMesh bitmap;
 
 	std::vector<byte> fontData;
 	stbtt_fontinfo fontInfo;
