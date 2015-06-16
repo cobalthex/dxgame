@@ -108,6 +108,8 @@ public:
 		return m;
 	}
 
+	inline bool IsValid() const { return (devContext != nullptr && indexCount > 0 && vertexCount > 0); }
+
 	//Draw the mesh (automatically binds if index >= 0)
 	inline virtual void Draw(unsigned Slot = 0) const
 	{

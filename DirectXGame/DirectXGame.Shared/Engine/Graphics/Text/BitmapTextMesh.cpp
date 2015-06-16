@@ -2,8 +2,13 @@
 #include "BitmapTextMesh.hpp"
 #include "Engine/Graphics/Shaders/TextShader.hpp"
 
-BitmapTextMesh::BitmapTextMesh(const DeviceResourcesPtr& DeviceResources, const std::string& Text, const stbtt_fontinfo* Font, float FontSize)
-	: deviceResources(DeviceResources), text(Text), font(Font), fontSize(FontSize)
+#include "Engine/Graphics/Textures/Formats/StbImageWrite.hpp"
+
+#include <ppltasks.h>	// For create_task
+#include <cwctype>
+
+BitmapTextMesh::BitmapTextMesh(const DeviceResourcesPtr& DeviceResources, const std::string& Text, const stbtt_fontinfo* Font, float FontSize, bool UsePow2Textures)
+	: deviceResources(DeviceResources), text(Text), font(Font), fontSize(FontSize), usePow2Textures(UsePow2Textures)
 {
 	Refresh();
 }
@@ -12,16 +17,38 @@ struct TexRegion
 {
 	int x1 = 0, y1 = 0;
 	int x2 = 0, y2 = 0;
+	bool drawn = false;
 };
 
 void BitmapTextMesh::Refresh()
 {
+	texture = Texture2D(deviceResources, "Content/textures/text.png");
+	std::vector<Shaders::TextShader::Vertex> _vx;
+	Shaders::TextShader::Vertex _v;
+	_v.position = Vector3(0, 0, 0);
+	_v.texCoord = Vector2(0, 0);
+	_vx.push_back(_v);
+	_v.position = Vector3(texture.Width(), 0, 0);
+	_v.texCoord = Vector2(1, 0);
+	_vx.push_back(_v);
+	_v.position = Vector3(0, texture.Height(), 0);
+	_v.texCoord = Vector2(0, 1);
+	_vx.push_back(_v);
+	_v.position = Vector3(texture.Width(), texture.Height(), 0);
+	_v.texCoord = Vector2(1, 1);
+	_vx.push_back(_v);
+	unsigned __i[] = { 0, 2, 1, 1, 2, 3 };
+	auto _ix = std::vector<unsigned>(__i, __i + 6);
+	mesh = Mesh::Create(deviceResources, _vx, _ix, PrimitiveTopology::TriangleList);
+	return;
+
 	unsigned width = 0;
 	unsigned height = 0;
 	float scale = stbtt_ScaleForPixelHeight(font, fontSize);
 	int ascent, descent, lineGap;
-	stbtt_GetFontVMetrics(font, &ascent, &descent, &lineGap);
 
+	stbtt_GetFontVMetrics(font, &ascent, &descent, &lineGap);
+	 
 	unsigned texWidth = 0;
 	unsigned texHeight = 0;
 	int x = 0, y = 0;
@@ -38,7 +65,7 @@ void BitmapTextMesh::Refresh()
 		stbtt_GetCodepointBitmapBox(font, text[i], scale, scale, &rgn.x1, &rgn.y1, &rgn.x2, &rgn.y2);
 		unsigned w = rgn.x2 - rgn.x1;
 		unsigned h = rgn.y2 - rgn.y1;
-		
+
 		rgn.x1 += x;
 		rgn.x2 += x;
 		rgn.y1 += y;
@@ -54,73 +81,87 @@ void BitmapTextMesh::Refresh()
 		texWidth += x;
 	}
 
-	//render texture
-	byte* tex = new byte[texWidth * texHeight];
-	for (auto& c : uniques)
+	if (usePow2Textures)
 	{
-		auto& v = c.second;
-
-		//compute y (different characters have different heights
-		int _y = ascent + v.y1;
-
-		//render character (stride and offset is important here)
-		int byteOffset = v.x1 + (_y  * texWidth);
-		stbtt_MakeCodepointBitmap(font, tex + byteOffset, v.x2 - v.x1, v.y2 - v.y1, texWidth, scale, scale, c.first);
+		texWidth = NextPowerOf2(texWidth);
+		texHeight = NextPowerOf2(texHeight);
 	}
-	if (!texture.IsValid() || texture.Width() != texWidth || texture.Height() != texHeight)
-		texture = Texture2D(deviceResources, texWidth, texHeight, DXGI_FORMAT_R8_UINT, 1, true);
-	texture.SetData(tex, 0, 0, texWidth, texHeight);
-	/*
-	//create mesh
+
+	//render texture and create mesh (texture size must be known from above before it can be made)
+	byte* tex = new byte[texWidth * texHeight];
 	x = 0;
 	y = 0;
 	std::vector<Shaders::TextShader::Vertex> verts;
+	std::vector<unsigned> idx;
 	for (unsigned i = 0; i < text.length(); i++)
 	{
+		auto& ch = uniques[text[i]];
 
+		int w = ch.x2 - ch.x1;
+		int h = ch.y2 - ch.y1;
+
+		if (!ch.drawn)
+		{
+			//compute y (different characters have different heights
+			int _y = ascent + ch.y1;
+
+			//render character (stride and offset is important here)
+			int byteOffset = ch.x1 + (_y  * texWidth);
+			stbtt_MakeCodepointBitmap(font, tex + byteOffset, w, h, texWidth, scale, scale, text[i]);
+		}
+
+		//create mesh
+		//1 - 2
+		//| / |
+		//3 - 4
+		//TODO: handle line breaks
+		Shaders::TextShader::Vertex v;
+		v.position = Vector3(x, y, 0);
+		v.texCoord = Vector2(0, 0);
+		verts.push_back(v);
+		v.position = Vector3(x + w, y, 0);
+		v.texCoord = Vector2(1, 0);
+		verts.push_back(v);
+		v.position = Vector3(x, y + h, 0);
+		v.texCoord = Vector2(0, 1);
+		verts.push_back(v);
+		v.position = Vector3(x + w, y + h, 0);
+		v.texCoord = Vector2(1, 1);
+		verts.push_back(v);
+		unsigned _i[] = { 0, 1, 2, 1, 2, 3 };
+		idx.insert(idx.end(), _i, _i + 6);
 
 		//how wide is this character
 		int ax;
 		stbtt_GetCodepointHMetrics(font, text[i], &ax, 0);
-		x += (int)(ax * scale);
+		x += (int)(ax * scale); 
 
+		//calculate kern
 		if (i < text.length() - 1)
 		{
 			int kern;
 			kern = stbtt_GetCodepointKernAdvance(font, text[i], text[i + 1]);
 			x += (int)(kern * scale);
 		}
-	}*/
+	}
+
+	mesh.CreateFrom(deviceResources, verts, idx, PrimitiveTopology::TriangleList, false);
+
+	//create hw texture
+	if (!texture.IsValid() || texture.Width() != texWidth || texture.Height() != texHeight)
+	{
+		texture = Texture2D(deviceResources, texWidth, texHeight, DXGI_FORMAT_R8_UINT, 1, true);
+		DX::SetDebugObjectName(texture.GetHWTexture().Get(), "RENDERED TEXT BITMAP");
+	}
+	texture.SetData(tex, 0, 0, texWidth, texHeight);
+
 }
 
 void BitmapTextMesh::Draw()
 {
 	if (texture.IsValid())
 		texture.Apply();
+
+	if (mesh.IsValid())
+		mesh.Draw();
 }
-
-
-
-
-/*
-//get bounding box for character (may be offset to account for chars that dip above or below the line
-int c_x1, c_y1, c_x2, c_y2;
-stbtt_GetCodepointBitmapBox(&fontInfo, text[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
-
-//compute y (different characters have different heights
-int y = ascent + c_y1;
-
-//render character (stride and offset is important here)
-int byteOffset = x + (y  * width);
-stbtt_MakeCodepointBitmap(&fontInfo, textBuffer + byteOffset, c_x2 - c_x1, c_y2 - c_y1, width, scale, scale, text[i]);
-
-//how wide is this character
-int ax;
-stbtt_GetCodepointHMetrics(&fontInfo, text[i], &ax, 0);
-x += (int)(ax * scale);
-
-//add kerning
-int kern;
-kern = stbtt_GetCodepointKernAdvance(&fontInfo, text[i], text[i + 1]);
-x += (int)(kern * scale);
-*/

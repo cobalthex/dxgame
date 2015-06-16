@@ -22,7 +22,7 @@ public:
 //Contains all of the transforms of a skeleton in one frame of a pose
 struct Pose
 {
-	Pose() { }
+	Pose() = default;
 	Pose(size_t Count) : rotations(new Quaternion[Count]), translations(new Vector3[Count]), scales(new Vector3[Count]), count(Count) { }
 	~Pose()
 	{

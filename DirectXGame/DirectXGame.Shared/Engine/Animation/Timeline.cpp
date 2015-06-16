@@ -72,43 +72,44 @@ void Timeline::Update()
 	auto d = Duration();
 
 	bool isDone = true;
-	for (auto& i : sequences)
+	for (int i = 0; i < sequences.size(); i++)
 	{
+		auto& s = sequences[i];
 
 		//no frames, no sequence
-		if (i->keyframes.size() < 1)
+		if (s->keyframes.size() < 1)
 			continue;
 
 		//don't animate when not in frame (not yet reached)
-		if (i->keyframes[0].start > tt)
+		if (s->keyframes[0].start > tt)
 		{
 			isDone = false;
 			continue;
 		}
-		if (i->keyframes[i->keyframes.size() - 1].start < tt) //at end
+		if (s->keyframes.back().start < tt) //at end
 		{
-			i->Finish();
-			if (!i->calledComplete)
+			s->Finish();
+			if (!s->calledComplete)
 			{
-				events.Enqueue(TimelineEvent(TimelineEventType::AnimationCompletion, this, i));
-				i->calledComplete = true;
+				events.Enqueue(TimelineEvent(TimelineEventType::AnimationCompletion, this, s));
+				s->calledComplete = true;
 			}
 			continue;
 		}
-		i->calledComplete = false;
+		s->calledComplete = false;
 		isDone = false;
 
 		//get current and next frames
-		size_t cfr = GetCurrentKeyframe(i);
-		size_t nfr = (cfr + 1) % i->keyframes.size();
+		size_t cfr = GetCurrentKeyframe(s);
+		size_t nfr = (cfr + 1) % s->keyframes.size();
 
-		i->Update(cfr, nfr, KeyframePercent(i->keyframes[cfr], i->keyframes[nfr]));
+		s->Update(cfr, nfr, KeyframePercent(s->keyframes[cfr], s->keyframes[nfr]));
 
 		//moved to the next keyframe
-		if (i->lastKeyframe != cfr)
+		if (s->lastKeyframe != cfr)
 		{
-			events.Enqueue(TimelineEvent(TimelineEventType::AnimationKeyframe, this, i));
-			i->lastKeyframe = cfr;
+			events.Enqueue(TimelineEvent(TimelineEventType::AnimationKeyframe, this, s));
+			s->lastKeyframe = cfr;
 		}
 	}
 
@@ -136,10 +137,10 @@ bool Timeline::AtEnd() const
 TimeSpan Timeline::Duration() const
 {
 	TimePoint max = TimePoint();
-	for (auto& i : sequences)
+	for (int i = 0; i < sequences.size(); i++)
 	{
-		if (i->keyframes.size() > 0 && i->keyframes.back().start > max)
-			max = i->keyframes.back().start;
+		if (sequences[i]->keyframes.size() > 0 && sequences[i]->keyframes.back().start > max)
+			max = sequences[i]->keyframes.back().start;
 	}
 	return std::chrono::duration_cast<TimeType>(max - TimePoint()); //convert to duration
 }

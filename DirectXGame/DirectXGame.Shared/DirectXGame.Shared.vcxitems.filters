@@ -158,6 +158,7 @@
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\skybox.png" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.dds" />
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Ground.png" />
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\text.png" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="$(MSBuildThisFileDirectory)Content\Fonts\DebugFixed\DebugFixed.ttf" />

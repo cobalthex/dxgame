@@ -28,7 +28,8 @@ void FpsDisplay::CreateDeviceResources()
 	worldViewProjection
 		= Matrix::CreateTranslation(0.01f, 0.01f, 0)
 		* Matrix::CreateLookAt(Vector3::Zero, Vector3::Forward, Vector3::Up)
-		* Matrix::CreateOrthographicOffCenter(0, sz.Width, sz.Height, 0, -1, 1);
+		//* Matrix::CreateOrthographicOffCenter(0, sz.Width, sz.Height, 0, -1, 1);
+		* Matrix::CreateOrthographic(1000, 700, -100, 100);
 }
 
 void FpsDisplay::ReleaseDeviceResources()
@@ -45,7 +46,7 @@ void FpsDisplay::Draw(const StepTimer& Timer)
 	if (fps != lastFps)
 	{
 		auto text = prefix + std::to_string(fps) + suffix;
-		bitmap = BitmapTextMesh(deviceResources, text, &fontInfo, 12);
+		bitmap = BitmapTextMesh(deviceResources, text, &fontInfo, 24);
 	}
 	lastFps = fps;
 

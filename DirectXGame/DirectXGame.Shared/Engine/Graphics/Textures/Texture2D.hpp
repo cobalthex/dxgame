@@ -82,6 +82,13 @@ public:
 	inline unsigned MipLevels() const { return desc.MipLevels; }
 	inline DXGI_FORMAT Format() const { return desc.Format; }
 
+	inline ComPtr<ID3D11Texture2D> GetHWTexture() const
+	{
+		ComPtr<ID3D11Resource> res;
+		srv->GetResource(&res);
+		return static_cast<ID3D11Texture2D*>(res.Get());
+	}
+
 	inline bool IsValid() const { return (srv != nullptr && deviceResources != nullptr); } //Is this texture valid?
 
 	static bool IsTextureFile(const std::wstring& Extension);

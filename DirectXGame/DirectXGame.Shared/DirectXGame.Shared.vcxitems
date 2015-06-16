@@ -242,6 +242,9 @@
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\sword.dds">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Content\Textures\text.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\ship.iqm">
       <DeploymentContent>true</DeploymentContent>
     </None>

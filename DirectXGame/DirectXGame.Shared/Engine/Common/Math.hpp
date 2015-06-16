@@ -19,6 +19,19 @@
 
 template <typename T> inline T& ClampRef(T& Value, T Minimum, T Maximum) { return (Value = min(max(Minimum, Value), Maximum)); }
 
+//Find the next power of 2 from N
+inline unsigned NextPowerOf2(unsigned N)
+{
+	N--;
+	N |= N >> 1;
+	N |= N >> 2;
+	N |= N >> 4;
+	N |= N >> 8;
+	N |= N >> 16;
+	N++;
+	return N;
+}
+
 using namespace DirectX;
 namespace Math
 {

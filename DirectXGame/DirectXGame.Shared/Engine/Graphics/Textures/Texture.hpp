@@ -6,6 +6,9 @@
 //The basis for all textures, abstract
 class Texture
 {
+public:
+	inline ComPtr<ID3D11ShaderResourceView> GetShaderResourceView() const { return srv; }
+
 protected:
 	Texture() : deviceResources(nullptr), srv(nullptr) { }
 	Texture(const DeviceResourcesPtr& DeviceResources, const ComPtr<ID3D11ShaderResourceView>& ShaderResourceView)

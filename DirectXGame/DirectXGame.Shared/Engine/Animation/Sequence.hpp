@@ -34,7 +34,7 @@ typedef std::vector<Keyframe> KeyframeList;
 class Sequence
 {
 public:
-	Sequence() : keyframes(), lastKeyframe(0), calledComplete(false) { }
+	Sequence() : lastKeyframe(0), calledComplete(false) { }
 	virtual ~Sequence() = default;
 
 	//Reset the sequence to its original state

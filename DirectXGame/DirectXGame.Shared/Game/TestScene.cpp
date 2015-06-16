@@ -194,14 +194,14 @@ void TestScene::Update(const StepTimer& Timer)
 		//camRotation.z -= 
 	}
 
-	timeline.Update();
+	//timeline.Update();
 }
 
 //Renders one frame using the vertex and pixel shaders.
 void TestScene::Draw(const StepTimer& Timer)
 {
 	if (!loadingComplete)
-		return;
+		return; 
 
 	auto context = deviceResources->GetD3DDeviceContext();
 	context->RSSetState(nullptr);
@@ -216,7 +216,7 @@ void TestScene::Draw(const StepTimer& Timer)
 
 	//sword.Draw();
 
-
+	/*
 	ulShader->Apply();
 	ulShader->Update();
 	ulShader->object = sh->object;
@@ -226,9 +226,9 @@ void TestScene::Draw(const StepTimer& Timer)
 		if (m.second.material.useTexture)
 			m.second.material.diffuseMap->Apply();
 		m.second.Draw(context);
-	}
+	}*/
 
-	/*
+	
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	lsShader->SetInputLayout();
 	lsShader->Apply();
@@ -255,5 +255,5 @@ void TestScene::Draw(const StepTimer& Timer)
 
 	iqmSkel.Draw();
 	context->RSSetState(nullptr);
-	*/
+	
 }
