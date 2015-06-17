@@ -21,33 +21,16 @@ struct TexRegion
 };
 
 void BitmapTextMesh::Refresh()
-{
-	texture = Texture2D(deviceResources, "Content/textures/text.png");
-	std::vector<Shaders::TextShader::Vertex> _vx;
-	Shaders::TextShader::Vertex _v;
-	_v.position = Vector3(0, 0, 0);
-	_v.texCoord = Vector2(0, 0);
-	_vx.push_back(_v);
-	_v.position = Vector3(texture.Width(), 0, 0);
-	_v.texCoord = Vector2(1, 0);
-	_vx.push_back(_v);
-	_v.position = Vector3(0, texture.Height(), 0);
-	_v.texCoord = Vector2(0, 1);
-	_vx.push_back(_v);
-	_v.position = Vector3(texture.Width(), texture.Height(), 0);
-	_v.texCoord = Vector2(1, 1);
-	_vx.push_back(_v);
-	unsigned __i[] = { 0, 2, 1, 1, 2, 3 };
-	auto _ix = std::vector<unsigned>(__i, __i + 6);
-	mesh = Mesh::Create(deviceResources, _vx, _ix, PrimitiveTopology::TriangleList);
-	return;
-
+{	
 	unsigned width = 0;
 	unsigned height = 0;
 	float scale = stbtt_ScaleForPixelHeight(font, fontSize);
 	int ascent, descent, lineGap;
 
 	stbtt_GetFontVMetrics(font, &ascent, &descent, &lineGap);
+	ascent = (int)(ascent * scale);
+	descent = (int)(descent * scale);
+	lineGap = (int)(lineGap * scale);
 	 
 	unsigned texWidth = 0;
 	unsigned texHeight = 0;
@@ -81,6 +64,8 @@ void BitmapTextMesh::Refresh()
 		texWidth += x;
 	}
 
+	texHeight -= descent - 1; //make sure height is actually sufficient
+
 	if (usePow2Textures)
 	{
 		texWidth = NextPowerOf2(texWidth);
@@ -89,10 +74,12 @@ void BitmapTextMesh::Refresh()
 
 	//render texture and create mesh (texture size must be known from above before it can be made)
 	byte* tex = new byte[texWidth * texHeight];
+	ZeroMemory(tex, sizeof(byte) * texWidth * texHeight);
 	x = 0;
 	y = 0;
 	std::vector<Shaders::TextShader::Vertex> verts;
 	std::vector<unsigned> idx;
+	unsigned ix = 0;
 	for (unsigned i = 0; i < text.length(); i++)
 	{
 		auto& ch = uniques[text[i]];
@@ -100,10 +87,10 @@ void BitmapTextMesh::Refresh()
 		int w = ch.x2 - ch.x1;
 		int h = ch.y2 - ch.y1;
 
+		//compute y (different characters have different heights
+		int _y = ascent + ch.y1;
 		if (!ch.drawn)
 		{
-			//compute y (different characters have different heights
-			int _y = ascent + ch.y1;
 
 			//render character (stride and offset is important here)
 			int byteOffset = ch.x1 + (_y  * texWidth);
@@ -117,23 +104,28 @@ void BitmapTextMesh::Refresh()
 		//TODO: handle line breaks
 		Shaders::TextShader::Vertex v;
 		v.position = Vector3(x, y, 0);
-		v.texCoord = Vector2(0, 0);
+		v.texCoord = Vector2(ch.x1, _y);
 		verts.push_back(v);
 		v.position = Vector3(x + w, y, 0);
-		v.texCoord = Vector2(1, 0);
+		v.texCoord = Vector2(ch.x2, _y);
 		verts.push_back(v);
 		v.position = Vector3(x, y + h, 0);
-		v.texCoord = Vector2(0, 1);
+		v.texCoord = Vector2(ch.x1, _y + h);
 		verts.push_back(v);
 		v.position = Vector3(x + w, y + h, 0);
-		v.texCoord = Vector2(1, 1);
+		v.texCoord = Vector2(ch.x2, _y + h);
 		verts.push_back(v);
-		unsigned _i[] = { 0, 1, 2, 1, 2, 3 };
-		idx.insert(idx.end(), _i, _i + 6);
+		idx.push_back(ix);
+		idx.push_back(ix + 1);
+		idx.push_back(ix + 2);
+		idx.push_back(ix + 1);
+		idx.push_back(ix + 3);
+		idx.push_back(ix + 2);
+		ix += 4;
 
 		//how wide is this character
 		int ax;
-		stbtt_GetCodepointHMetrics(font, text[i], &ax, 0);
+		stbtt_GetCodepointHMetrics(font, text[i], &ax, nullptr);
 		x += (int)(ax * scale); 
 
 		//calculate kern
@@ -144,17 +136,32 @@ void BitmapTextMesh::Refresh()
 			x += (int)(kern * scale);
 		}
 	}
-
-	mesh.CreateFrom(deviceResources, verts, idx, PrimitiveTopology::TriangleList, false);
-
+	mesh = Mesh::Create(deviceResources, verts, idx, PrimitiveTopology::TriangleList);
+	/*
+	//texture = Texture2D(deviceResources, "Content/textures/text.png");
+	std::vector<Shaders::TextShader::Vertex> _vx;
+	Shaders::TextShader::Vertex _v;
+	_v.position = Vector3(0, 0, 0);
+	_v.texCoord = Vector2(0, 0);
+	_vx.push_back(_v);
+	_v.position = Vector3(texWidth, 0, 0);
+	_v.texCoord = Vector2(1, 0);
+	_vx.push_back(_v);
+	_v.position = Vector3(0, texHeight, 0);
+	_v.texCoord = Vector2(0, 1);
+	_vx.push_back(_v);
+	_v.position = Vector3(texWidth, texHeight, 0);
+	_v.texCoord = Vector2(1, 1);
+	_vx.push_back(_v);
+	unsigned __i[] = { 0, 2, 1, 1, 2, 3 };
+	auto _ix = std::vector<unsigned>(__i, __i + 6);
+	mesh = Mesh::Create(deviceResources, _vx, _ix, PrimitiveTopology::TriangleList);
+	*/
 	//create hw texture
 	if (!texture.IsValid() || texture.Width() != texWidth || texture.Height() != texHeight)
-	{
 		texture = Texture2D(deviceResources, texWidth, texHeight, DXGI_FORMAT_R8_UINT, 1, true);
-		DX::SetDebugObjectName(texture.GetHWTexture().Get(), "RENDERED TEXT BITMAP");
-	}
 	texture.SetData(tex, 0, 0, texWidth, texHeight);
-
+	delete[] tex;
 }
 
 void BitmapTextMesh::Draw()

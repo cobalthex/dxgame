@@ -48,7 +48,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\BitmapTextMesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\StbFreetype.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Input\InputHandler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Scene\Skybox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Animation\Animation.hpp" />
@@ -78,7 +77,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImageWrite.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\BitmapTextMesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\TextRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\GameComponent.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Effects\Effect.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Effects\ShadowMapEffect.hpp" />
@@ -128,7 +126,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\TextureCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Formats\IQM\util.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\StbFreetype.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Input\InputHandler.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\Console.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\TelnetConsole.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.hpp" />

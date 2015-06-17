@@ -18,12 +18,11 @@ class TestScene : public AlignedStorage<16>, public GameComponent
 {
 public:
 	TestScene(Game& Game, const DeviceResourcesPtr& DeviceResources);
-	void CreateDeviceResources();
-	void CreateWindowResources(Windows::UI::Core::CoreWindow^ Window);
-	void ReleaseDeviceResources();
+	void CreateDeviceResources() override;
+	void CreateWindowResources(Windows::UI::Core::CoreWindow^ Window) override;
+	void ReleaseDeviceResources() override;
 	void Update(const StepTimer& Timer);
 	void Draw(const StepTimer& Timer);
-	bool IsTracking() { return tracking; }
 
 private:
 	TextureCache texCache;
@@ -50,10 +49,9 @@ private:
 	Timeline timeline;
 
 	// Variables used with the rendering loop.
-	bool	loadingComplete;
-	float	degreesPerSecond;
-	bool	tracking;
+	bool loadingComplete;
 
+	Math::Vector2 lastMouse;
 
-	bool isPointerPressed;
+	Platform::Agile<Windows::UI::Core::CoreWindow> wnd;
 };

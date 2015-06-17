@@ -35,6 +35,10 @@ Game::~Game()
 //Updates application state when the window size changes (e.g. device orientation change)
 void Game::CreateWindowResources(Windows::UI::Core::CoreWindow^ Window)
 {
+	float defaultSafeArea = 20; //20 pixels from the edge of the screen
+	auto wb = Window->Bounds;
+	safeArea = Windows::Foundation::Rect(wb.Left + defaultSafeArea, wb.Top + defaultSafeArea, wb.Width - (defaultSafeArea * 2), wb.Height - (defaultSafeArea * 2));
+
 	for (auto& c : components)
 		c->CreateWindowResources(Window);
 
@@ -100,8 +104,7 @@ void Game::OnDeviceLost()
 //Notifies renderers that device resources may now be recreated.
 void Game::OnDeviceRestored()
 {
-	//recreate shaders?
-
+	shaderCache.Reload();
 
 	for (auto& c : components)
 		c->CreateDeviceResources();

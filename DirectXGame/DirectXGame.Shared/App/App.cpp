@@ -1,6 +1,5 @@
 ﻿#include "Pch.hpp"
 #include "App.hpp"
-#include "Engine/Input/InputHandler.hpp"
 #include "Game/TestScene.hpp"
 
 #include <ppltasks.h>
@@ -91,7 +90,6 @@ void App::SetWindow(CoreWindow^ Window)
 #endif
 
 	deviceResources->SetWindow(Window);
-	InputHandler::Initialize(Window);
 }
 
 //Initializes scene resources, or loads a previously saved app state.
@@ -112,7 +110,9 @@ void App::Run()
 	{
 		if (windowVisible)
 		{
-			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+			auto window = CoreWindow::GetForCurrentThread();
+
+			window->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
 			main->Update();
 

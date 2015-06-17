@@ -11,6 +11,7 @@ float4 main(float4 Position : SV_POSITION, float2 TexCoord : TEXCOORD) : SV_TARG
 {
 	uint w, h;
 	Texture.GetDimensions(w, h);
-	float c = Texture.Load(float3(TexCoord.x * w, (1 - TexCoord.y) * h, 0));
+	//float c = Texture.Load(float3(TexCoord.x * w, (1 - TexCoord.y) * h, 0));
+	float c = Texture.Load(float3(TexCoord.x, TexCoord.y, 0));
 	return float4(Color.rgb, Color.a * c);
 }

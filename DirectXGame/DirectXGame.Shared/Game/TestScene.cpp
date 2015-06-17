@@ -5,7 +5,6 @@
 #include "Engine/Graphics/Models/Formats/IQM/IqmLoader.hpp"
 #include "Engine/Graphics/Models/Formats/OBJ/ObjLoader.hpp"
 #include "Engine/Graphics/Primitives.hpp"
-#include "Engine/Input/InputHandler.hpp"
 #include "Engine/Data/Formats/Osl/Osl.hpp"
 
 using namespace DirectX;
@@ -15,8 +14,6 @@ using namespace Windows::UI::Core;
 //Loads vertex and pixel shaders from files and instantiates the cube geometry.
 TestScene::TestScene(Game& Game, const std::shared_ptr<DeviceResources>& DeviceResources) :
 loadingComplete(false),
-degreesPerSecond(45),
-tracking(false),
 texCache(DeviceResources),
 GameComponent(Game, DeviceResources)
 {
@@ -28,6 +25,8 @@ GameComponent(Game, DeviceResources)
 //Initializes view parameters when the window size changes.
 void TestScene::CreateWindowResources(CoreWindow^ Window)
 {
+	wnd = Platform::Agile<CoreWindow>(Window);
+
 	Size outputSize = deviceResources->GetOutputSize();
 	float aspectRatio = outputSize.Width / outputSize.Height;
 	float fovAngleY = 70.0f * XM_PI / 180.0f;
@@ -168,14 +167,24 @@ void TestScene::ReleaseDeviceResources()
 //Called once per frame, rotates the cube and calculates the model and view matrices.
 void TestScene::Update(const StepTimer& Timer)
 {
+	Vector2 mouse = Vector2(wnd->PointerPosition.X, wnd->PointerPosition.Y);
+
 	Matrix world =
 		Matrix::CreateRotationX(-XM_PIDIV2) *
 		Matrix::CreateRotationY(-XM_PIDIV2);
 
+	//handle input
+	if (wnd->GetAsyncKeyState(Windows::System::VirtualKey::LeftButton) == CoreVirtualKeyStates::Down)
+	{
+		Math::Vector2 delta = (mouse - lastMouse);
+		delta /= deviceResources->GetDpi();
+		camRotation.x += delta.x;
+		camRotation.y -= delta.y;
+	}
+
 	cam.position = Vector3::Transform(Vector3::Backward, Matrix::CreateFromYawPitchRoll(camRotation.x, camRotation.y, 0));
 	cam.position *= camRotation.z;
 	cam.CalcMatrices();
-
 
 	lsShader->object.data.world = world.Transpose();
 	lsShader->object.data.Calc(cam.View(), cam.Projection());
@@ -185,16 +194,9 @@ void TestScene::Update(const StepTimer& Timer)
 	sh->object.data.world = Matrix::Identity;
 	sh->object.data.Calc(cam.View(), cam.Projection());
 
-	if (InputHandler::isLeftMousePressed)
-	{
-		auto xy = InputHandler::cursor - InputHandler::lastCursor;
-		xy /= deviceResources->GetDpi();
-		camRotation.x -= xy.x;
-		camRotation.y -= xy.y;
-		//camRotation.z -= 
-	}
-
 	//timeline.Update();
+
+	lastMouse = mouse;
 }
 
 //Renders one frame using the vertex and pixel shaders.

@@ -25,9 +25,7 @@ public:
 	void Trim();
 	void Present();
 
-	//Helper for managing assets.
-
-	//Device Accessor.sM
+	//Device Accessors
 	inline Windows::Foundation::Size GetOutputSize() const						{ return outputSize; }
 	inline Windows::Foundation::Size GetLogicalSize() const						{ return logicalSize; }
 	inline Platform::Agile<Windows::UI::Core::CoreWindow> GetWindow() const		{ return window; }

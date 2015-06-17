@@ -47,7 +47,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Texture2D.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\TextureCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\DeviceResources.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Input\InputHandler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImage.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.cpp" />
@@ -124,12 +123,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Lighting.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Primitives.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Input\InputHandler.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Drawable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImageWrite.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\TextRenderer.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\BitmapTextMesh.hpp" />
   </ItemGroup>
   <ItemGroup>
