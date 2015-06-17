@@ -102,25 +102,26 @@ void BitmapTextMesh::Refresh()
 		//| / |
 		//3 - 4
 		//TODO: handle line breaks
+		//note, text shader takes in absolute texture coordinates and are vertically flipped
 		Shaders::TextShader::Vertex v;
 		v.position = Vector3(x, y, 0);
-		v.texCoord = Vector2(ch.x1, _y);
-		verts.push_back(v);
-		v.position = Vector3(x + w, y, 0);
-		v.texCoord = Vector2(ch.x2, _y);
-		verts.push_back(v);
-		v.position = Vector3(x, y + h, 0);
 		v.texCoord = Vector2(ch.x1, _y + h);
 		verts.push_back(v);
-		v.position = Vector3(x + w, y + h, 0);
+		v.position = Vector3(x + w, y, 0);
 		v.texCoord = Vector2(ch.x2, _y + h);
 		verts.push_back(v);
+		v.position = Vector3(x, y + h, 0);
+		v.texCoord = Vector2(ch.x1, _y);
+		verts.push_back(v);
+		v.position = Vector3(x + w, y + h, 0);
+		v.texCoord = Vector2(ch.x2, _y);
+		verts.push_back(v);
 		idx.push_back(ix);
-		idx.push_back(ix + 1);
 		idx.push_back(ix + 2);
 		idx.push_back(ix + 1);
+		idx.push_back(ix + 1);
+		idx.push_back(ix + 2);
 		idx.push_back(ix + 3);
-		idx.push_back(ix + 2);
 		ix += 4;
 
 		//how wide is this character
@@ -137,26 +138,26 @@ void BitmapTextMesh::Refresh()
 		}
 	}
 	mesh = Mesh::Create(deviceResources, verts, idx, PrimitiveTopology::TriangleList);
-	/*
-	//texture = Texture2D(deviceResources, "Content/textures/text.png");
-	std::vector<Shaders::TextShader::Vertex> _vx;
+	
+	//render just the bitmap generated
+	/*std::vector<Shaders::TextShader::Vertex> _vx;
 	Shaders::TextShader::Vertex _v;
 	_v.position = Vector3(0, 0, 0);
-	_v.texCoord = Vector2(0, 0);
+	_v.texCoord = Vector2(0, texHeight);
 	_vx.push_back(_v);
 	_v.position = Vector3(texWidth, 0, 0);
-	_v.texCoord = Vector2(1, 0);
+	_v.texCoord = Vector2(texWidth, texHeight);
 	_vx.push_back(_v);
 	_v.position = Vector3(0, texHeight, 0);
-	_v.texCoord = Vector2(0, 1);
+	_v.texCoord = Vector2(0, 0);
 	_vx.push_back(_v);
 	_v.position = Vector3(texWidth, texHeight, 0);
-	_v.texCoord = Vector2(1, 1);
+	_v.texCoord = Vector2(texWidth, 0);
 	_vx.push_back(_v);
 	unsigned __i[] = { 0, 2, 1, 1, 2, 3 };
 	auto _ix = std::vector<unsigned>(__i, __i + 6);
-	mesh = Mesh::Create(deviceResources, _vx, _ix, PrimitiveTopology::TriangleList);
-	*/
+	mesh = Mesh::Create(deviceResources, _vx, _ix, PrimitiveTopology::TriangleList);*/
+	
 	//create hw texture
 	if (!texture.IsValid() || texture.Width() != texWidth || texture.Height() != texHeight)
 		texture = Texture2D(deviceResources, texWidth, texHeight, DXGI_FORMAT_R8_UINT, 1, true);

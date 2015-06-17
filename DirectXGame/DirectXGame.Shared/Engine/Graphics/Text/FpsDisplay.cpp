@@ -9,6 +9,9 @@ FpsDisplay::FpsDisplay(const std::shared_ptr<DeviceResources>& DeviceResources, 
 	: lastFps(0), textBuffer(nullptr), Drawable(DeviceResources), textColor(Color(1, 1, 1, 1.f))
 {
 	fontData = Sys::ReadFile(SystemSettings::GetFontFile("OCRAExt.ttf"));
+
+	prefix = "FPS: ";
+
 	
 	if (stbtt_InitFont(&fontInfo, fontData.data(), 0)) {}
 
@@ -26,10 +29,7 @@ void FpsDisplay::CreateDeviceResources()
 	auto sz = deviceResources->GetLogicalSize();
 
 	worldViewProjection
-		= Matrix::CreateTranslation(0.01f, 0.01f, 0)
-		* Matrix::CreateLookAt(Vector3::Zero, Vector3::Forward, Vector3::Up)
-		//* Matrix::CreateOrthographicOffCenter(0, sz.Width, sz.Height, 0, -1, 1);
-		* Matrix::CreateOrthographic(1000, 700, -100, 100);
+		= Matrix::CreateOrthographic(sz.Width, sz.Height, 0, 1);
 }
 
 void FpsDisplay::ReleaseDeviceResources()
