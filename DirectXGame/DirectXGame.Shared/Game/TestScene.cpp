@@ -204,7 +204,7 @@ void TestScene::Draw(const StepTimer& Timer)
 		return; 
 
 	auto context = deviceResources->GetD3DDeviceContext();
-	context->RSSetState(nullptr);
+	//context->RSSetState(nullptr);
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
@@ -246,7 +246,7 @@ void TestScene::Draw(const StepTimer& Timer)
 	iqmSkel.UpdateVertices(skel.vertices);
 
 	//Draw skeleton
-	context->RSSetState(wireRasterizer.Get());
+	//context->RSSetState(wireRasterizer.Get());
 
 	pcShader->wvp.data.wvp = lsShader->object.data.worldViewProjection;
 	pcShader->SetInputLayout();
@@ -254,6 +254,6 @@ void TestScene::Draw(const StepTimer& Timer)
 	pcShader->Apply();
 
 	iqmSkel.Draw();
-	context->RSSetState(nullptr);
+	//context->RSSetState(nullptr);
 	
 }

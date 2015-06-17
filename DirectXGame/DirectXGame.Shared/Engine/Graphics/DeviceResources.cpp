@@ -373,12 +373,15 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	D3D11_BLEND_DESC blDesc;
 	ZeroMemory(&blDesc, sizeof(D3D11_BLEND_DESC));
 	blDesc.RenderTarget[0].BlendEnable = TRUE;
+	
 	blDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 	blDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	blDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+
 	blDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 	blDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+
 	blDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	blDesc.IndependentBlendEnable = FALSE;
 	blDesc.AlphaToCoverageEnable = FALSE;
@@ -386,6 +389,19 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	ComPtr<ID3D11BlendState> blState;
 	Sys::ThrowIfFailed(d3dDevice->CreateBlendState(&blDesc, &blState));
 	d3dContext->OMSetBlendState(blState.Get(), 0, 0xffffffff);
+
+	//rasterizer settings
+	D3D11_RASTERIZER_DESC rzDesc;
+	ZeroMemory(&rzDesc, sizeof(D3D11_RASTERIZER_DESC));
+
+	rzDesc.FillMode = D3D11_FILL_SOLID;
+	rzDesc.CullMode = D3D11_CULL_BACK;
+	rzDesc.AntialiasedLineEnable = true;
+	rzDesc.MultisampleEnable = true;
+
+	ComPtr<ID3D11RasterizerState> rzState;
+	Sys::ThrowIfFailed(d3dDevice->CreateRasterizerState(&rzDesc, &rzState));
+	d3dContext->RSSetState(rzState.Get());
 }
 
 //This method is called when the CoreWindow is created (or re-created).
