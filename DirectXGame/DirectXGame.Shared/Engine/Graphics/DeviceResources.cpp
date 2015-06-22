@@ -3,6 +3,7 @@
 #include "Engine/Common/PlatformHelpers.hpp"
 
 using namespace DirectX;
+using namespace D2D1;
 using namespace Microsoft::WRL;
 using namespace Windows::Foundation;
 using namespace Windows::Graphics::Display;
@@ -14,7 +15,7 @@ using namespace Platform;
 namespace ScreenRotation
 {
 	//0-degree Z-rotation
-	static const XMFLOAT4X4 Rotation0( 
+	static const XMFLOAT4X4 Rotation0(
 		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
@@ -38,7 +39,7 @@ namespace ScreenRotation
 		);
 
 	//270-degree Z-rotation
-	static const XMFLOAT4X4 Rotation270( 
+	static const XMFLOAT4X4 Rotation270(
 		0.0f, -1.0f, 0.0f, 0.0f,
 		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
@@ -47,7 +48,7 @@ namespace ScreenRotation
 };
 
 //Constructor for DeviceResources.
-DeviceResources::DeviceResources() : 
+DeviceResources::DeviceResources() :
 	screenViewport(),
 	d3dFeatureLevel(D3D_FEATURE_LEVEL_11_1),
 	d3dRenderTargetSize(),
@@ -67,10 +68,22 @@ DeviceResources::DeviceResources() :
 //Configures resources that don't depend on the Direct3D device.
 void DeviceResources::CreateDeviceIndependentResources()
 {
+	//Initialize Direct2D resources.
+	D2D1_FACTORY_OPTIONS options;
+	ZeroMemory(&options, sizeof(D2D1_FACTORY_OPTIONS));
+
+#if defined(_DEBUG)
+	//If the project is in a debug build, enable Direct2D debugging via SDK Layers.
+	options.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
+#endif
+
+	Sys::ThrowIfFailed(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(ID2D1Factory2), &options, &d2dFactory));
+	Sys::ThrowIfFailed(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory2), &dwriteFactory));
+	Sys::ThrowIfFailed(CoCreateInstance(CLSID_WICImagingFactory2, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&wicFactory)));
 }
 
 //Configures the Direct3D device, and stores handles to it and the device context.
-void DeviceResources::CreateDeviceResources() 
+void DeviceResources::CreateDeviceResources()
 {
 	//This flag adds support for surfaces with a different color channel ordering
 	//than the API default. It is required for compatibility with Direct2D.
@@ -88,7 +101,7 @@ void DeviceResources::CreateDeviceResources()
 	//Note the ordering should be preserved.
 	//Don't forget to declare your application's minimum required feature level in its
 	//description.  All applications are assumed to support 9.1 unless otherwise stated.
-	D3D_FEATURE_LEVEL featureLevels[] = 
+	D3D_FEATURE_LEVEL featureLevels[] =
 	{
 		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0,
@@ -139,31 +152,35 @@ void DeviceResources::CreateDeviceResources()
 
 	//Store pointers to the Direct3D 11.1 API device and immediate context.
 	Sys::ThrowIfFailed(device.As(&d3dDevice));
-
 	Sys::ThrowIfFailed(context.As(&d3dContext));
 
 	//Create the Direct2D device object and a corresponding context.
 	ComPtr<IDXGIDevice3> dxgiDevice;
 	Sys::ThrowIfFailed(d3dDevice.As(&dxgiDevice));
+
+	Sys::ThrowIfFailed(d2dFactory->CreateDevice(dxgiDevice.Get(), &d2dDevice));
+	Sys::ThrowIfFailed(d2dDevice->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &d2dContext));
 }
 
 //These resources need to be recreated every time the window size is changed.
-void DeviceResources::CreateWindowSizeDependentResources() 
+void DeviceResources::CreateWindowSizeDependentResources()
 {
 #if (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
 	//Windows Phone does not support resizing the swap chain, so clear it instead of resizing.
 	swapChain = nullptr;
 #endif
-	ID3D11RenderTargetView* nullViews[] = {nullptr};
+	ID3D11RenderTargetView* nullViews[] = { nullptr };
 	d3dContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
 	d3dRenderTargetView = nullptr;
 	d3dDepthStencilView = nullptr;
+	d2dContext->SetTarget(nullptr);
+	d2dTargetBitmap = nullptr;
 	d3dContext->Flush();
 
 	//Calculate the necessary render target size in pixels.
 	outputSize.Width = Sys::ConvertDipsToPixels(logicalSize.Width, dpi);
 	outputSize.Height = Sys::ConvertDipsToPixels(logicalSize.Height, dpi);
-	
+
 	//Prevent zero size DirectX content from being created.
 	outputSize.Width = max(outputSize.Width, 1);
 	outputSize.Height = max(outputSize.Height, 1);
@@ -188,7 +205,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 			lround(d3dRenderTargetSize.Height),
 			DXGI_FORMAT_B8G8R8A8_UNORM,
 			0
-		);
+			);
 
 		if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
 		{
@@ -251,13 +268,13 @@ void DeviceResources::CreateWindowSizeDependentResources()
 
 		Sys::ThrowIfFailed(
 			dxgiFactory->CreateSwapChainForCoreWindow(
-			d3dDevice.Get(),
-			reinterpret_cast<IUnknown*>(window.Get()),
-			&swapChainDesc,
-			nullptr,
-			&swapChain
-			)
-		);
+				d3dDevice.Get(),
+				reinterpret_cast<IUnknown*>(window.Get()),
+				&swapChainDesc,
+				nullptr,
+				&swapChain
+				)
+			);
 
 		//Ensure that DXGI does not queue more than one frame at a time. This both reduces latency and
 		//ensures that the application will only render after each VSync, minimizing power consumption.
@@ -273,14 +290,21 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	switch (displayRotation)
 	{
 	case DXGI_MODE_ROTATION_IDENTITY:
+		orientationTransform2D = Matrix3x2F::Identity();
 		orientationTransform3D = ScreenRotation::Rotation0;
 		break;
 
 	case DXGI_MODE_ROTATION_ROTATE90:
+		orientationTransform2D =
+			Matrix3x2F::Rotation(90.0f) *
+			Matrix3x2F::Translation(logicalSize.Height, 0.0f);
 		orientationTransform3D = ScreenRotation::Rotation270;
 		break;
 
 	case DXGI_MODE_ROTATION_ROTATE180:
+		orientationTransform2D =
+			Matrix3x2F::Rotation(180.0f) *
+			Matrix3x2F::Translation(logicalSize.Width, logicalSize.Height);
 		orientationTransform3D = ScreenRotation::Rotation180;
 		break;
 
@@ -312,9 +336,9 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	// Create a surface that's multisampled
 	Sys::ThrowIfFailed(
 		d3dDevice->CreateTexture2D(
-		&offScreenSurfaceDesc,
-		nullptr,
-		&offScreenSurface)
+			&offScreenSurfaceDesc,
+			nullptr,
+			&offScreenSurface)
 		);
 
 	CD3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc(D3D11_RTV_DIMENSION_TEXTURE2DMS);
@@ -328,7 +352,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 
 	//Create a depth stencil view for use with 3D rendering if needed.
 	CD3D11_TEXTURE2D_DESC depthStencilDesc(
-		DXGI_FORMAT_D24_UNORM_S8_UINT, 
+		DXGI_FORMAT_D24_UNORM_S8_UINT,
 		lround(d3dRenderTargetSize.Width),
 		lround(d3dRenderTargetSize.Height),
 		1, //This depth stencil view has only one texture.
@@ -339,7 +363,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 		sampleSize,
 		sampleQuality,
 		0
-	);
+		);
 
 	ComPtr<ID3D11Texture2D> depthStencil;
 	Sys::ThrowIfFailed(
@@ -358,22 +382,34 @@ void DeviceResources::CreateWindowSizeDependentResources()
 			&d3dDepthStencilView
 			)
 		);
-	
+
 	//Set the 3D rendering viewport to target the entire window.
 	screenViewport = CD3D11_VIEWPORT(
 		0.0f,
 		0.0f,
 		d3dRenderTargetSize.Width,
 		d3dRenderTargetSize.Height
-	);
+		);
 
 	d3dContext->RSSetViewports(1, &screenViewport);
+
+	//Create a Direct2D target bitmap associated with the swap chain back buffer and set it as the current target.
+	D2D1_BITMAP_PROPERTIES1 bitmapProperties =
+		D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED), dpi, dpi);
+
+	ComPtr<IDXGISurface2> dxgiBackBuffer;
+	Sys::ThrowIfFailed(swapChain->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer)));
+	Sys::ThrowIfFailed(d2dContext->CreateBitmapFromDxgiSurface(dxgiBackBuffer.Get(), &bitmapProperties, &d2dTargetBitmap));
+	d2dContext->SetTarget(d2dTargetBitmap.Get());
+
+	//Grayscale text anti-aliasing is recommended for all Windows Store apps.
+	d2dContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
 
 	//create default alpha blending blend state
 	D3D11_BLEND_DESC blDesc;
 	ZeroMemory(&blDesc, sizeof(D3D11_BLEND_DESC));
 	blDesc.RenderTarget[0].BlendEnable = TRUE;
-	
+
 	blDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 	blDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	blDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
@@ -414,6 +450,7 @@ void DeviceResources::SetWindow(CoreWindow^ Window)
 	nativeOrientation = currentDisplayInformation->NativeOrientation;
 	currentOrientation = currentDisplayInformation->CurrentOrientation;
 	dpi = currentDisplayInformation->LogicalDpi;
+	d2dContext->SetDpi(dpi, dpi);
 
 	CreateWindowSizeDependentResources();
 }
@@ -434,6 +471,7 @@ void DeviceResources::SetDpi(float Dpi)
 	if (dpi != Dpi)
 	{
 		dpi = Dpi;
+		d2dContext->SetDpi(dpi, dpi);
 
 		//When the display DPI changes, the logical size of the window (measured in Dips) also changes and needs to be updated.
 		logicalSize = Windows::Foundation::Size(window->Bounds.Width, window->Bounds.Height);
@@ -515,6 +553,7 @@ void DeviceResources::HandleDeviceLost()
 	}
 
 	CreateDeviceResources();
+	d2dContext->SetDpi(dpi, dpi);
 	CreateWindowSizeDependentResources();
 
 	if (deviceNotify != nullptr)
@@ -540,7 +579,7 @@ void DeviceResources::Trim()
 }
 
 //Present the contents of the swap chain to the screen.
-void DeviceResources::Present() 
+void DeviceResources::Present()
 {
 	//if multisampling is used, update the back buffer correctly
 	if (sampleSize > 1)
@@ -553,7 +592,7 @@ void DeviceResources::Present()
 			offScreenSurface.Get(),
 			sub,
 			DXGI_FORMAT_B8G8R8A8_UNORM
-		);
+			);
 	}
 
 	//The first argument instructs DXGI to block until VSync, putting the application

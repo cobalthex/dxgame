@@ -3,39 +3,37 @@
 #include "Pch.hpp"
 #include "Engine/Graphics/Textures/Texture2D.hpp"
 #include "Engine/Common/Math.hpp"
-#include "Engine/Graphics/Shaders/TextShader.hpp"
-#include "Engine/Graphics/Text/BitmapTextMesh.hpp"
 #include "Engine/Graphics/Drawable.hpp"
 
 //Renders the current FPS value in the bottom right corner of the screen using Direct2D and DirectWrite
 class FpsDisplay : public Drawable
 {
 public:
-	FpsDisplay(const std::shared_ptr<DeviceResources>& DeviceResources, const std::shared_ptr<Shaders::TextShader>& Shader);
+	FpsDisplay(const std::shared_ptr<DeviceResources>& DeviceResources);
 	virtual ~FpsDisplay();
 
 	void CreateDeviceResources();
 	void ReleaseDeviceResources();
 	void Draw(const StepTimer& Timer);
 
-	std::string prefix; //prefix before fps
-	std::string suffix; //suffix after fps
+	std::wstring prefix; //prefix before fps
+	std::wstring suffix; //suffix after fps
 
 	unsigned LastFps() const { return lastFps; } //the last recorded FPS
 
-	Color textColor;
-
 protected:
 	unsigned lastFps;
-	 
-	BitmapTextMesh bitmap;
 
-	std::vector<byte> fontData;
-	stbtt_fontinfo fontInfo;
-	byte* textBuffer;
-	float scale;
-	int ascent, descent, lineGap, baseline;
-
-	std::shared_ptr<Shaders::TextShader> shader;
 	Math::Matrix worldViewProjection;
+
+	std::wstring                    text;
+	DWRITE_TEXT_METRICS	            textMetrics;
+	ComPtr<ID2D1SolidColorBrush>    whiteBrush;
+	ComPtr<ID2D1SolidColorBrush>    blackBrush;
+
+	ComPtr<ID2D1DrawingStateBlock>  stateBlock;
+	ComPtr<IDWriteTextLayout>       textLayout;
+	ComPtr<IDWriteTextFormat>		textFormat;
+
+	D2D1::Matrix3x2F screenTranslation;
 };

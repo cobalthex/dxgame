@@ -10,7 +10,6 @@
     <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\PositionTexture.vs.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\ShadowMap.ps.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\ShadowMap.vs.hlsl" />
-    <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\Text.ps.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\Unlit.ps.hlsl" />
   </ItemGroup>
   <ItemGroup>
@@ -39,9 +38,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\PositionTextureShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShaderCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShadowMapShader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\TextShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\UnlitShader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\StbFreetype.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\WICTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Texture2D.cpp" />
@@ -50,7 +47,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImage.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\BitmapTextMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp" />
@@ -107,9 +103,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShaderCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShaderStructures.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShadowMapShader.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\TextShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\UnlitShader.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\StbFreetype.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\DDS.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\DDSTextureLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImage.hpp" />
@@ -127,7 +121,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImageWrite.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\BitmapTextMesh.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\DWriteFontCollectionLoader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\mrfixit.iqm" />

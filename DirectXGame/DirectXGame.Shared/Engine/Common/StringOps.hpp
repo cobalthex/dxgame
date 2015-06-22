@@ -43,9 +43,8 @@ namespace StringOps
 	extern std::string CombinePaths(const std::string& PathA, const std::string& PathB, char CombineChar = '/');
 	extern std::wstring CombinePaths(const std::wstring& PathA, const std::wstring& PathB, wchar_t CombineChar = L'/');
 	//Join a list of paths using the CombinePaths(A, B) function. Uses the default path char
-	template <typename T, typename... Args>
-	inline std::string CombinePaths(const T& Path, const Args&... Paths)
-	{
-		return CombinePaths(Path, CombinePaths(Paths...));
-	}
+	template <typename... Args>
+	inline std::string CombinePaths(const std::string& Path, const Args&... Paths) { return CombinePaths(Path, CombinePaths(Paths...)); }
+	template <typename... Args>
+	inline std::wstring CombinePaths(const std::wstring& Path, const Args&... Paths) { return CombinePaths(Path, CombinePaths(Paths...)); }
 }

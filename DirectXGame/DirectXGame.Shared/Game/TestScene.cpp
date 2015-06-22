@@ -178,7 +178,7 @@ void TestScene::Update(const StepTimer& Timer)
 	{
 		Math::Vector2 delta = (mouse - lastMouse);
 		delta /= deviceResources->GetDpi();
-		camRotation.x += delta.x;
+		camRotation.x -= delta.x;
 		camRotation.y -= delta.y;
 	}
 

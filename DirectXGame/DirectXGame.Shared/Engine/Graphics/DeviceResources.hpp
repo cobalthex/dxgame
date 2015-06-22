@@ -26,13 +26,13 @@ public:
 	void Present();
 
 	//Device Accessors
-	inline Windows::Foundation::Size GetOutputSize() const						{ return outputSize; }
-	inline Windows::Foundation::Size GetLogicalSize() const						{ return logicalSize; }
-	inline Platform::Agile<Windows::UI::Core::CoreWindow> GetWindow() const		{ return window; }
-	Windows::Graphics::Display::DisplayOrientations	NativeOrientation() const	{ return currentOrientation; }
-	Windows::Graphics::Display::DisplayOrientations	CurrentOrientation() const	{ return currentOrientation; }
-	inline unsigned SapmMUleSize() const											{ return sampleSize; }
-	inline unsigned SampleQuality() const										{ return sampleQuality; }
+	inline Windows::Foundation::Size GetOutputSize() const								{ return outputSize; }
+	inline Windows::Foundation::Size GetLogicalSize() const								{ return logicalSize; }
+	inline Platform::Agile<Windows::UI::Core::CoreWindow> GetWindow() const				{ return window; }
+	inline Windows::Graphics::Display::DisplayOrientations	NativeOrientation() const	{ return currentOrientation; }
+	inline Windows::Graphics::Display::DisplayOrientations	CurrentOrientation() const	{ return currentOrientation; }
+	inline unsigned SapmMUleSize() const												{ return sampleSize; }
+	inline unsigned SampleQuality() const												{ return sampleQuality; }
 
 	//D3D Accessors.
 	inline ID3D11Device2*			GetD3DDevice() const					{ return d3dDevice.Get(); }
@@ -43,6 +43,15 @@ public:
 	inline ID3D11DepthStencilView*	GetDepthStencilView() const				{ return d3dDepthStencilView.Get(); }
 	inline D3D11_VIEWPORT			GetScreenViewport() const				{ return screenViewport; }
 	inline DirectX::XMFLOAT4X4		GetOrientationTransform3D() const		{ return orientationTransform3D; }
+	
+	//D2D Accessors.
+	inline ID2D1Factory2*		GetD2DFactory() const { return d2dFactory.Get(); }
+	inline ID2D1Device1*		GetD2DDevice() const { return d2dDevice.Get(); }
+	inline ID2D1DeviceContext1*	GetD2DDeviceContext() const { return d2dContext.Get(); }
+	inline ID2D1Bitmap1*		GetD2DTargetBitmap() const { return d2dTargetBitmap.Get(); }
+	inline IDWriteFactory2*		GetDWriteFactory() const { return dwriteFactory.Get(); }
+	inline IWICImagingFactory2*	GetWicImagingFactory() const { return wicFactory.Get(); }
+	inline D2D1::Matrix3x2F		GetOrientationTransform2D() const { return orientationTransform2D; }
 
 private:
 	void CreateDeviceIndependentResources();
@@ -64,6 +73,16 @@ private:
 	ComPtr<ID3D11DepthStencilView>	d3dDepthStencilView;
 	D3D11_VIEWPORT					screenViewport;
 
+	//Direct2D drawing components.
+	ComPtr<ID2D1Factory2>		d2dFactory;
+	ComPtr<ID2D1Device1>		d2dDevice;
+	ComPtr<ID2D1DeviceContext1>	d2dContext;
+	ComPtr<ID2D1Bitmap1>		d2dTargetBitmap;
+
+	//DirectWrite drawing components.
+	ComPtr<IDWriteFactory2>		dwriteFactory;
+	ComPtr<IWICImagingFactory2>	wicFactory;
+
 	//Cached reference to the Window.
 	Platform::Agile<Windows::UI::Core::CoreWindow> window;
 
@@ -75,13 +94,14 @@ private:
 	Windows::Graphics::Display::DisplayOrientations	nativeOrientation;
 	Windows::Graphics::Display::DisplayOrientations	currentOrientation;
 	float											dpi;
+
+	//Transforms used for display orientation.
+	D2D1::Matrix3x2F	orientationTransform2D;
+	DirectX::XMFLOAT4X4	orientationTransform3D;
 		
 	//Multisampling properties (uses BGRA 8)
 	unsigned sampleSize;
 	unsigned sampleQuality;
 	const bool enableMultisampling = true;
-
-	//Transforms used for display orientation.
-	DirectX::XMFLOAT4X4	orientationTransform3D;
 };
 typedef std::shared_ptr<DeviceResources> DeviceResourcesPtr;
