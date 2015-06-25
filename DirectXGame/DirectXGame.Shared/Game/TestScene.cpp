@@ -242,7 +242,7 @@ void TestScene::Draw(const StepTimer& Timer)
 	context->DrawAuto();
 	iqm.Draw();
 
-	context->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1, 0);
+	//context->ClearDepthStencilView(deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1, 0);
 
 	auto skel = iqm.CreateSkeletalMesh(Color(1, 0.6f, 0, 0));
 	iqmSkel.UpdateVertices(skel.vertices);

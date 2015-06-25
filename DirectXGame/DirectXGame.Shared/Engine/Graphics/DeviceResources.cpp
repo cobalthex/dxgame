@@ -163,7 +163,7 @@ void DeviceResources::CreateDeviceResources()
 }
 
 //These resources need to be recreated every time the window size is changed.
-void DeviceResources::CreateWindowSizeDependentResources()
+void DeviceResources::CreateWindowResources()
 {
 #if (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
 	//Windows Phone does not support resizing the swap chain, so clear it instead of resizing.
@@ -392,18 +392,19 @@ void DeviceResources::CreateWindowSizeDependentResources()
 		);
 
 	d3dContext->RSSetViewports(1, &screenViewport);
-
+	
 	//Create a Direct2D target bitmap associated with the swap chain back buffer and set it as the current target.
 	D2D1_BITMAP_PROPERTIES1 bitmapProperties =
 		D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED), dpi, dpi);
-
+	
 	ComPtr<IDXGISurface2> dxgiBackBuffer;
 	Sys::ThrowIfFailed(swapChain->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer)));
-	Sys::ThrowIfFailed(d2dContext->CreateBitmapFromDxgiSurface(dxgiBackBuffer.Get(), &bitmapProperties, &d2dTargetBitmap));
+	Sys::ThrowIfFailed(d2dContext->CreateBitmapFromDxgiSurface(
+		dxgiBackBuffer.Get(),
+		&bitmapProperties,
+		&d2dTargetBitmap)
+	);
 	d2dContext->SetTarget(d2dTargetBitmap.Get());
-
-	//Grayscale text anti-aliasing is recommended for all Windows Store apps.
-	d2dContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
 
 	//create default alpha blending blend state
 	D3D11_BLEND_DESC blDesc;
@@ -452,7 +453,7 @@ void DeviceResources::SetWindow(CoreWindow^ Window)
 	dpi = currentDisplayInformation->LogicalDpi;
 	d2dContext->SetDpi(dpi, dpi);
 
-	CreateWindowSizeDependentResources();
+	CreateWindowResources();
 }
 
 //This method is called in the event handler for the SizeChanged event.
@@ -461,7 +462,7 @@ void DeviceResources::SetLogicalSize(Windows::Foundation::Size LogicalSize)
 	if (logicalSize != LogicalSize)
 	{
 		logicalSize = LogicalSize;
-		CreateWindowSizeDependentResources();
+		CreateWindowResources();
 	}
 }
 
@@ -476,7 +477,7 @@ void DeviceResources::SetDpi(float Dpi)
 		//When the display DPI changes, the logical size of the window (measured in Dips) also changes and needs to be updated.
 		logicalSize = Windows::Foundation::Size(window->Bounds.Width, window->Bounds.Height);
 
-		CreateWindowSizeDependentResources();
+		CreateWindowResources();
 	}
 }
 
@@ -486,7 +487,7 @@ void DeviceResources::SetCurrentOrientation(DisplayOrientations CurrentOrientati
 	if (currentOrientation != CurrentOrientation)
 	{
 		currentOrientation = CurrentOrientation;
-		CreateWindowSizeDependentResources();
+		CreateWindowResources();
 	}
 }
 
@@ -548,18 +549,14 @@ void DeviceResources::HandleDeviceLost()
 	swapChain = nullptr;
 
 	if (deviceNotify != nullptr)
-	{
 		deviceNotify->OnDeviceLost();
-	}
 
 	CreateDeviceResources();
 	d2dContext->SetDpi(dpi, dpi);
-	CreateWindowSizeDependentResources();
+	CreateWindowResources();
 
 	if (deviceNotify != nullptr)
-	{
 		deviceNotify->OnDeviceRestored();
-	}
 }
 
 //Register our DeviceNotify to be informed on device lost and creation.

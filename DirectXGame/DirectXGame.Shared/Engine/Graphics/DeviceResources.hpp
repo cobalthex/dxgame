@@ -56,7 +56,7 @@ public:
 private:
 	void CreateDeviceIndependentResources();
 	void CreateDeviceResources();
-	void CreateWindowSizeDependentResources();
+	void CreateWindowResources();
 	DXGI_MODE_ROTATION ComputeDisplayRotation();
 
 	IDeviceNotify* deviceNotify;
