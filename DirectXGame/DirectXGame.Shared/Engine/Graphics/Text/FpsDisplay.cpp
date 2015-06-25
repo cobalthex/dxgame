@@ -66,7 +66,7 @@ void FpsDisplay::Draw(const StepTimer& Timer)
 	unsigned fps = Timer.GetFramesPerSecond();
 
 	//recreate fps text
-	if (fps != lastFps)
+	if (fps != lastFps || textLayout == nullptr)
 	{
 		auto text = prefix + std::to_wstring(fps) + suffix;
 		Sys::ThrowIfFailed
