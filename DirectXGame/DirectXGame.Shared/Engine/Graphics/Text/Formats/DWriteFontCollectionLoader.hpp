@@ -10,7 +10,7 @@ class DWriteFontFileEnumerator : public IDWriteFontFileEnumerator
 public:
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void **ppvObject)
 	{
-		if (ppvObject == NULL)
+		if (ppvObject == nullptr)
 			return E_INVALIDARG;
 
 		if (IsEqualIID(riid, __uuidof(IUnknown)))
@@ -27,7 +27,7 @@ public:
 			return S_OK;
 		}
 
-		*ppvObject = NULL;
+		*ppvObject = nullptr;
 		return E_NOINTERFACE;
 	}
 
@@ -45,10 +45,10 @@ public:
 
 	virtual HRESULT STDMETHODCALLTYPE GetCurrentFontFile(IDWriteFontFile **ppFontFile)
 	{
-		if (ppFontFile == NULL)
+		if (ppFontFile == nullptr)
 			return E_INVALIDARG;
 
-		if (pFontFile == NULL)
+		if (pFontFile == nullptr)
 			return E_FAIL;
 
 		pFontFile->AddRef();
@@ -59,13 +59,13 @@ public:
 
 	virtual HRESULT STDMETHODCALLTYPE MoveNext(BOOL *pHasCurrentFile)
 	{
-		if (pHasCurrentFile == NULL)
+		if (pHasCurrentFile == nullptr)
 			return E_INVALIDARG;
 
 		if (count > 0)
-			*pHasCurrentFile = FALSE;
+			*pHasCurrentFile = false;
 		else
-			*pHasCurrentFile = TRUE;
+			*pHasCurrentFile = true;
 
 		++count;
 
@@ -100,9 +100,9 @@ private:
 class DWriteFontCollectionLoader : public IDWriteFontCollectionLoader
 {
 public:
-	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void **ppvObject)
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject)
 	{
-		if (ppvObject == NULL)
+		if (ppvObject == nullptr)
 			return E_INVALIDARG;
 
 		if (IsEqualIID(riid, __uuidof(IUnknown)))
@@ -118,7 +118,7 @@ public:
 			return S_OK;
 		}
 
-		*ppvObject = NULL;
+		*ppvObject = nullptr;
 		return E_NOINTERFACE;
 	}
 
@@ -144,11 +144,11 @@ public:
 		collectionKey;
 		collectionKeySize;
 
-		if (pFactory == NULL || ppFontFileEnumerator == NULL)
+		if (pFactory == nullptr || ppFontFileEnumerator == nullptr)
 			return E_INVALIDARG;
 
 		IDWriteFontFile *pFontFile;
-		HRESULT hResult = pFactory->CreateFontFileReference(filePath.c_str(), NULL, &pFontFile);
+		HRESULT hResult = pFactory->CreateFontFileReference(filePath.c_str(), nullptr, &pFontFile);
 		if (FAILED(hResult))
 			return hResult;
 
@@ -163,11 +163,11 @@ public:
 	DWriteFontCollectionLoader(const WCHAR* FontfilePath) : m_cRefCount(1), filePath(FontfilePath) { }
 
 private:
-	~DWriteFontCollectionLoader() { }
+	~DWriteFontCollectionLoader() = default;
 
 	ULONG m_cRefCount;
 	std::wstring filePath;
 
-	DWriteFontCollectionLoader(const DWriteFontCollectionLoader&);
-	DWriteFontCollectionLoader& operator=(const DWriteFontCollectionLoader&);
+	DWriteFontCollectionLoader(const DWriteFontCollectionLoader&) = default;
+	DWriteFontCollectionLoader& operator=(const DWriteFontCollectionLoader&) = default;
 };
