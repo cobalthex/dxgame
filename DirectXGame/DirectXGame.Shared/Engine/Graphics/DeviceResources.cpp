@@ -394,11 +394,16 @@ void DeviceResources::CreateWindowResources()
 	d3dContext->RSSetViewports(1, &screenViewport);
 	
 	//Create a Direct2D target bitmap associated with the swap chain back buffer and set it as the current target.
-	D2D1_BITMAP_PROPERTIES1 bitmapProperties =
-		D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED), dpi, dpi);
+	D2D1_BITMAP_PROPERTIES1 bitmapProperties = D2D1::BitmapProperties1(
+		D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW, 
+		D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
+		dpi,
+		dpi
+	);
 	
 	ComPtr<IDXGISurface2> dxgiBackBuffer;
-	Sys::ThrowIfFailed(swapChain->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer)));
+	//Sys::ThrowIfFailed(swapChain->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer))); //offscreen surface must be used when multisampling
+	Sys::ThrowIfFailed(offScreenSurface.Get()->QueryInterface(IID_PPV_ARGS(&dxgiBackBuffer)));
 	Sys::ThrowIfFailed(d2dContext->CreateBitmapFromDxgiSurface(
 		dxgiBackBuffer.Get(),
 		&bitmapProperties,
