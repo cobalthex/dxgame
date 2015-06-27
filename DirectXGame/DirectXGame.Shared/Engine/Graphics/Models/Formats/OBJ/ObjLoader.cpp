@@ -22,7 +22,7 @@ struct VertexIndex
 
 bool LoadMaterials(const std::string& LibFile, TextureCache& TexCache, std::map<std::string, Materials::LitMaterial>& Materials, const std::shared_ptr<Shaders::LitShader>& Shader); //load a list of materials from a file into the materials list
 
-bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Filename, TextureCache& TexCache, const std::shared_ptr<Shaders::LitShader>& Shader, __out StaticModel& Model)
+bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Filename, TextureCache& TexCache, const std::shared_ptr<Shaders::LitShader>& Shader, __out Model& Model)
 {
 	std::vector<Vector3> positions;
 	std::vector<Vector3> normals;
@@ -30,15 +30,15 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 
 	std::map<VertexIndex, unsigned> uVerts;
 
-	std::vector<StaticModel::VertexType> vertices;
-	std::vector<StaticModel::IndexType> indices;
+	std::vector<Model::VertexType> vertices;
+	std::vector<Model::IndexType> indices;
 
 	std::map<std::string, Materials::LitMaterial> materials;
 
 	std::string curMaterial; //currently selected material
 	std::string name; //current object name
 
-	std::map<std::string, StaticModel::MeshType> meshes;
+	std::map<std::string, Model::MeshType> meshes;
 	unsigned nextVertex = 0, nextIndex = 0;
 
 	std::ifstream fin(Filename);
@@ -146,7 +146,7 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 				auto uvi = uVerts.find(vi);
 				if (uvi == uVerts.end()) //not found
 				{
-					StaticModel::VertexType vtx;
+					Model::VertexType vtx;
 					vtx.position = positions[vi.v < 0 ? positions.size() + vi.v : vi.v - 1];
 					vtx.normal = normals[vi.n < 0 ? normals.size() + vi.n : vi.n - 1];
 					vtx.texCoord = texcoords[vi.t < 0 ? texcoords.size() + vi.t : vi.t - 1];
@@ -183,7 +183,7 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 		meshes[name] = { name, nextVertex, (unsigned)vertices.size() - nextVertex, nextIndex, (unsigned)indices.size() - nextIndex, mtl, Bounds() };
 	}
 
-	Model = StaticModel(DeviceResources, vertices, indices, PrimitiveTopology::TriangleList, meshes);
+	Model = ::Model(DeviceResources, vertices, indices, PrimitiveTopology::TriangleList, meshes);
 
 	return true;
 }

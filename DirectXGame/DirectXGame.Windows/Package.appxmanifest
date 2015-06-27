@@ -6,7 +6,7 @@
             Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>DirectXGame.Windows</DisplayName>
+    <DisplayName>Dash.Windows</DisplayName>
     <PublisherDisplayName>matt</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -23,12 +23,12 @@
   <Applications>
     <Application Id="App"
         Executable="$targetnametoken$.exe"
-        EntryPoint="DirectXGame_Windows.App">
+        EntryPoint="Dash_Windows.App">
         <VisualElements
-            DisplayName="DirectXGame.Windows"
+            DisplayName="Dash.Windows"
             Logo="Assets\Logo.png"
             SmallLogo="Assets\SmallLogo.png"
-            Description="DirectXGame.Windows"
+            Description="Dash.Windows"
             ForegroundText="light"
             BackgroundColor="#464646">
             <DefaultTile ShowName="allLogos" />

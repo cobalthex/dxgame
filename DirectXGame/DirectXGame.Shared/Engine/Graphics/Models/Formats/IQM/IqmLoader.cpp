@@ -60,7 +60,7 @@ void CleanupTemp(IqmTemp& Temp)
 	delete[] Temp.genJoints;
 }
 
-bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Filename, TextureCache& TexCache, const std::shared_ptr<Shaders::LitSkinnedShader>& Shader, __out Model& Mdl)
+bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Filename, TextureCache& TexCache, const std::shared_ptr<Shaders::LitSkinnedShader>& Shader, __out SkinnedModel& Mdl)
 {
 	const char* fn = Filename.c_str();
 	FILE* f = nullptr;
@@ -106,9 +106,9 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 	auto matFile = StringOps::CombinePaths(SystemSettings::BaseContentFolder, SystemSettings::BaseMaterialsFolder, Filename.substr(fp, Filename.find_last_of('.') - fp) + ".matl");
 	Osl::Document doc(matFile);
 
-	std::map<std::string, Model::MeshType> meshes;
+	std::map<std::string, SkinnedModel::MeshType> meshes;
 	//meshes.reserve(tmp.header.numMeshes);
-	std::vector<::Model::VertexType> vertices;
+	std::vector<::SkinnedModel::VertexType> vertices;
 	std::vector<unsigned> indices;
 	for (unsigned i = 0; i < tmp.header.numMeshes; i++)
 	{
@@ -129,7 +129,7 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 		//vertices
 		for (unsigned j = 0; j < m.numVertices; j++)
 		{
-			::Model::VertexType v;
+			::SkinnedModel::VertexType v;
 
 			auto& _v = tmp.vertices[m.firstVertex + j];
 			auto& _n = tmp.normals[m.firstVertex + j];
@@ -198,7 +198,7 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 		sequences[pname] = s;
 	}
 
-	Mdl = Model(DeviceResources, vertices, indices, PrimitiveTopology::TriangleList, meshes, std::vector<::Joint>(tmp.genJoints, tmp.genJoints + tmp.header.numJoints), sequences);
+	Mdl = SkinnedModel(DeviceResources, vertices, indices, PrimitiveTopology::TriangleList, meshes, std::vector<::Joint>(tmp.genJoints, tmp.genJoints + tmp.header.numJoints), sequences);
 	if (tmp.header.numAnims > 0)
 		Mdl.pose = std::string(tmp.texts + tmp.anims[0].name);
 

@@ -1,8 +1,7 @@
 ﻿#pragma once
 
 #include "Game/GameComponent.hpp"
-#include "Engine/Graphics/Models/Model.hpp"
-#include "Engine/Graphics/Models/StaticModel.hpp"
+#include "Engine/Graphics/Models/SkinnedModel.hpp"
 #include "Engine/Graphics/Textures/TextureCache.hpp"
 #include "Engine/Graphics/Textures/Texture2D.hpp"
 #include "Engine/Graphics/Shaders/UnlitShader.hpp"
@@ -37,15 +36,15 @@ private:
 	Camera cam;
 	Vector3 camRotation;
 
-	Model iqm;
+	SkinnedModel iqm;
 	Mesh iqmSkel;
 	Texture2D* tex;
 
-	StaticModel stage;
+	Model stage;
 	void CreateStage(float Radius = 10);
 
-	StaticModel sword;
-
+	Model sword;
+	
 	Timeline timeline;
 
 	// Variables used with the rendering loop.

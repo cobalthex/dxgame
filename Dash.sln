@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22609.0
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DirectXGame", "DirectXGame", "{BDBE8510-1777-4228-B350-47E0D31DE1CF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dash", "Dash", "{BDBE8510-1777-4228-B350-47E0D31DE1CF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXGame.Shared", "DirectXGame\DirectXGame.Shared\DirectXGame.Shared.vcxitems", "{BEFAA802-08E3-4EB2-95E7-6D62EC63F17B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dash.Shared", "DirectXGame\DirectXGame.Shared\DirectXGame.Shared.vcxitems", "{BEFAA802-08E3-4EB2-95E7-6D62EC63F17B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXGame.Windows", "DirectXGame\DirectXGame.Windows\DirectXGame.Windows.vcxproj", "{84172CE1-86E5-4C1D-B733-65B7E36FAC8D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dash.Windows", "DirectXGame\DirectXGame.Windows\DirectXGame.Windows.vcxproj", "{84172CE1-86E5-4C1D-B733-65B7E36FAC8D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXGame.WindowsPhone", "DirectXGame\DirectXGame.WindowsPhone\DirectXGame.WindowsPhone.vcxproj", "{A26CD155-DF87-4144-AF3A-D8D9F26EA87C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dash.WindowsPhone", "DirectXGame\DirectXGame.WindowsPhone\DirectXGame.WindowsPhone.vcxproj", "{A26CD155-DF87-4144-AF3A-D8D9F26EA87C}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

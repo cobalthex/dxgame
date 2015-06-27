@@ -63,7 +63,6 @@ size_t StreamOps::SkipComments(std::istream& Stream, const std::string& SingleLi
 	if (Stream.eof())
 		return 0;
 
-	auto sp = Stream.tellg();
 	if (IsSequenceNext(Stream, SingleLine))
 	{
 		std::string x;
@@ -71,24 +70,7 @@ size_t StreamOps::SkipComments(std::istream& Stream, const std::string& SingleLi
 		return SingleLine.length() + x.length();
 	}
 	else if (IsSequenceNext(Stream, MultiLineBegin))
-	{
+		return MultiLineBegin.length() + SkipUntil(Stream, MultiLineEnd);
 
-	}
-
-	if (Stream.peek() == '/')
-	{
-		Stream.get();
-		char pk;
-		if ((pk = Stream.peek()) == '/')
-			while (!Stream.eof() && Stream.get() != '\n'); //line comment
-		else if (pk == '*')
-		{
-			Stream.get();
-			while (!Stream.eof())
-			{
-				if (Stream.get() == '*' && Stream.get() == '/')
-					return 0 /* ///// TODO ///// */;
-			}
-		}
-	}
+	return 0;
 }

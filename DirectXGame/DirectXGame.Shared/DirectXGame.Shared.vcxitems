@@ -5,7 +5,7 @@
     <HasSharedItems>true</HasSharedItems>
     <ItemsProjectGuid>{befaa802-08e3-4eb2-95e7-6d62ec63f17b}</ItemsProjectGuid>
     <ItemsRootNamespace>DirectXGame</ItemsRootNamespace>
-    <ItemsProjectName>DirectXGame.Shared</ItemsProjectName>
+    <ItemsProjectName>Dash.Shared</ItemsProjectName>
     <SharedGUID>2d014abd-655d-41cc-a95c-48a00ae73565</SharedGUID>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -21,15 +21,16 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Common\StringOps.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Common\Math.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Common\StreamOps.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Curves\Curve.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Data\Formats\Json\Json.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Data\Formats\Osl\Osl.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Effects\ShadowMapEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Formats\IQM\IqmLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Formats\OBJ\ObjLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\MeshOps.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Model.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\SkinnedModel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Skinning.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\StaticModel.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Model.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\LitShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\LitSkinnedShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\PositionColorShader.cpp" />
@@ -56,6 +57,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Common\StbRectPack.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Common\StreamOps.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Common\StringOps.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Curves\Curve.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Data\Formats\Osl\Osl.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Events\CallbackCollection.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Events\CallbackId.hpp" />
@@ -70,7 +72,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Data\Cache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Data\ISerializable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Data\Formats\Json\Json.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Game\GameObject.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Drawable.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Game\Maps\Map.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImageWrite.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\DWriteFontCollectionLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.hpp" />
@@ -81,7 +85,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Formats\OBJ\ObjLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\MeshOps.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\ModelMesh.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\StaticModel.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Model.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Primitives.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Scene\Camera.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\ConstantBuffer.hpp" />
@@ -93,7 +97,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Mesh.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Model.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\SkinnedModel.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Scene\ChaseCamera.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Scene\Skybox.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\LitShader.hpp" />
@@ -273,6 +277,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\cube.obj">
+      <DeploymentContent>true</DeploymentContent>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\tracktest.obj">
       <DeploymentContent>true</DeploymentContent>
       <FileType>Document</FileType>
     </None>

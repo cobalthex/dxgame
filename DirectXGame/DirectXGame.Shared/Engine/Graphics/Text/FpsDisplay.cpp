@@ -96,7 +96,7 @@ void FpsDisplay::Draw(const StepTimer& Timer)
 
 	context->SetTransform(screenTranslation * deviceResources->GetOrientationTransform2D());
 
-	Sys::ThrowIfFailed(textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING));
+	Sys::ThrowIfFailed(textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING));
 
 	context->DrawTextLayout(D2D1::Point2F(-1.f, -1.f), textLayout.Get(), blackBrush.Get());
 	context->DrawTextLayout(D2D1::Point2F(1.f, -1.f), textLayout.Get(), blackBrush.Get());

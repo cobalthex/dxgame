@@ -38,7 +38,9 @@ class Mesh
 public:
 	typedef unsigned IndexType;
 
-	Mesh() : devContext(nullptr), vertices(nullptr), vertexCount(0), vertexStride(0), indices(nullptr), indexCount(0), topology(PrimitiveTopology::Unknown), hasDynamicUsage(false) { }
+	Mesh() = default;
+	Mesh(const DeviceResourcesPtr& DeviceResources)
+		: devContext(DeviceResources->GetD3DDeviceContext()) { }
 
 	inline const VertexBuffer& Vertices() const { return vertices; }
 	inline const IndexBuffer& Indices() const { return indices; }
