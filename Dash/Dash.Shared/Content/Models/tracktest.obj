@@ -1,0 +1,12 @@
+# Blender v2.73 (sub 0) OBJ File: ''
+# www.blender.org
+mtllib tracktest.mtl
+o Track test
+v -160.000000 0.000000 8.000000
+v 160.000000 0.000000 8.000000
+v -160.000000 0.000000 -8.000000
+v 160.000000 0.000000 -8.000000
+usemtl None
+s off
+f 2 4 3
+f 1 2 3
