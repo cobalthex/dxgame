@@ -28,7 +28,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{84172ce1-86e5-4c1d-b733-65b7e36fac8d}</ProjectGuid>
-    <RootNamespace>DirectXGame</RootNamespace>
+    <RootNamespace>Dash</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
@@ -96,9 +96,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <PackageCertificateKeyFile>DirectXGame.Windows_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>Dash.Windows_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
-  <Import Project="..\DirectXGame.Shared\DirectXGame.Shared.vcxitems" Label="Shared" />
+  <Import Project="..\Dash.Shared\Dash.Shared.vcxitems" Label="Shared" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
       <AdditionalDependencies>d2d1.lib;d3d11.lib;dxgi.lib;dxguid.lib;ole32.lib;windowscodecs.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -205,7 +205,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="DirectXGame.Windows_TemporaryKey.pfx" />
+    <None Include="Dash.Windows_TemporaryKey.pfx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

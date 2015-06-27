@@ -5,17 +5,17 @@ VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dash", "Dash", "{BDBE8510-1777-4228-B350-47E0D31DE1CF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dash.Shared", "DirectXGame\DirectXGame.Shared\DirectXGame.Shared.vcxitems", "{BEFAA802-08E3-4EB2-95E7-6D62EC63F17B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dash.Shared", "Dash\Dash.Shared\Dash.Shared.vcxitems", "{BEFAA802-08E3-4EB2-95E7-6D62EC63F17B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dash.Windows", "DirectXGame\DirectXGame.Windows\DirectXGame.Windows.vcxproj", "{84172CE1-86E5-4C1D-B733-65B7E36FAC8D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dash.Windows", "Dash\Dash.Windows\Dash.Windows.vcxproj", "{84172CE1-86E5-4C1D-B733-65B7E36FAC8D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dash.WindowsPhone", "DirectXGame\DirectXGame.WindowsPhone\DirectXGame.WindowsPhone.vcxproj", "{A26CD155-DF87-4144-AF3A-D8D9F26EA87C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dash.WindowsPhone", "Dash\Dash.WindowsPhone\Dash.WindowsPhone.vcxproj", "{A26CD155-DF87-4144-AF3A-D8D9F26EA87C}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		DirectXGame\DirectXGame.Shared\DirectXGame.Shared.vcxitems*{a26cd155-df87-4144-af3a-d8d9f26ea87c}*SharedItemsImports = 4
-		DirectXGame\DirectXGame.Shared\DirectXGame.Shared.vcxitems*{befaa802-08e3-4eb2-95e7-6d62ec63f17b}*SharedItemsImports = 9
-		DirectXGame\DirectXGame.Shared\DirectXGame.Shared.vcxitems*{84172ce1-86e5-4c1d-b733-65b7e36fac8d}*SharedItemsImports = 4
+		Dash\Dash.Shared\Dash.Shared.vcxitems*{a26cd155-df87-4144-af3a-d8d9f26ea87c}*SharedItemsImports = 4
+		Dash\Dash.Shared\Dash.Shared.vcxitems*{befaa802-08e3-4eb2-95e7-6d62ec63f17b}*SharedItemsImports = 9
+		Dash\Dash.Shared\Dash.Shared.vcxitems*{84172ce1-86e5-4c1d-b733-65b7e36fac8d}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
