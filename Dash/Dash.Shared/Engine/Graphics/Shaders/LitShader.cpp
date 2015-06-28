@@ -32,7 +32,7 @@ LitShader::LitShader(const DeviceResourcesPtr& DeviceResources)
 	});
 }
 
-LitMaterial::LitMaterial(const std::shared_ptr<Shader>& Shader) : Material(Shader) { }
+LitMaterial::LitMaterial(const std::shared_ptr<Shader>& Shader) : Material(Shader), useTexture(false) { }
 LitMaterial::LitMaterial(TextureCache& TexCache, const Osl::Object& MaterialObject, const std::shared_ptr<Shader>& Shader)
 	: Material(Shader)
 {

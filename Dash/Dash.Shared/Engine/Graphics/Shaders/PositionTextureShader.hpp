@@ -40,9 +40,9 @@ namespace Shaders
 			wvp.Update();
 		}
 
-		virtual inline ShaderType Type() const { return ShaderType::PositionTexture; }
+		virtual inline ShaderType Type() const override { return ShaderType::PositionTexture; }
 
-		inline void SetInputLayout() const{ if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
+		virtual inline void SetInputLayout() const override { if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
 
 		ConstantBuffer<WVPBufferDef> wvp; //world view projection buffer
 

@@ -48,6 +48,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Curves\Curve.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Scenes\TestScene.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\AppData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\ModelCache.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp" />
@@ -126,6 +127,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Game\GameObject.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Scenes\TestScene.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\AppData.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\ModelCache.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\mrfixit.iqm" />
@@ -145,6 +147,7 @@
     <None Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\Lighting.hlsli" />
     <None Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\Skinning.hlsli" />
     <None Include="$(MSBuildThisFileDirectory)Content\Models\tracktest.obj" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\cube.iqm" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="$(MSBuildThisFileDirectory)Content\Textures\Body.dds" />

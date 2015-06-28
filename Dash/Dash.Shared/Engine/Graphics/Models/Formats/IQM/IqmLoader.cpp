@@ -8,7 +8,7 @@
 
 using namespace Math;
 
-const float Iqm::DefaultFrameLength = (1000.f / 24.f);
+const float Iqm::DefaultFrameTime = (1000.f / 24.f);
 
 //Todo: maybe move to memory mapped files
 
@@ -37,8 +37,8 @@ struct IqmTemp
 	Iqm::Bounds* bounds = nullptr;
 	//Matrix* frames = nullptr; //animation frames
 
-	::Pose* genPoses; //A collection of generated poses from the Iqm poses (all of these poses will be assigned to the model)
-	::Joint* genJoints; //A collection of joints in the mesh (all of these joints will be assigned to the model)
+	::Pose* genPoses = nullptr; //A collection of generated poses from the Iqm poses (all of these poses will be assigned to the model)
+	::Joint* genJoints = nullptr; //A collection of joints in the mesh (all of these joints will be assigned to the model)
 
 	//Matrix* baseFrames = nullptr;
 	//Matrix* inverseBaseFrames = nullptr;
@@ -56,11 +56,13 @@ void CleanupTemp(IqmTemp& Temp)
 {
 	delete[] Temp.buffer;
 
-	delete[] Temp.genPoses;
-	delete[] Temp.genJoints;
+	if (Temp.genPoses != nullptr)
+		delete[] Temp.genPoses;
+	if (Temp.genJoints != nullptr)
+		delete[] Temp.genJoints;
 }
 
-bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Filename, TextureCache& TexCache, const std::shared_ptr<Shaders::LitSkinnedShader>& Shader, __out SkinnedModel& Mdl)
+std::shared_ptr<Model> Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Filename, TextureCache& TexCache, ShaderCache& ShCache)
 {
 	const char* fn = Filename.c_str();
 	FILE* f = nullptr;
@@ -78,132 +80,213 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 
 	//load header
 	if (fread(&tmp.header, 1, sizeof(tmp.header), f) != sizeof(tmp.header) || memcmp(tmp.header.magic, IQM_MAGIC, sizeof(tmp.header.magic)))
-		return false;
+		return nullptr;
 
 	LilSwap(&tmp.header.version, (sizeof(tmp.header) - sizeof(tmp.header.magic)) / sizeof(uint));
 
 	if (tmp.header.version != IQM_VERSION)
-		return false;
-	
+		return nullptr;
+
 	if (tmp.header.fileSize > (16 << 20))
-		return false; //sanity check... don't load files bigger than 16 MB
+		return nullptr; //sanity check... don't load files bigger than 16 MB
 
 	tmp.buffer = new uchar[tmp.header.fileSize];
-	
+
 	//read the file into memory
 	if (fread(tmp.buffer + sizeof(tmp.header), 1, tmp.header.fileSize - sizeof(tmp.header), f) != tmp.header.fileSize - sizeof(tmp.header))
-		return false;
+		return nullptr;
 	fclose(f);
 
 	if (tmp.header.numMeshes > 0 && !LoadMeshes(tmp))
-		return false;
+		return nullptr;
 	if (tmp.header.numAnims > 0 && !LoadAnimations(tmp))
-		return false;
+		return nullptr;
 
 	//Create model from generated data
+
+	bool isSkinned = (tmp.header.numJoints > 0); //IQM supports both skinned and not-skinned models. This loader supports both
 
 	auto fp = Filename.find_last_of('/') + 1;
 	auto matFile = StringOps::CombinePaths(AppData::BaseContentFolder, AppData::BaseMaterialsFolder, Filename.substr(fp, Filename.find_last_of('.') - fp) + ".matl");
 	Osl::Document doc(matFile);
 
-	std::map<std::string, SkinnedModel::MeshType> meshes;
-	//meshes.reserve(tmp.header.numMeshes);
-	std::vector<::SkinnedModel::VertexType> vertices;
-	std::vector<unsigned> indices;
-	for (unsigned i = 0; i < tmp.header.numMeshes; i++)
+	std::shared_ptr<Model> mdl = nullptr;
+
+	if (isSkinned)
 	{
-		auto& m = tmp.meshes[i];
-
-		indices.reserve(indices.size() + m.numTriangles * 3);
-		vertices.reserve(vertices.size() + m.numVertices);
-
-		//indices
-		for (unsigned j = 0; j < m.numTriangles; j++)
+		std::map<std::string, SkinnedModel::MeshType> meshes;
+		std::vector<SkinnedModel::VertexType> vertices;
+		std::vector<unsigned> indices;
+		for (unsigned i = 0; i < tmp.header.numMeshes; i++)
 		{
-			//For independent vertex buffers, subtract m.firstVertex from each of the vertices of the triangle
-			indices.push_back(tmp.tris[m.firstTriangle + j].vertex[0]);
-			indices.push_back(tmp.tris[m.firstTriangle + j].vertex[1]);
-			indices.push_back(tmp.tris[m.firstTriangle + j].vertex[2]);
+			auto& m = tmp.meshes[i];
+
+			indices.reserve(indices.size() + m.numTriangles * 3);
+			vertices.reserve(vertices.size() + m.numVertices);
+
+			//indices
+			for (unsigned j = 0; j < m.numTriangles; j++)
+			{
+				//For independent vertex buffers, subtract m.firstVertex from each of the vertices of the triangle
+				indices.push_back(tmp.tris[m.firstTriangle + j].vertex[0]);
+				indices.push_back(tmp.tris[m.firstTriangle + j].vertex[1]);
+				indices.push_back(tmp.tris[m.firstTriangle + j].vertex[2]);
+			}
+
+			//vertices
+			for (unsigned j = 0; j < m.numVertices; j++)
+			{
+				SkinnedModel::VertexType v;
+
+				auto& _v = tmp.vertices[m.firstVertex + j];
+				auto& _n = tmp.normals[m.firstVertex + j];
+				auto& _g = tmp.tangents[m.firstVertex + j];
+				auto& _t = tmp.texCoords[m.firstVertex + j];
+				auto& _c = tmp.colors[m.firstVertex + j];
+				auto& _i = tmp.blendIndices[m.firstVertex + j];
+				auto& _w = tmp.blendWeights[m.firstVertex + j];
+
+				//correct orientation would be yzx for DX
+
+				v.position = Vector3(_v.x, _v.y, _v.z);
+				if (tmp.normals != nullptr)
+					v.normal = Vector3(_n.x, _n.y, _n.z);
+				if (tmp.tangents != nullptr)
+					v.tangent = Vector4(_g.x, _g.y, _g.z, _g.w);
+				if (tmp.texCoords != nullptr)
+					v.texCoord = Vector2(_t.u, _t.v);
+				if (tmp.colors != nullptr)
+					v.color = DirectX::PackedVector::XMUBYTEN4(_c.r, _c.g, _c.b, 1);
+				if (tmp.blendIndices != nullptr)
+					v.indices = DirectX::PackedVector::XMUBYTE4(_i.a, _i.b, _i.c, _i.d);
+				if (tmp.blendWeights != nullptr)
+					v.weights = DirectX::PackedVector::XMUBYTEN4(_w.a, _w.b, _w.c, _w.d);
+
+				vertices.push_back(v);
+			}
+
+			//material
+
+			Materials::LitMaterial mat;
+			std::string matStr(tmp.texts + m.material);
+			if (doc.Contains(matStr))
+				mat = Materials::LitMaterial(TexCache, doc[matStr], ShCache.Load(ShaderType::LitSkinned));
+			else
+				mat = Materials::LitMaterial(ShCache.Load(ShaderType::LitSkinned));
+
+			::Bounds bnd;
+			if (tmp.bounds != nullptr)
+			{
+				bnd.box = Box3(tmp.bounds[i].bbMin, tmp.bounds[i].bbMin);
+				bnd.radius = tmp.bounds[i].radius;
+				bnd.xyRadius = tmp.bounds[i].xyRadius;
+			}
+			std::string mname = std::string(tmp.texts + m.name);
+			meshes[mname] = { mname, m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat, bnd };
 		}
 
-		//vertices
-		for (unsigned j = 0; j < m.numVertices; j++)
+		std::map<std::string, ::SkinnedSequence> sequences;
+
+		//create animations
+		for (unsigned i = 0; i < tmp.header.numAnims; i++)
 		{
-			::SkinnedModel::VertexType v;
+			auto& a = tmp.anims[i];
 
-			auto& _v = tmp.vertices[m.firstVertex + j];
-			auto& _n = tmp.normals[m.firstVertex + j];
-			auto& _g = tmp.tangents[m.firstVertex + j];
-			auto& _t = tmp.texCoords[m.firstVertex + j];
-			auto& _c = tmp.colors[m.firstVertex + j];
-			auto& _i = tmp.blendIndices[m.firstVertex + j];
-			auto& _w = tmp.blendWeights[m.firstVertex + j];
+			std::vector<::Pose> poses(tmp.genPoses + a.firstFrame, tmp.genPoses + a.firstFrame + a.numFrames);
 
-			//correct orientation would be yzx for DX
+			::SkinnedSequence s(poses);
+			s.Keyframes().reserve(a.numFrames);
 
-			v.position = Vector3(_v.x, _v.y, _v.z);
-			if (tmp.normals != nullptr)
-				v.normal = Vector3(_n.x, _n.y, _n.z);
-			if (tmp.tangents != nullptr)
-				v.tangent = Vector4(_g.x, _g.y, _g.z, _g.w);
-			if (tmp.texCoords != nullptr)
-				v.texCoord = Vector2(_t.u, _t.v);
-			if (tmp.colors != nullptr)
-				v.color = DirectX::PackedVector::XMUBYTEN4(_c.r, _c.g, _c.b, 1);
-			if (tmp.blendIndices != nullptr)
-				v.indices = DirectX::PackedVector::XMUBYTE4(_i.a, _i.b, _i.c, _i.d);
-			if (tmp.blendWeights != nullptr) 
-				v.weights = DirectX::PackedVector::XMUBYTEN4(_w.a, _w.b, _w.c, _w.d);
+			unsigned millis = (unsigned)(1000 / (a.frameRate > 0 ? a.frameRate : DefaultFrameTime));
 
-			vertices.push_back(v);
+			//create frames
+			for (unsigned i = 0; i < a.numFrames; i++)
+				s.Append(Keyframe(TimePoint(TimeType(i * millis))));
+
+			std::string pname = std::string(tmp.texts + a.name);
+			sequences[pname] = s;
 		}
 
-		//material
+		auto _mdl = std::make_shared<SkinnedModel>(DeviceResources, vertices, indices, PrimitiveTopology::TriangleList, meshes,
+			std::vector<::Joint>(tmp.genJoints, tmp.genJoints + tmp.header.numJoints), sequences);
 
-		Materials::LitMaterial mat;
-		std::string matStr (tmp.texts + m.material);
-		if (doc.Contains(matStr))
-			mat = Materials::LitMaterial(TexCache, doc[matStr], Shader);
+		if (tmp.header.numAnims > 0)
+			_mdl->pose = std::string(tmp.texts + tmp.anims[0].name);
 
-		::Bounds bnd;
-		if (tmp.bounds != nullptr)
-		{
-			bnd.box = Box3(tmp.bounds[i].bbMin, tmp.bounds[i].bbMin);
-			bnd.radius = tmp.bounds[i].radius;
-			bnd.xyRadius = tmp.bounds[i].xyRadius;
-		}
-		std::string mname = std::string(tmp.texts + m.name);
-		meshes[mname] = { mname, m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat, bnd };
+		mdl = _mdl;
 	}
-
-	std::map<std::string, ::SkinnedSequence> sequences;
-
-	//create animations
-	for (unsigned i = 0; i < tmp.header.numAnims; i++)
+	else //not-skinned
 	{
-		auto& a = tmp.anims[i];
+		std::map<std::string, Model::MeshType> meshes;
+		std::vector<Model::VertexType> vertices;
+		std::vector<unsigned> indices;
+		for (unsigned i = 0; i < tmp.header.numMeshes; i++)
+		{
+			auto& m = tmp.meshes[i];
 
-		std::vector<::Pose> poses (tmp.genPoses + a.firstFrame, tmp.genPoses + a.firstFrame + a.numFrames);
+			indices.reserve(indices.size() + m.numTriangles * 3);
+			vertices.reserve(vertices.size() + m.numVertices);
 
-		::SkinnedSequence s (poses);
-		s.Keyframes().reserve(a.numFrames);
+			//indices
+			for (unsigned j = 0; j < m.numTriangles; j++)
+			{
+				//For independent vertex buffers, subtract m.firstVertex from each of the vertices of the triangle
+				indices.push_back(tmp.tris[m.firstTriangle + j].vertex[0]);
+				indices.push_back(tmp.tris[m.firstTriangle + j].vertex[1]);
+				indices.push_back(tmp.tris[m.firstTriangle + j].vertex[2]);
+			}
 
-		unsigned millis = (unsigned)(1000 / (a.frameRate > 0 ? a.frameRate : DefaultFrameLength));
+			//vertices
+			for (unsigned j = 0; j < m.numVertices; j++)
+			{
+				Model::VertexType v;
 
-		//create frames
-		for (unsigned i = 0; i < a.numFrames; i++)
-			s.Append(Keyframe(TimePoint(TimeType(i * millis))));
+				auto& _v = tmp.vertices[m.firstVertex + j];
+				auto& _n = tmp.normals[m.firstVertex + j];
+				auto& _g = tmp.tangents[m.firstVertex + j];
+				auto& _t = tmp.texCoords[m.firstVertex + j];
+				auto& _c = tmp.colors[m.firstVertex + j];
 
-		std::string pname = std::string(tmp.texts + a.name);
-		sequences[pname] = s;
+				//correct orientation would be yzx for DX
+
+				v.position = Vector3(_v.x, _v.y, _v.z);
+				if (tmp.normals != nullptr)
+					v.normal = Vector3(_n.x, _n.y, _n.z);
+				if (tmp.tangents != nullptr)
+					v.tangent = Vector4(_g.x, _g.y, _g.z, _g.w);
+				if (tmp.texCoords != nullptr)
+					v.texCoord = Vector2(_t.u, _t.v);
+				if (tmp.colors != nullptr)
+					v.color = DirectX::PackedVector::XMUBYTEN4(_c.r, _c.g, _c.b, 1);
+
+				vertices.push_back(v);
+			}
+
+			//material
+
+			Materials::LitMaterial mat;
+			std::string matStr(tmp.texts + m.material);
+			if (doc.Contains(matStr))
+				mat = Materials::LitMaterial(TexCache, doc[matStr], ShCache.Load(ShaderType::Lit));
+			else
+				mat = Materials::LitMaterial(ShCache.Load(ShaderType::Lit));
+
+			::Bounds bnd;
+			if (tmp.bounds != nullptr)
+			{
+				bnd.box = Box3(tmp.bounds[i].bbMin, tmp.bounds[i].bbMin);
+				bnd.radius = tmp.bounds[i].radius;
+				bnd.xyRadius = tmp.bounds[i].xyRadius;
+			}
+			std::string mname = std::string(tmp.texts + m.name);
+			meshes[mname] = { mname, m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat, bnd };
+
+			mdl = std::make_shared<Model>(DeviceResources, vertices, indices, PrimitiveTopology::TriangleList, meshes);
+		}
 	}
-
-	Mdl = SkinnedModel(DeviceResources, vertices, indices, PrimitiveTopology::TriangleList, meshes, std::vector<::Joint>(tmp.genJoints, tmp.genJoints + tmp.header.numJoints), sequences);
-	if (tmp.header.numAnims > 0)
-		Mdl.pose = std::string(tmp.texts + tmp.anims[0].name);
 
 	CleanupTemp(tmp);
-	return true;
+	return mdl;
 }
 
 bool LoadMeshes(IqmTemp& Temp)
@@ -283,7 +366,6 @@ bool LoadMeshes(IqmTemp& Temp)
 
 	Temp.meshes = (Iqm::Mesh*)&Temp.buffer[Temp.header.offsetMeshes];
 	Temp.tris = (Iqm::Triangle*)&Temp.buffer[Temp.header.offsetTriangles];
-	Temp.joints = (Iqm::Joint*)&Temp.buffer[Temp.header.offsetJoints];
 
 	if (Temp.header.offsetAdjacency > 0)
 		Temp.adjacencies = (Iqm::Adjacency*)&Temp.buffer[Temp.header.offsetAdjacency];
@@ -292,31 +374,34 @@ bool LoadMeshes(IqmTemp& Temp)
 	Temp.comments = Temp.header.offsetComments > 0 ? (char*)&Temp.buffer[Temp.header.offsetComments] : "";
 
 	//load joints
-	
-	Temp.genJoints = new Joint[Temp.header.numJoints];
-	for (unsigned i = 0; i < Temp.header.numJoints; i++)
+	if (Temp.header.offsetJoints > 0)
 	{
-		auto& j = Temp.joints[i];
-
-		Temp.genJoints[i].index = i;
-		Temp.genJoints[i].parent = j.parent;
-		Temp.genJoints[i].name = std::string(Temp.texts + j.name);
-
-		auto q = Quaternion(j.rotate); q.Normalize();
-		Matrix scale = Matrix::CreateScale(Vector3(j.scale));
-		Matrix rotation = Matrix::CreateFromQuaternion(q);
-		Matrix translation = Matrix::CreateTranslation(Vector3(j.translate));
-
-		Temp.genJoints[i].transform = (scale * rotation) * translation;
-		Temp.genJoints[i].inverseTransform = Temp.genJoints[i].transform.Invert();
-
-		if (j.parent >= 0)
+		Temp.joints = (Iqm::Joint*)&Temp.buffer[Temp.header.offsetJoints];
+		Temp.genJoints = new Joint[Temp.header.numJoints];
+		for (unsigned i = 0; i < Temp.header.numJoints; i++)
 		{
-			Temp.genJoints[i].transform *= Temp.genJoints[j.parent].transform;
-			Temp.genJoints[i].inverseTransform = Temp.genJoints[j.parent].inverseTransform * Temp.genJoints[i].inverseTransform;
+			auto& j = Temp.joints[i];
+
+			Temp.genJoints[i].index = i;
+			Temp.genJoints[i].parent = j.parent;
+			Temp.genJoints[i].name = std::string(Temp.texts + j.name);
+
+			auto q = Quaternion(j.rotate); q.Normalize();
+			Matrix scale = Matrix::CreateScale(Vector3(j.scale));
+			Matrix rotation = Matrix::CreateFromQuaternion(q);
+			Matrix translation = Matrix::CreateTranslation(Vector3(j.translate));
+
+			Temp.genJoints[i].transform = (scale * rotation) * translation;
+			Temp.genJoints[i].inverseTransform = Temp.genJoints[i].transform.Invert();
+
+			if (j.parent >= 0)
+			{
+				Temp.genJoints[i].transform *= Temp.genJoints[j.parent].transform;
+				Temp.genJoints[i].inverseTransform = Temp.genJoints[j.parent].inverseTransform * Temp.genJoints[i].inverseTransform;
+			}
 		}
 	}
-	
+
 	return true;
 }
 bool LoadAnimations(IqmTemp& Temp)
@@ -344,13 +429,13 @@ bool LoadAnimations(IqmTemp& Temp)
 			pose.translations[j].x = p.channelOffset[0]; if (p.mask & 0x01) pose.translations[j].x += *frameData++ * p.channelScale[0];
 			pose.translations[j].y = p.channelOffset[1]; if (p.mask & 0x02) pose.translations[j].y += *frameData++ * p.channelScale[1];
 			pose.translations[j].z = p.channelOffset[2]; if (p.mask & 0x04) pose.translations[j].z += *frameData++ * p.channelScale[2];
-			
+
 			pose.rotations[j].x = p.channelOffset[3]; if (p.mask & 0x08) pose.rotations[j].x += *frameData++ * p.channelScale[3];
 			pose.rotations[j].y = p.channelOffset[4]; if (p.mask & 0x10) pose.rotations[j].y += *frameData++ * p.channelScale[4];
 			pose.rotations[j].z = p.channelOffset[5]; if (p.mask & 0x20) pose.rotations[j].z += *frameData++ * p.channelScale[5];
 			pose.rotations[j].w = p.channelOffset[6]; if (p.mask & 0x40) pose.rotations[j].w += *frameData++ * p.channelScale[6];
 			pose.rotations[j].Normalize();
-			
+
 			pose.scales[j].x = p.channelOffset[7]; if (p.mask & 0x080) pose.scales[j].x += *frameData++ * p.channelScale[7];
 			pose.scales[j].y = p.channelOffset[8]; if (p.mask & 0x100) pose.scales[j].y += *frameData++ * p.channelScale[8];
 			pose.scales[j].z = p.channelOffset[9]; if (p.mask & 0x200) pose.scales[j].z += *frameData++ * p.channelScale[9];

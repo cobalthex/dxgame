@@ -23,6 +23,7 @@ public:
 	inline std::shared_ptr<Shader> LoadShader(const ShaderType& Type) { return shaderCache.Load(Type); } //Load a shader from the game wide cache
 	template <typename ShaderTy>
 	inline std::shared_ptr<ShaderTy> LoadShader(const ShaderType& Type) { return shaderCache.Load<ShaderTy>(Type); } //Load a shade from the game wide cache
+	inline ShaderCache& ShaderCache() { return shaderCache; }
 
 	template <class T, typename Arg, typename... Args>
 	inline void AddComponent(Arg&& Arg, Args&&... Args) { PushComponent(std::make_shared<T>(*this, deviceResources, Arg, Args...)); }
@@ -43,6 +44,6 @@ private:
 	//Rendering loop timer
 	StepTimer timer;
 
-	ShaderCache shaderCache;
+	::ShaderCache shaderCache;
 	FpsDisplay FpsDisplay;
 };

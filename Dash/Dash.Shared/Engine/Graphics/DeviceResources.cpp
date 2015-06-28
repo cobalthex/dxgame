@@ -413,6 +413,8 @@ void DeviceResources::CreateWindowResources()
 
 	//Below are some default states. If the active state is modified, it's the responsibility of whatever set the state to unset it
 
+	d3dContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	//create default alpha blending blend state
 	D3D11_BLEND_DESC blDesc;
 	ZeroMemory(&blDesc, sizeof(D3D11_BLEND_DESC));

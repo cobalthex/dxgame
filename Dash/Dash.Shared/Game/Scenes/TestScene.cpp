@@ -20,6 +20,7 @@ TestScene::TestScene(Game& Game, const DeviceResourcesPtr& DeviceResources)
 {
 	CreateDeviceResources();
 	CreateWindowResources(DeviceResources->GetWindow().Get());
+	loadingComplete = true;
 }
 
 //Initializes view parameters when the window size changes.
@@ -52,6 +53,13 @@ void TestScene::CreateWindowResources(CoreWindow^ Window)
 void TestScene::CreateDeviceResources()
 {
 	Obj::Load(deviceResources, AppData::GetModelFile("tracktest.obj"), texCache, game.LoadShader<Shaders::LitShader>(ShaderType::Lit), map.world);
+	cube = Iqm::Load(deviceResources, AppData::GetModelFile("cube.iqm"), texCache, game.ShaderCache());
+	orc = Iqm::Load(deviceResources, AppData::GetModelFile("mrfixit.iqm"), texCache, game.ShaderCache());
+
+	SkinnedModel* sorc = (SkinnedModel*)orc.get();
+	timeline.Add(&sorc->poses[sorc->pose]);
+	timeline.isLooping = true;
+	timeline.Start();
 }
 
 void TestScene::ReleaseDeviceResources()
@@ -62,9 +70,21 @@ void TestScene::ReleaseDeviceResources()
 //Called once per frame, rotates the cube and calculates the model and view matrices.
 void TestScene::Update(const StepTimer& Timer)
 {
+	if (!loadingComplete)
+		return;
+
 	Vector2 mouse = Vector2(wnd->PointerPosition.X, wnd->PointerPosition.Y);
 
+	cam.CalcMatrices();
 
+	auto sh = (Shaders::LitShader*)map.world.meshes.begin()->second.material.shader.get();
+	sh->object.data.world = Matrix::CreateRotationZ(XM_PIDIV2) * Matrix::CreateRotationY(XM_PIDIV2);
+	sh->object.data.Calc(cam.View(), cam.Projection());
+
+	auto ssh = (Shaders::LitSkinnedShader*)orc->meshes.begin()->second.material.shader.get();
+	ssh->object.data.world = Matrix::CreateRotationZ(XM_PIDIV2) * Matrix::CreateRotationY(XM_PIDIV2);
+	ssh->object.data.Calc(cam.View(), cam.Projection());
+	std::static_pointer_cast<SkinnedModel>(orc)->Skin(ssh->object.data.joints);
 
 	timeline.Update();
 	lastMouse = mouse;
@@ -74,11 +94,9 @@ void TestScene::Update(const StepTimer& Timer)
 void TestScene::Draw(const StepTimer& Timer)
 {
 	if (!loadingComplete)
-		return; 
+		return;
 
-	auto context = deviceResources->GetD3DDeviceContext();
-
-	
-
-	map.world.Draw();
+	//map.world.Draw();
+	cube->Draw();
+	orc->Draw();
 }

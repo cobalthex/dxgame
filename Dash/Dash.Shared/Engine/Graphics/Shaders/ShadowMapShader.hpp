@@ -58,9 +58,9 @@ namespace Shaders
 			light.Update();
 		}
 
-		virtual inline ShaderType Type() const { return ShaderType::ShadowMap; }
+		virtual inline ShaderType Type() const override { return ShaderType::ShadowMap; }
 
-		inline void SetInputLayout() const{ if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
+		virtual inline void SetInputLayout() const override { if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
 
 	protected:
 		VertexShader vshader;

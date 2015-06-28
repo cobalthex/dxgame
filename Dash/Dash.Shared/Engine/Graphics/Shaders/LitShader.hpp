@@ -96,7 +96,7 @@ namespace Shaders
 
 		virtual inline ShaderType Type() const { return ShaderType::Lit; }
 
-		inline void SetInputLayout() const{ if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
+		virtual inline void SetInputLayout() const override { if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
 
 		ConstantBuffer<ObjectBufferDef> object;
 		ConstantBuffer<Materials::LitMaterial::BufferDef> material;

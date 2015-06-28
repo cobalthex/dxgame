@@ -30,5 +30,6 @@ private:
 	Camera cam;
 
 	Map map;
-	Model cube;
+	std::shared_ptr<Model> cube;
+	std::shared_ptr<Model> orc;
 };

@@ -150,7 +150,9 @@ public:
 	virtual void Apply() = 0; //Apply the shaders/etc in this implementation
 	virtual void Update() = 0; //Update any buffers/etc in this implementation
 
-	virtual inline ShaderType Type() const = 0;
+	virtual inline ShaderType Type() const = 0; //Return the type of shader that this is
+
+	virtual inline void SetInputLayout() const { } //Set any input layouts if this applies
 
 	static Shader* ActiveShader; //the currently set shader. Useful for not rebinding the same shader
 };

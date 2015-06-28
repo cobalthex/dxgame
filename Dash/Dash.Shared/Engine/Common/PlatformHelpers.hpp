@@ -16,11 +16,20 @@ namespace Sys
 		return std::wstring(Windows::ApplicationModel::Package::Current->InstalledLocation->Path->Begin());
 	}
 
-	//Get a filename's extension
+	//Get a filename's extension (Excluding the .)
+	inline std::string GetFileExtension(const std::string& Filename)
+	{
+		auto last = Filename.find_last_of('.');
+		auto ext = Filename.substr(last + 1);
+		for (auto& c : ext)
+			c = tolower(c);
+		return ext;
+	}
+	//Get a filename's extension (Excluding the .)
 	inline std::wstring GetFileExtension(const std::wstring& Filename)
 	{
 		auto last = Filename.find_last_of(L'.');
-		auto ext = Filename.substr(last);
+		auto ext = Filename.substr(last + 1);
 		for (auto& c : ext)
 			c = std::towlower(c);
 		return ext;
