@@ -176,7 +176,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <FxCompile>
-      <ObjectFileOutput>$(OutDir)Content/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput>$(OutDir)Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

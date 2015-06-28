@@ -1,6 +1,6 @@
 #include "Pch.hpp"
 #include "PositionTextureShader.hpp"
-#include "App/SystemSettings.hpp"
+#include "App/AppData.hpp"
 
 using namespace Shaders;
 
@@ -14,12 +14,12 @@ const unsigned PositionTextureShader::Vertex::ElementCount = ARRAYSIZE(PositionT
 PositionTextureShader::PositionTextureShader(const DeviceResourcesPtr& DeviceResources)
 	: wvp(DeviceResources), vshader(), pshader()
 {
-	auto file = Sys::ReadFileAsync(StringOps::ToWString(SystemSettings::GetShaderFile("PositionTexture.vs.cso"))).then([this, &DeviceResources](const Sys::FileData& Data)
+	auto file = Sys::ReadFileAsync(StringOps::ToWString(AppData::GetShaderFile("PositionTexture.vs.cso"))).then([this, &DeviceResources](const Sys::FileData& Data)
 	{
 		vshader = VertexShader(DeviceResources, Data);
 		DeviceResources->GetD3DDevice()->CreateInputLayout(Vertex::ElementDesc, Vertex::ElementCount, Data.data(), Data.size(), inputLayout.GetAddressOf());
 	});
-	file = Sys::ReadFileAsync(StringOps::ToWString(SystemSettings::GetShaderFile("PositionTexture.ps.cso"))).then([this, &DeviceResources](const Sys::FileData& Data)
+	file = Sys::ReadFileAsync(StringOps::ToWString(AppData::GetShaderFile("PositionTexture.ps.cso"))).then([this, &DeviceResources](const Sys::FileData& Data)
 	{
 		pshader = PixelShader(DeviceResources, Data);
 	});

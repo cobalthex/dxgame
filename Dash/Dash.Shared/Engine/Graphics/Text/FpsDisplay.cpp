@@ -2,7 +2,7 @@
 
 #include "FpsDisplay.hpp"
 #include "Engine/Common/PlatformHelpers.hpp"
-#include "App/SystemSettings.hpp"
+#include "App/AppData.hpp"
 #include "Formats/DWriteFontCollectionLoader.hpp"
 #include "Engine/Common/StringOps.hpp"
 
@@ -15,7 +15,7 @@ FpsDisplay::FpsDisplay(const std::shared_ptr<DeviceResources>& DeviceResources)
 
 	ComPtr<IDWriteFactory> dwFactory = deviceResources->GetDWriteFactory();
 
-	auto fontFn = SystemSettings::GetFontFile(L"DebugFixed\\DebugFixed.ttf");
+	auto fontFn = AppData::GetFontFile(L"DebugFixed\\DebugFixed.ttf");
 	ComPtr<IDWriteFontCollectionLoader> pCollectionLoader = new DWriteFontCollectionLoader(fontFn.data());
 	Sys::ThrowIfFailed(dwFactory->RegisterFontCollectionLoader(pCollectionLoader.Get()));
 

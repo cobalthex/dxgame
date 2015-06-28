@@ -4,6 +4,7 @@
 #include "GameComponent.hpp"
 
 #include "Engine/Graphics/Text/FpsDisplay.hpp"
+#include "Game/Scenes/TestScene.hpp"
 
 using namespace Windows::Foundation;
 using namespace Windows::System::Threading;
@@ -25,6 +26,8 @@ Game::Game(const std::shared_ptr<DeviceResources>& DeviceResources) :
 	timer.SetFixedTimeStep(true);
 	timer.SetTargetElapsedSeconds(1.0 / 60);
 	*/
+
+	components.push_back(std::make_shared<TestScene>(*this, deviceResources));
 }
 
 Game::~Game()

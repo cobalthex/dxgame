@@ -38,6 +38,7 @@ public:
 protected:
 	DeviceResourcesPtr deviceResources;
 
-	Model(const DeviceResourcesPtr& DeviceResources)
-		: Mesh(DeviceResources), deviceResources(DeviceResources) { }
+	//A partial constructor for inherited classes
+	Model(const DeviceResourcesPtr& DeviceResources, const std::map<std::string, MeshType>& Meshes)
+		: Mesh(DeviceResources), deviceResources(DeviceResources), meshes(Meshes) { }
 };

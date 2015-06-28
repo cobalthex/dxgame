@@ -12,7 +12,7 @@ SkinnedModel::SkinnedModel
 	const std::vector<Joint>& Joints,
 	const std::map<std::string, SkinnedSequence> Poses
 ) :
-	Model(DeviceResources),
+	Model(DeviceResources, Meshes),
 	joints(Joints),
 	poses(Poses)
 {
@@ -48,24 +48,6 @@ void SkinnedModel::Skin(const std::string& Pose, Matrix* PoseArray, size_t MaxPo
 			poseMats[i] = local;
 	
 		PoseArray[i] = (joints[i].inverseTransform * poseMats[i]).Transpose();
-	}
-}
-
-void SkinnedModel::Draw(unsigned Slot) const
-{
-	BeginDraw(Slot);
-
-	//Draw all of the meshes
-	for (auto& m : meshes)
-	{
-		if (m.second.material.shader.get() != Shader::ActiveShader)
-			m.second.material.shader->Apply();
-
-		m.second.material.Apply();
-		m.second.material.shader->Update();
-
-		//Draw the objects.
-		m.second.Draw(devContext);
 	}
 }
 

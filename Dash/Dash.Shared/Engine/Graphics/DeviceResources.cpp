@@ -411,6 +411,8 @@ void DeviceResources::CreateWindowResources()
 	);
 	d2dContext->SetTarget(d2dTargetBitmap.Get());
 
+	//Below are some default states. If the active state is modified, it's the responsibility of whatever set the state to unset it
+
 	//create default alpha blending blend state
 	D3D11_BLEND_DESC blDesc;
 	ZeroMemory(&blDesc, sizeof(D3D11_BLEND_DESC));
@@ -432,7 +434,22 @@ void DeviceResources::CreateWindowResources()
 	Sys::ThrowIfFailed(d3dDevice->CreateBlendState(&blDesc, &blState));
 	d3dContext->OMSetBlendState(blState.Get(), 0, 0xffffffff);
 
-	//rasterizer settings
+	//default sampler
+	D3D11_SAMPLER_DESC sampDesc;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = -FLT_MAX;
+	sampDesc.MaxLOD = FLT_MAX;
+	sampDesc.MaxAnisotropy = 16;
+	sampDesc.MipLODBias = 0;
+	ComPtr<ID3D11SamplerState> sampState;
+	d3dDevice->CreateSamplerState(&sampDesc, &sampState);
+	d3dContext->PSSetSamplers(0, 1, sampState.GetAddressOf());
+
+	//default rasterizer
 	D3D11_RASTERIZER_DESC rzDesc;
 	ZeroMemory(&rzDesc, sizeof(D3D11_RASTERIZER_DESC));
 

@@ -14,7 +14,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)App\SystemSettings.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Game.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Animation\Sequence.cpp" />
@@ -43,11 +42,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\TextureCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\DeviceResources.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImage.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\SkinnedModel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Model.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Curves\Curve.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Scenes\TestScene.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)App\AppData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp" />
@@ -55,7 +55,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\TelnetConsole.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)App\SystemSettings.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Game.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\GameComponent.hpp" />
@@ -118,7 +117,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Primitives.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Drawable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImageWrite.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\DWriteFontCollectionLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\SkinnedModel.hpp" />
@@ -126,6 +124,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Curves\Curve.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Game\Maps\Map.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Game\GameObject.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Scenes\TestScene.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)App\AppData.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\mrfixit.iqm" />

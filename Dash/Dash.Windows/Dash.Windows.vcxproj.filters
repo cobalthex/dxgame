@@ -28,6 +28,6 @@
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DirectXGame.Windows_TemporaryKey.pfx" />
+    <None Include="Dash.Windows_TemporaryKey.pfx" />
   </ItemGroup>
 </Project>

@@ -4,7 +4,7 @@
 #include "Engine/Common/Math.hpp"
 #include "Engine/Graphics/Shaders/ShaderStructures.hpp"
 #include "Engine/Data/Formats/Osl/Osl.hpp"
-#include "App/SystemSettings.hpp"
+#include "App/AppData.hpp"
 
 using namespace Math;
 
@@ -103,7 +103,7 @@ bool Iqm::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 	//Create model from generated data
 
 	auto fp = Filename.find_last_of('/') + 1;
-	auto matFile = StringOps::CombinePaths(SystemSettings::BaseContentFolder, SystemSettings::BaseMaterialsFolder, Filename.substr(fp, Filename.find_last_of('.') - fp) + ".matl");
+	auto matFile = StringOps::CombinePaths(AppData::BaseContentFolder, AppData::BaseMaterialsFolder, Filename.substr(fp, Filename.find_last_of('.') - fp) + ".matl");
 	Osl::Document doc(matFile);
 
 	std::map<std::string, SkinnedModel::MeshType> meshes;

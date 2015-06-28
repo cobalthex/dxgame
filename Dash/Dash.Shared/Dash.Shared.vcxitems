@@ -17,7 +17,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Animation\Sequence.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Animation\Timeline.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)App\SystemSettings.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)App\AppData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Common\StringOps.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Common\Math.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Common\StreamOps.cpp" />
@@ -47,10 +47,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\TextureCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Scene\Skybox.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Game\TestScene.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Game\Scenes\TestScene.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Animation\Animation.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Animation\Sequence.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)App\SystemSettings.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)App\AppData.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Common\AlignedStorage.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Common\Box.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Common\Math.hpp" />
@@ -94,7 +94,7 @@
       <FileType>CppHeader</FileType>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Formats\IQM\IqmLoader.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Game\TestScene.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Game\Scenes\TestScene.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Mesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\SkinnedModel.hpp" />

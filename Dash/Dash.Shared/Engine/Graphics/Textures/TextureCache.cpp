@@ -1,6 +1,6 @@
 #include "Pch.hpp"
 #include "TextureCache.hpp"
-#include "App/SystemSettings.hpp"
+#include "App/AppData.hpp"
 #include "Engine/Common/PlatformHelpers.hpp"
 
 std::shared_ptr<Texture2D> TextureCache::Load(const std::string& Key)
@@ -17,7 +17,7 @@ std::shared_ptr<Texture2D> TextureCache::Load(const std::string& Key)
 	if (file.front() == '~')
 		file = file.substr(1);
 	if (file.front() != '/')
-		file = SystemSettings::GetTextureFile(file);
+		file = AppData::GetTextureFile(file);
 
 	if (Sys::FileExists(file))
 	{

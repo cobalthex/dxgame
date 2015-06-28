@@ -2,7 +2,7 @@
 #include "ObjLoader.hpp"
 #include "Engine/Common/StreamOps.hpp"
 #include "Engine/Graphics/Models/MeshOps.hpp"
-#include "App/SystemSettings.hpp"
+#include "App/AppData.hpp"
 
 //triangle for obj vertex indices
 struct VertexIndex
@@ -84,7 +84,7 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 		{
 			StreamOps::SkipWhitespace(fin);
 			getline(fin, ty);
-			ty = SystemSettings::GetMaterialFile(ty);
+			ty = AppData::GetMaterialFile(ty);
 			LoadMaterials(ty, TexCache, materials, Shader);
 		}
 		else if (ty == "v")
@@ -123,6 +123,8 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 				StreamOps::SkipWhitespace(fin);
 
 				fin >> vi.v;
+				isT = false;
+				isN = false;
 				if (fin.peek() == '/')
 				{
 					fin.ignore();
@@ -137,7 +139,7 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 				}
 				
 				//invalid vertices, skip this face
-				if (vi.v > positions.size() || vi.n > normals.size() || vi.t > texcoords.size())
+				if (vi.v > positions.size() || (isN && vi.n > normals.size()) || (isT && vi.t > texcoords.size()))
 				{
 					std::getline(fin, ty);
 					break;
@@ -148,8 +150,16 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 				{
 					Model::VertexType vtx;
 					vtx.position = positions[vi.v < 0 ? positions.size() + vi.v : vi.v - 1];
-					vtx.normal = normals[vi.n < 0 ? normals.size() + vi.n : vi.n - 1];
-					vtx.texCoord = texcoords[vi.t < 0 ? texcoords.size() + vi.t : vi.t - 1];
+					
+					if (isN)
+						vtx.normal = normals[vi.n < 0 ? normals.size() + vi.n : vi.n - 1];
+					else
+						vtx.normal = Vector3::Zero;
+
+					if (isT)
+						vtx.texCoord = texcoords[vi.t < 0 ? texcoords.size() + vi.t : vi.t - 1];
+					else
+						vtx.texCoord = Vector2::Zero;
 
 					uVerts[vi] = (unsigned)vertices.size();
 					vertices.push_back(vtx);

@@ -1,6 +1,6 @@
 #include "Pch.hpp"
 #include "ShadowMapShader.hpp"
-#include "App/SystemSettings.hpp"
+#include "App/AppData.hpp"
 
 using namespace Shaders;
 
@@ -15,13 +15,13 @@ const unsigned ShadowMapShader::Vertex::ElementCount = ARRAYSIZE(ShadowMapShader
 ShadowMapShader::ShadowMapShader(const DeviceResourcesPtr& DeviceResources)
 	: world(DeviceResources), light(DeviceResources), vshader(), pshader()
 {
-	auto fp = StringOps::ToWString(SystemSettings::GetShaderFile("ShadowMap.vs.cso"));
+	auto fp = StringOps::ToWString(AppData::GetShaderFile("ShadowMap.vs.cso"));
 	auto file = Sys::ReadFileAsync(fp).then([this, &DeviceResources](const Sys::FileData& Data)
 	{
 		vshader = VertexShader(DeviceResources, Data);
 		DeviceResources->GetD3DDevice()->CreateInputLayout(Vertex::ElementDesc, Vertex::ElementCount, Data.data(), Data.size(), inputLayout.GetAddressOf());
 	});
-	fp = StringOps::ToWString(SystemSettings::GetShaderFile("ShadowMap.ps.cso"));
+	fp = StringOps::ToWString(AppData::GetShaderFile("ShadowMap.ps.cso"));
 	file = Sys::ReadFileAsync(fp).then([this, &DeviceResources](const Sys::FileData& Data)
 	{
 		pshader = PixelShader(DeviceResources, Data);
