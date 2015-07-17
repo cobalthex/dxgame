@@ -139,7 +139,7 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 				}
 				
 				//invalid vertices, skip this face
-				if (vi.v > positions.size() || (isN && vi.n > normals.size()) || (isT && vi.t > texcoords.size()))
+				if (vi.v > (int)positions.size() || (isN && vi.n > (int)normals.size()) || (isT && vi.t > (int)texcoords.size()))
 				{
 					std::getline(fin, ty);
 					break;

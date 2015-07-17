@@ -23,9 +23,9 @@ std::shared_ptr<Model> ModelCache::Load(const std::string& Key)
 
 	if (Sys::FileExists(file))
 	{
-		//store original key as system may be case sensitive
 		if (StringOps::EndsWith(StringOps::ToLower(file), ".iqm"))
-			;
+			cache[key] = Iqm::Load(deviceResources, file, *texCache, *shCache);
+
 		return cache[key];
 	}
 	return nullptr;

@@ -7,6 +7,7 @@ template <typename KeyType, class StorageType>
 class Cache
 {
 public:
+	typedef KeyType CacheKey;
 	typedef std::shared_ptr<StorageType> CacheItem;
 	typedef std::map<KeyType, CacheItem> CacheMap;
 

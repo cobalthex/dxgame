@@ -13,14 +13,15 @@ using namespace Windows::Foundation;
 using namespace Windows::UI::Core;
 
 //Loads vertex and pixel shaders from files and instantiates the cube geometry.
-TestScene::TestScene(Game& Game, const DeviceResourcesPtr& DeviceResources) 
+TestScene::TestScene(Game& Game, const DeviceResourcesPtr& DeviceResources)
 	: loadingComplete(false),
-	texCache(DeviceResources),
 	GameComponent(Game, DeviceResources)
 {
 	CreateDeviceResources();
 	CreateWindowResources(DeviceResources->GetWindow().Get());
 	loadingComplete = true;
+
+	litShader = std::static_pointer_cast<Shaders::LitShader>(game.LoadShader(ShaderType::Lit));
 }
 
 //Initializes view parameters when the window size changes.
@@ -44,7 +45,7 @@ void TestScene::CreateWindowResources(CoreWindow^ Window)
 	cam.nearPlaneDistance = 0.01f;
 	cam.farPlaneDistance = 1000;
 
-	cam.position = { 0, 10, 10 };
+	cam.position = { 0, 50, 70 };
 	cam.lookAt = { 0, 3, 0 };
 
 	cam.CalcMatrices();
@@ -52,15 +53,61 @@ void TestScene::CreateWindowResources(CoreWindow^ Window)
 
 void TestScene::CreateDeviceResources()
 {
-	Obj::Load(deviceResources, AppData::GetModelFile("tracktest.obj"), texCache, game.LoadShader<Shaders::LitShader>(ShaderType::Lit), map.world);
-	cube = Iqm::Load(deviceResources, AppData::GetModelFile("cube.iqm"), texCache, game.ShaderCache());
-	orc = Iqm::Load(deviceResources, AppData::GetModelFile("mrfixit.iqm"), texCache, game.ShaderCache());
+	orc = game.LoadModel("mrfixit.iqm");
+	cube = game.LoadModel("cube.iqm");
+	map.world = game.LoadModel("tracktest.iqm");
 
 	SkinnedModel* sorc = (SkinnedModel*)orc.get();
 	timeline.Add(&sorc->poses[sorc->pose]);
 	timeline.isLooping = true;
 	timeline.Start();
+
+	CreateStage(100);
 }
+void TestScene::CreateStage(float Radius)
+{
+	std::vector<Model::VertexType> verts;
+	Model::VertexType v;
+	v.position = Vector3(-Radius, 0, -Radius);
+	v.texCoord = Vector2(0, 0);
+	v.color = DirectX::PackedVector::XMUBYTEN4(0.5f, 0.5f, 0.5f, 1);
+	v.normal = Vector3::Up;
+	verts.push_back(v);
+
+	v.position = Vector3(Radius, 0, -Radius);
+	v.texCoord = Vector2(1, 0);
+	v.normal = Vector3::Up;
+	verts.push_back(v);
+
+	v.position = Vector3(-Radius, 0, Radius);
+	v.texCoord = Vector2(0, 1);
+	v.normal = Vector3::Up;
+	verts.push_back(v);
+
+	v.position = Vector3(Radius, 0, Radius);
+	v.texCoord = Vector2(1, 1);
+	v.normal = Vector3::Up;
+	verts.push_back(v);
+
+	static const std::vector<unsigned> indices = { 0, 1, 2, 3 };
+
+	std::map<std::string, Model::MeshType> meshes;
+
+	Materials::LitMaterial mat(game.LoadShader<Shaders::LitShader>(ShaderType::Lit));
+	mat.diffuseMap = game.LoadTexture("ground.dds");
+	mat.useTexture = (mat.diffuseMap != nullptr && mat.diffuseMap->IsValid());
+	mat.ambient = mat.diffuse = Color(1, 1, 1);
+
+	meshes["stage"] = { "stage", 0, 4, 0, 4, mat, Bounds() };
+
+	stage = Model(deviceResources, verts, indices, PrimitiveTopology::TriangleStrip, meshes);
+
+	/*unsigned s = 128;
+	unsigned* cmap = new unsigned[s * s];
+	FillMemory(cmap, s * s * sizeof(unsigned), 0xff00ff00);
+	mat.diffuseMap->SetData(cmap, 10, 10, s, s);*/
+}
+
 
 void TestScene::ReleaseDeviceResources()
 {
@@ -77,14 +124,8 @@ void TestScene::Update(const StepTimer& Timer)
 
 	cam.CalcMatrices();
 
-	auto sh = (Shaders::LitShader*)map.world.meshes.begin()->second.material.shader.get();
-	sh->object.data.world = Matrix::CreateRotationZ(XM_PIDIV2) * Matrix::CreateRotationY(XM_PIDIV2);
-	sh->object.data.Calc(cam.View(), cam.Projection());
-
-	auto ssh = (Shaders::LitSkinnedShader*)orc->meshes.begin()->second.material.shader.get();
-	ssh->object.data.world = Matrix::CreateRotationZ(XM_PIDIV2) * Matrix::CreateRotationY(XM_PIDIV2);
-	ssh->object.data.Calc(cam.View(), cam.Projection());
-	std::static_pointer_cast<SkinnedModel>(orc)->Skin(ssh->object.data.joints);
+	litShader->object.data.world = Matrix::CreateRotationZ(XM_PIDIV2) * Matrix::CreateRotationY(XM_PIDIV2);
+	litShader->object.data.Calc(cam.View(), cam.Projection());
 
 	timeline.Update();
 	lastMouse = mouse;
@@ -96,7 +137,15 @@ void TestScene::Draw(const StepTimer& Timer)
 	if (!loadingComplete)
 		return;
 
-	//map.world.Draw();
-	cube->Draw();
-	orc->Draw();
+	//cube->Draw();
+	//orc->Draw();
+	litShader->SetInputLayout();
+	litShader->lighting.data.shadowColor = Color(0, 0.5f, 0.8f, 1);
+	litShader->lighting.data.lights[0].isEnabled = true;
+	litShader->lighting.data.lights[0].type = LightType::Point;
+	litShader->Update();
+	litShader->Apply();
+	stage.ApplyTopology();
+	stage.Draw();
+	map.world->Draw();
 }

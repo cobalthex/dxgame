@@ -8,7 +8,7 @@ SkinnedModel::SkinnedModel
 	const std::vector<VertexType>& Vertices,
 	const std::vector<IndexType>& Indices,
 	PrimitiveTopology Topology,
-	const std::map<std::string, MeshType>& Meshes,
+	const std::map<std::string, ModelMesh>& Meshes,
 	const std::vector<Joint>& Joints,
 	const std::map<std::string, SkinnedSequence> Poses
 ) :

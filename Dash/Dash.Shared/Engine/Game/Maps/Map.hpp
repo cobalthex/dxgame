@@ -8,7 +8,7 @@
 class Map
 {
 public:
-	Model world; //The static world should be one giant model
+	std::shared_ptr<Model> world; //The static world should be one giant model
 	std::vector<std::shared_ptr<Model>> models; //all other world objects (including animated/skinned models)
 
 	Curve3d track;

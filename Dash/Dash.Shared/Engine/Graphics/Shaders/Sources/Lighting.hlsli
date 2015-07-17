@@ -33,6 +33,7 @@ cbuffer LightBuffer : register(b1)
 {
 	float4 EyePosition; //the position of the camera
 	float4 GlobalAmbience; //global ambient light
+	float4 ShadowColor;
 
 	Light Lights[MAX_LIGHTS];
 };
@@ -47,13 +48,13 @@ float4 CalcDiffuse(Light Li, float3 L, float3 N) //Light, light vector, surface 
 float4 CalcSpecularPhong(Light Li, float3 V, float3 L, float3 N) //Light, viewer vector, light vector, surface normal
 {
 	float3 R = normalize(reflect(-L, N));
-	return Li.color * pow(max(0, dot(R, V)), SpecularPower);
+		return Li.color * pow(max(0, dot(R, V)), SpecularPower);
 }
 //Calculate Blinn-Phong (approximation) specular lighting
 float4 CalcSpecularBlinnPhong(Light Li, float3 V, float3 L, float3 N) //Light, viewer vector, light vector, surface normal
 {
 	float3 H = normalize(L + V);
-	return Li.color * pow(max(0, dot(N, H)), SpecularPower);
+		return Li.color * pow(max(0, dot(N, H)), SpecularPower);
 }
 
 #define CalcSpecular(Li, V, L, N) CalcSpecularBlinnPhong(Li, V, L, N) //the current specular function
@@ -77,7 +78,7 @@ LightCalc CalcPointLight(Light Li, float3 V, float4 P, float3 N) //Light, viewer
 	LightCalc result;
 
 	float3 L = (Li.position - P).xyz; //Light vector
-	float distance = length(L);
+		float distance = length(L);
 	L /= distance;
 
 	float attenuation = CalcAttenuation(Li, distance);
@@ -94,7 +95,7 @@ LightCalc CalcDirectionalLight(Light Li, float3 V, float4 P, float3 N) //Light, 
 
 	float3 L = -Li.direction.xyz;
 
-	result.diffuse = CalcDiffuse(Li, L, N);
+		result.diffuse = CalcDiffuse(Li, L, N);
 	result.specular = CalcSpecular(Li, V, L, N);
 
 	return result;
@@ -114,7 +115,7 @@ LightCalc CalcSpotLight(Light Li, float3 V, float4 P, float3 N) //Light, viewer 
 	LightCalc result;
 
 	float3 L = (Li.position - P).xyz;
-	float distance = length(L);
+		float distance = length(L);
 	L = L / distance;
 
 	float attenuation = CalcAttenuation(Li, distance);
@@ -130,7 +131,7 @@ LightCalc ComputeLighting(float4 P, float3 N)
 {
 	float3 V = normalize(EyePosition - P).xyz;
 
-	LightCalc totalResult = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+	LightCalc totalResult = { ShadowColor, { 0, 0, 0, 0 } };
 
 	[unroll]
 	for (int i = 0; i < MAX_LIGHTS; i++)

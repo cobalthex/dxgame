@@ -8,7 +8,7 @@ const DeviceResourcesPtr& DeviceResources,
 const std::vector<VertexType>& Vertices,
 const std::vector<IndexType>& Indices,
 PrimitiveTopology Topology,
-const std::map<std::string, MeshType>& Meshes
+const std::map<std::string, ModelMesh>& Meshes
 ) :
 	deviceResources(DeviceResources),
 	meshes(Meshes)
@@ -23,14 +23,14 @@ void Model::Draw(unsigned Slot) const
 	//Draw all of the meshes
 	for (auto& m : meshes)
 	{
-		auto sh = m.second.material.shader.get();
+		auto sh = m.second.material->shader.get();
 		if (sh != Shader::ActiveShader)
 		{
 			sh->Apply();
 			sh->SetInputLayout();
 		}
 
-		m.second.material.Apply();
+		m.second.material->Apply();
 		sh->Update();
 
 		//Draw the objects.

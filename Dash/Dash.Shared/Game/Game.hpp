@@ -2,8 +2,10 @@
 
 #include "Engine/Common/StepTimer.hpp"
 #include "Engine/Graphics/DeviceResources.hpp"
-#include "Engine/Graphics/Shaders/ShaderCache.hpp"
 #include "Engine/Graphics/Text/FpsDisplay.hpp"
+#include "Engine/Graphics/Shaders/ShaderCache.hpp"
+#include "Engine/Graphics/Textures/TextureCache.hpp"
+#include "Engine/Graphics/Models/ModelCache.hpp"
 
 class GameComponent;
 
@@ -20,10 +22,15 @@ public:
 	virtual void OnDeviceLost();
 	virtual void OnDeviceRestored();
 
-	inline std::shared_ptr<Shader> LoadShader(const ShaderType& Type) { return shaderCache.Load(Type); } //Load a shader from the game wide cache
-	template <typename ShaderTy>
-	inline std::shared_ptr<ShaderTy> LoadShader(const ShaderType& Type) { return shaderCache.Load<ShaderTy>(Type); } //Load a shade from the game wide cache
 	inline ShaderCache& ShaderCache() { return shaderCache; }
+	inline TextureCache& TextureCache() { return textureCache; }
+	inline ModelCache& ModelCache() { return modelCache; }
+
+	template <class ShaderClass>
+	inline std::shared_ptr<ShaderClass> LoadShader(const ShaderCache::CacheKey& Key) { return std::static_pointer_cast<ShaderClass>(shaderCache.Load(Key)); }
+	inline ShaderCache::CacheItem LoadShader(const ShaderCache::CacheKey& Key) { return shaderCache.Load(Key); }
+	inline TextureCache::CacheItem LoadTexture(const TextureCache::CacheKey& Key) { return textureCache.Load(Key); }
+	inline ModelCache::CacheItem LoadModel(const ModelCache::CacheKey& Key) { return modelCache.Load(Key); }
 
 	template <class T, typename Arg, typename... Args>
 	inline void AddComponent(Arg&& Arg, Args&&... Args) { PushComponent(std::make_shared<T>(*this, deviceResources, Arg, Args...)); }
@@ -45,5 +52,8 @@ private:
 	StepTimer timer;
 
 	::ShaderCache shaderCache;
+	::TextureCache textureCache;
+	::ModelCache modelCache;
+
 	FpsDisplay FpsDisplay;
 };

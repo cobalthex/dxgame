@@ -114,7 +114,7 @@ std::shared_ptr<Model> Iqm::Load(const DeviceResourcesPtr& DeviceResources, cons
 
 	if (isSkinned)
 	{
-		std::map<std::string, SkinnedModel::MeshType> meshes;
+		std::map<std::string, ModelMesh> meshes;
 		std::vector<SkinnedModel::VertexType> vertices;
 		std::vector<unsigned> indices;
 		for (unsigned i = 0; i < tmp.header.numMeshes; i++)
@@ -167,12 +167,12 @@ std::shared_ptr<Model> Iqm::Load(const DeviceResourcesPtr& DeviceResources, cons
 
 			//material
 
-			Materials::LitMaterial mat;
+			std::shared_ptr<Materials::LitMaterial> mat;
 			std::string matStr(tmp.texts + m.material);
 			if (doc.Contains(matStr))
-				mat = Materials::LitMaterial(TexCache, doc[matStr], ShCache.Load(ShaderType::LitSkinned));
+				*mat = Materials::LitMaterial(TexCache, doc[matStr], ShCache.Load(ShaderType::LitSkinned));
 			else
-				mat = Materials::LitMaterial(ShCache.Load(ShaderType::LitSkinned));
+				*mat = Materials::LitMaterial(ShCache.Load(ShaderType::LitSkinned));
 
 			::Bounds bnd;
 			if (tmp.bounds != nullptr)
@@ -217,7 +217,7 @@ std::shared_ptr<Model> Iqm::Load(const DeviceResourcesPtr& DeviceResources, cons
 	}
 	else //not-skinned
 	{
-		std::map<std::string, Model::MeshType> meshes;
+		std::map<std::string, ModelMesh> meshes;
 		std::vector<Model::VertexType> vertices;
 		std::vector<unsigned> indices;
 		for (unsigned i = 0; i < tmp.header.numMeshes; i++)
@@ -264,12 +264,12 @@ std::shared_ptr<Model> Iqm::Load(const DeviceResourcesPtr& DeviceResources, cons
 
 			//material
 
-			Materials::LitMaterial mat;
+			std::shared_ptr<Materials::LitMaterial> mat;
 			std::string matStr(tmp.texts + m.material);
 			if (doc.Contains(matStr))
-				mat = Materials::LitMaterial(TexCache, doc[matStr], ShCache.Load(ShaderType::Lit));
+				*mat = Materials::LitMaterial(TexCache, doc[matStr], ShCache.Load(ShaderType::Lit));
 			else
-				mat = Materials::LitMaterial(ShCache.Load(ShaderType::Lit));
+				*mat = Materials::LitMaterial(ShCache.Load(ShaderType::Lit));
 
 			::Bounds bnd;
 			if (tmp.bounds != nullptr)

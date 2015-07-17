@@ -72,7 +72,7 @@ void Timeline::Update()
 	auto d = Duration();
 
 	bool isDone = true;
-	for (int i = 0; i < sequences.size(); i++)
+	for (size_t i = 0; i < sequences.size(); i++)
 	{
 		auto& s = sequences[i];
 
@@ -137,7 +137,7 @@ bool Timeline::AtEnd() const
 TimeSpan Timeline::Duration() const
 {
 	TimePoint max = TimePoint();
-	for (int i = 0; i < sequences.size(); i++)
+	for (size_t i = 0; i < sequences.size(); i++)
 	{
 		if (sequences[i]->keyframes.size() > 0 && sequences[i]->keyframes.back().start > max)
 			max = sequences[i]->keyframes.back().start;

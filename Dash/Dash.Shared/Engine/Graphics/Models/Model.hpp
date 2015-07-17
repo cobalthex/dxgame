@@ -2,7 +2,7 @@
 
 #include "Pch.hpp"
 #include "Engine/Graphics/DeviceResources.hpp"
-#include "Engine/Graphics/Shaders/LitShader.hpp"
+#include "Engine/Graphics/Shaders/ShaderStructures.hpp"
 #include "ModelMesh.hpp"
 #include "Mesh.hpp"
 
@@ -10,9 +10,8 @@
 class Model : public Mesh
 {
 public:
-	typedef Shaders::LitShader::Vertex VertexType;
+	typedef Vertexes::StaticVertex VertexType;
 	typedef unsigned IndexType;
-	typedef ModelMesh<Materials::LitMaterial> MeshType;
 
 	Model() = default;
 	Model
@@ -21,10 +20,10 @@ public:
 		const std::vector<VertexType>& Vertices,
 		const std::vector<IndexType>& Indices,
 		PrimitiveTopology Topology,
-		const std::map<std::string, MeshType>& Meshes
+		const std::map<std::string, ModelMesh>& Meshes
 	);
 
-	std::map<std::string, MeshType> meshes; //All of the model meshes that make up this model
+	std::map<std::string, ModelMesh> meshes; //All of the model meshes that make up this model
 
 	inline void BeginDraw(unsigned Slot = 0) const //Apply the model but do not draw any of the meshes
 	{
@@ -39,6 +38,6 @@ protected:
 	DeviceResourcesPtr deviceResources;
 
 	//A partial constructor for inherited classes
-	Model(const DeviceResourcesPtr& DeviceResources, const std::map<std::string, MeshType>& Meshes)
+	Model(const DeviceResourcesPtr& DeviceResources, const std::map<std::string, ModelMesh>& Meshes)
 		: Mesh(DeviceResources), deviceResources(DeviceResources), meshes(Meshes) { }
 };

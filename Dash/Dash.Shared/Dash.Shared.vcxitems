@@ -32,13 +32,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\SkinnedModel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Skinning.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Model.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\LitShader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\LitSkinnedShader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\PositionColorShader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\PositionTextureShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Material.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShaderCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShadowMapShader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\UnlitShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticLitShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImage.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\WICTextureLoader.cpp">
@@ -49,6 +46,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Scene\Skybox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Scenes\TestScene.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShaderStructures.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Animation\Animation.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Animation\Sequence.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\AppData.hpp" />
@@ -76,7 +74,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Game\GameObject.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Drawable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Game\Maps\Map.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\ModelCache.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticLitShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImageWrite.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\DWriteFontCollectionLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.hpp" />
@@ -102,18 +102,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\SkinnedModel.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Scene\ChaseCamera.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Scene\Skybox.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\LitShader.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\LitSkinnedShader.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\PositionTextureShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Shader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShaderCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShaderStructures.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Game.hpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Game.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Formats\IQM\iqm.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\PositionColorShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShadowMapShader.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\UnlitShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\DDS.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\DDSTextureLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImage.hpp">
@@ -139,15 +134,17 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\Lit.ps.hlsl">
+    <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\StaticLit.ps.hlsl">
       <ShaderType>Pixel</ShaderType>
       <ShaderModel>4.0</ShaderModel>
       <EnableDebuggingInformation>true</EnableDebuggingInformation>
+      <FileType>Document</FileType>
     </FxCompile>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\Lit.vs.hlsl">
+    <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\StaticLit.vs.hlsl">
       <ShaderType>Vertex</ShaderType>
       <ShaderModel>4.0</ShaderModel>
       <EnableDebuggingInformation>true</EnableDebuggingInformation>
+      <FileType>Document</FileType>
     </FxCompile>
     <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\LitSkinned.vs.hlsl">
       <ShaderType>Vertex</ShaderType>
@@ -193,6 +190,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\cube.iqm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Content\Models\tracktest.iqm">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="$(MSBuildThisFileDirectory)Engine\Common\Math.inl" />
@@ -282,12 +282,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\cube.obj">
-      <DeploymentContent>true</DeploymentContent>
-      <FileType>Document</FileType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Content\Models\tracktest.obj">
       <DeploymentContent>true</DeploymentContent>
       <FileType>Document</FileType>
     </None>

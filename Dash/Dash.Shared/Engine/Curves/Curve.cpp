@@ -101,7 +101,7 @@ Curve::ValueType Curve::GetCurvePosition(float Position)
 	//only for position in curve
 	KeyType* prev = &keys[0];
 	KeyType* next = nullptr;
-	for (int i = 1; i < keys.size(); i++)
+	for (size_t i = 1; i < keys.size(); i++)
 	{
 		next = &keys[i];
 		if (next->position >= Position)

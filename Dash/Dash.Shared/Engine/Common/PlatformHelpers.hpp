@@ -82,17 +82,14 @@ namespace Sys
 		return buffer;
 	}
 
-	//Read a binary file asynchronously
-	inline Concurrency::task<FileData> ReadFileAsync(const std::wstring& Filename)
+	//Read a binary file asynchronously (File name must be relative to app directory
+	inline Concurrency::task<FileData> ReadFileAsync(const std::wstring& LocalFile)
 	{
 		using namespace Windows::Storage;
 		using namespace Concurrency;
 
-		auto folder = Windows::ApplicationModel::Package::Current->InstalledLocation;
-
-		auto fn = Filename;
-		StringOps::Replace(fn, L"/", L"\\"); //folder->GetFileAsync does not accept forward slashes
-		return create_task(folder->GetFileAsync(Platform::StringReference(fn.c_str()))).then([](StorageFile^ file)
+		auto file = Windows::Storage::StorageFile::GetFileFromPathAsync(Platform::StringReference(LocalFile.c_str()));
+		return create_task(file).then([](StorageFile^ file)
 		{
 			return FileIO::ReadBufferAsync(file);
 		}).then([](Streams::IBuffer^ fileBuffer) -> FileData

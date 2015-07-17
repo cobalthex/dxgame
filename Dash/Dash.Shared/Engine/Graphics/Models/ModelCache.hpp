@@ -4,10 +4,13 @@
 #include "Engine/Data/Cache.hpp"
 #include "Model.hpp"
 
+class ShaderCache;
+class TextureCache;
+
 class ModelCache : public Cache<std::string, Model>
 {
 public:
-	ModelCache(const DeviceResourcesPtr& DeviceResources) : deviceResources(DeviceResources) { }
+	ModelCache(const DeviceResourcesPtr& DeviceResources, TextureCache* TexCache, ShaderCache* ShCache) : deviceResources(DeviceResources), texCache(TexCache), shCache(ShCache) { }
 	virtual ~ModelCache() { }
 
 	//Load a texture, keys are stored as case-insensitive.
@@ -20,4 +23,6 @@ public:
 
 protected:
 	DeviceResourcesPtr deviceResources;
+	TextureCache* texCache;
+	ShaderCache* shCache;
 };

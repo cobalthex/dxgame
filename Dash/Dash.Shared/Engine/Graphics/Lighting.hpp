@@ -35,6 +35,7 @@ struct LightBufferDef : public ConstantBufferDef
 {
 	Vector4 eyePosition;
 	Color globalAmbience;
+	Color shadowColor;
 
 	Light lights[MAX_LIGHTS];
 };

@@ -1,6 +1,7 @@
 ﻿#include "Pch.hpp"
 #include "DeviceResources.hpp"
 #include "Engine/Common/PlatformHelpers.hpp"
+#include "Shaders/ShaderStructures.hpp"
 
 using namespace DirectX;
 using namespace D2D1;
@@ -461,8 +462,8 @@ void DeviceResources::CreateWindowResources()
 	rzDesc.MultisampleEnable = true;
 
 	ComPtr<ID3D11RasterizerState> rzState;
-	Sys::ThrowIfFailed(d3dDevice->CreateRasterizerState(&rzDesc, &rzState));
-	d3dContext->RSSetState(rzState.Get());
+	//Sys::ThrowIfFailed(d3dDevice->CreateRasterizerState(&rzDesc, &rzState));
+	//d3dContext->RSSetState(rzState.Get());
 }
 
 //This method is called when the CoreWindow is created (or re-created).

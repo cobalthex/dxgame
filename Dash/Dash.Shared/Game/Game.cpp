@@ -12,7 +12,11 @@ using namespace Concurrency;
 
 //Loads and initializes application assets when the application is loaded.
 Game::Game(const std::shared_ptr<DeviceResources>& DeviceResources) :
-	deviceResources(DeviceResources), shaderCache(DeviceResources), FpsDisplay(DeviceResources)
+	deviceResources(DeviceResources),
+	shaderCache(DeviceResources),
+	textureCache(DeviceResources),
+	modelCache(DeviceResources, &textureCache, &shaderCache),
+	FpsDisplay(DeviceResources)
 {
 	//Register to be notified if the Device is lost or recreated
 	deviceResources->RegisterDeviceNotify(this);

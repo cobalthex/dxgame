@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Engine/Common/Box.hpp"
 #include "Pch.hpp"
+#include "Engine/Common/Box.hpp"
+#include "Material.hpp"
 
 //3D boundaries for models
 struct Bounds
@@ -12,12 +13,11 @@ struct Bounds
 };
 
 //A mesh that is part of a model. Contains information about its vertices, indices, and contains a material. Does not inherit from Mesh
-template <class MaterialType>
 class ModelMesh
 {
 public:
 	ModelMesh() { }
-	ModelMesh(const std::string& Name, size_t StartVertex, size_t VertexCount, size_t StartIndex, size_t IndexCount, const MaterialType& Material, const Bounds& Bounds)
+	ModelMesh(const std::string& Name, size_t StartVertex, size_t VertexCount, size_t StartIndex, size_t IndexCount, const std::shared_ptr<Material>& Material, const Bounds& Bounds)
 		: name(Name), startVertex(StartVertex), vertexCount(VertexCount), startIndex(StartIndex), indexCount(IndexCount), material(Material), bounds(Bounds) { }
 
 	inline size_t StartVertex() const { return startVertex; } //The first vertex of this mesh in the model which owns it
@@ -26,7 +26,7 @@ public:
 	inline size_t IndexCount() const { return indexCount; } //The number of indices in this mesh
 
 	std::string name;
-	MaterialType material;
+	Material material;
 
 	inline Bounds Bounds() const { return bounds; }
 

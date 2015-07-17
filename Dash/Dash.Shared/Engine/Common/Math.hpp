@@ -275,6 +275,8 @@ namespace Math
 		Vector4(FXMVECTOR V) { XMStoreFloat4(this, V); }
 
 		operator XMVECTOR() const { return XMLoadFloat4(this); }
+		operator DirectX::PackedVector::XMUBYTE4() const { return XMUBYTE4(x, y, z, w); }
+		operator DirectX::PackedVector::XMUBYTEN4() const { return XMUBYTEN4(x, y, z, w); }
 
 		inline Vector3 XYZ() const { return Vector3(x, y, z); }
 

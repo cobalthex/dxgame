@@ -5,6 +5,11 @@
 //Various operations that can be performed on strings
 namespace StringOps
 {
+
+	inline std::string ToString(const std::wstring& String)
+	{
+		return std::string(String.begin(), String.end());
+	}
 	inline std::wstring ToWString(const std::string& String)
 	{
 		return std::wstring(String.begin(), String.end());
@@ -40,8 +45,8 @@ namespace StringOps
 	extern std::wstring Replace(std::wstring& String, const wchar_t* Find, const wchar_t* Replace);
 
 	//Join two paths with a / if the end of A does not have one and the start of B does not have one
-	extern std::string CombinePaths(const std::string& PathA, const std::string& PathB, char CombineChar = '/');
-	extern std::wstring CombinePaths(const std::wstring& PathA, const std::wstring& PathB, wchar_t CombineChar = L'/');
+	extern std::string CombinePaths(const std::string& PathA, const std::string& PathB, char CombineChar = '\\');
+	extern std::wstring CombinePaths(const std::wstring& PathA, const std::wstring& PathB, wchar_t CombineChar = L'\\');
 	//Join a list of paths using the CombinePaths(A, B) function. Uses the default path char
 	template <typename... Args>
 	inline std::string CombinePaths(const std::string& Path, const Args&... Paths) { return CombinePaths(Path, CombinePaths(Paths...)); }
