@@ -20,9 +20,7 @@ struct VertexIndex
 	}
 };
 
-bool LoadMaterials(const std::string& LibFile, TextureCache& TexCache, std::map<std::string, Materials::LitMaterial>& Materials, const std::shared_ptr<Shaders::LitShader>& Shader); //load a list of materials from a file into the materials list
-
-bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Filename, TextureCache& TexCache, const std::shared_ptr<Shaders::LitShader>& Shader, __out Model& Model)
+bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Filename, TextureCache& TexCache, __out Model& Model)
 {
 	std::vector<Vector3> positions;
 	std::vector<Vector3> normals;
@@ -194,103 +192,6 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 	}
 
 	Model = ::Model(DeviceResources, vertices, indices, PrimitiveTopology::TriangleList, meshes);
-
-	return true;
-}
-
-bool LoadMaterials(const std::string& LibFile, TextureCache& TexCache, std::map<std::string, Materials::LitMaterial>& Materials, const std::shared_ptr<Shaders::LitShader>& Shader)
-{
-	std::ifstream fin(LibFile);
-	if (!fin.is_open())
-		return false;
-
-	Color ambient;
-	Color diffuse;
-	Color emissive;
-	Color specular;
-	float specPower = 0;
-
-	int illum = 2;
-	float dissolved = 1;
-
-	std::string name;
-
-	std::shared_ptr<Texture2D> diffMap; //others unused currently
-
-	std::string ty;
-	while (!fin.eof())
-	{
-		StreamOps::SkipWhitespace(fin);
-		if (fin.peek() == '#')
-		{
-			std::getline(fin, ty);
-			continue;
-		}
-		fin >> ty; //type
-		ty = StringOps::ToLower(ty);
-
-		if (ty == "newmtl") //no empty named objects
-		{
-			if (name.length() > 0)
-			{
-				Materials[name] = Materials::LitMaterial(Shader);
-				auto& mtl = Materials[name];
-				mtl.ambient = ambient;
-				mtl.diffuse = diffuse;
-				mtl.diffuseMap = diffMap;
-				mtl.useTexture = (diffMap != nullptr && diffMap->IsValid());
-				mtl.emissive = emissive;
-				mtl.specular = specular;
-				mtl.specularPower = specPower;
-			}
-			ambient = diffuse = emissive = specular = Color();
-			specPower = 0;
-			illum = 2;
-			dissolved = 1;
-			diffMap = nullptr;
-
-			StreamOps::SkipWhitespace(fin);
-			std::getline(fin, name);
-		}
-		else if (ty == "ka")
-			fin >> ambient.x >> ambient.y >> ambient.z;
-		else if (ty == "kd")
-			fin >> diffuse.x >> diffuse.y >> diffuse.z;
-		else if (ty == "ke")
-			fin >> emissive.x >> emissive.y >> emissive.z;
-		else if (ty == "ks")
-			fin >> specular.x >> specular.y >> specular.z;
-		else if (ty == "ns")
-			fin >> specPower;
-		else if (ty == "illum")
-			fin >> illum;
-		else if (ty == "d" || ty == "tr")
-			fin >> dissolved;
-		else if (ty == "map_kd") //options not supported
-		{
-			StreamOps::SkipWhitespace(fin);
-			std::getline(fin, ty);
-
-			diffMap = TexCache.Load(ty);
-		}
-		else //all others unused
-			std::getline(fin, ty);
-	}
-	fin.close();
-
-	//last material
-	if (name.length() > 0)
-	{
-		Materials[name] = Materials::LitMaterial(Shader);
-		auto& mtl = Materials[name];
-		mtl.ambient = ambient;
-		mtl.diffuse = diffuse;
-		mtl.diffuseMap = diffMap;
-		mtl.useTexture = (diffMap != nullptr && diffMap->IsValid());
-		mtl.emissive = emissive;
-		mtl.specular = specular;
-		mtl.specularPower = specPower;
-	}
 
 	return true;
 }

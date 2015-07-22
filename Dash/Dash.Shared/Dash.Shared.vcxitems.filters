@@ -53,7 +53,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\Console.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Net\Debug\TelnetConsole.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pch.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\SimpleMath.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Game.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\GameComponent.hpp" />
@@ -121,7 +120,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Scenes\TestScene.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\AppData.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\ModelCache.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticLitShader.hpp" />
   </ItemGroup>
   <ItemGroup>

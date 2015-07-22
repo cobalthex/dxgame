@@ -74,7 +74,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Game\GameObject.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Drawable.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Game\Maps\Map.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Material.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\ModelCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticLitShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImageWrite.hpp" />
@@ -83,7 +83,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\GameComponent.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Effects\Effect.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Effects\ShadowMapEffect.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Formats\OBJ\ObjLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\MeshOps.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\ModelMesh.hpp" />
@@ -97,7 +96,6 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Formats\IQM\IqmLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Game\Scenes\TestScene.hpp" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Models\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Mesh.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\SkinnedModel.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Scene\ChaseCamera.hpp" />
