@@ -2,10 +2,9 @@
 
 #include "Models/Mesh.hpp"
 #include "Engine/Common/Math.hpp"
-#include "Engine/Graphics/Shaders/PositionColorShader.hpp"
+#include "Engine/Graphics/Models/VertexFormats.hpp"
 
 using namespace Math;
-using PCSVertex = Shaders::PositionColorShader::Vertex;
 
 namespace Primitives
 {
@@ -40,15 +39,15 @@ namespace Primitives
 	}
 
 	//Create the typical 3 axis lines (each vertex is of length 1)
-	BasicMesh<PCSVertex> CreateAxes(const Color& XColor = Color(1, 0, 0), const Color& YColor = Color(0, 1, 0), const Color& ZColor = Color(0, 0, 1))
+	BasicMesh<Vertexes::PositionColorVertex> CreateAxes(const Color& XColor = Color(1, 0, 0), const Color& YColor = Color(0, 1, 0), const Color& ZColor = Color(0, 0, 1))
 	{
-		BasicMesh<PCSVertex> mesh;
+		BasicMesh<Vertexes::PositionColorVertex> mesh;
 
 		//vertices
 		//Y  Z
 		//| /
 		//+--X
-		PCSVertex v;
+		Vertexes::PositionColorVertex v;
 		v.color = XColor;
 		v.position = Vector3(0, 0, 0);
 		mesh.vertices.push_back(v);

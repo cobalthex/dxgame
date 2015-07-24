@@ -33,6 +33,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Skinning.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Model.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Material.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\VertexFormats.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShaderCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShadowMapShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticLitShader.cpp" />
@@ -46,7 +47,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Scene\Skybox.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Scenes\TestScene.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShaderStructures.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Animation\Animation.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Animation\Sequence.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)App\AppData.hpp" />
@@ -76,6 +76,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Game\Maps\Map.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Material.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\ModelCache.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\VertexFormats.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticLitShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImageWrite.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\DWriteFontCollectionLoader.hpp" />

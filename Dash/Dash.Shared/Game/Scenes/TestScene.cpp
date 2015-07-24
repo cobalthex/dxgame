@@ -131,21 +131,18 @@ void TestScene::Update(const StepTimer& Timer)
 	lastMouse = mouse;
 }
 
+enum class VertexTypes
+{
+	Static,
+	Skinned
+};
+VertexTypes ModelVertexType(std::shared_p)
+
 //Renders one frame using the vertex and pixel shaders.
 void TestScene::Draw(const StepTimer& Timer)
 {
 	if (!loadingComplete)
 		return;
 
-	//cube->Draw();
-	//orc->Draw();
-	litShader->SetInputLayout();
-	litShader->lighting.data.shadowColor = Color(0, 0.5f, 0.8f, 1);
-	litShader->lighting.data.lights[0].isEnabled = true;
-	litShader->lighting.data.lights[0].type = LightType::Point;
-	litShader->Update();
-	litShader->Apply();
-	stage.ApplyTopology();
-	stage.Draw();
-	map.world->Draw();
+
 }

@@ -2,7 +2,7 @@
 
 #include "Pch.hpp"
 #include "Engine/Common/Box.hpp"
-#include "Material.hpp"
+#include "Engine/Graphics/Material.hpp"
 
 //3D boundaries for models
 struct Bounds
@@ -17,7 +17,7 @@ class ModelMesh
 {
 public:
 	ModelMesh() { }
-	ModelMesh(const std::string& Name, size_t StartVertex, size_t VertexCount, size_t StartIndex, size_t IndexCount, const std::shared_ptr<Material>& Material, const Bounds& Bounds)
+	ModelMesh(const std::string& Name, size_t StartVertex, size_t VertexCount, size_t StartIndex, size_t IndexCount, const Material& Material, const Bounds& Bounds)
 		: name(Name), startVertex(StartVertex), vertexCount(VertexCount), startIndex(StartIndex), indexCount(IndexCount), material(Material), bounds(Bounds) { }
 
 	inline size_t StartVertex() const { return startVertex; } //The first vertex of this mesh in the model which owns it

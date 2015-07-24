@@ -3,6 +3,7 @@
 #include "Engine/Common/StreamOps.hpp"
 #include "Engine/Graphics/Models/MeshOps.hpp"
 #include "App/AppData.hpp"
+#include "Engine/Graphics/Material.hpp"
 
 //triangle for obj vertex indices
 struct VertexIndex
@@ -31,12 +32,12 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 	std::vector<Model::VertexType> vertices;
 	std::vector<Model::IndexType> indices;
 
-	std::map<std::string, Materials::LitMaterial> materials;
+	std::map<std::string, Material> materials;
 
 	std::string curMaterial; //currently selected material
 	std::string name; //current object name
 
-	std::map<std::string, Model::MeshType> meshes;
+	std::map<std::string, ModelMesh> meshes;
 	unsigned nextVertex = 0, nextIndex = 0;
 
 	std::ifstream fin(Filename);
@@ -60,11 +61,9 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 			//first object or empty
 			if (vertices.size() > 0)
 			{
-				Materials::LitMaterial mtl;
+				Material mtl;
 				if (materials.find(curMaterial) != materials.end())
 					mtl = materials[curMaterial];
-				else
-					mtl.shader = Shader;
 
 				meshes[name] = { name, nextVertex, (unsigned)vertices.size() - nextVertex, nextIndex, (unsigned)indices.size() - nextIndex, mtl, Bounds() };
 				
@@ -83,7 +82,7 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 			StreamOps::SkipWhitespace(fin);
 			getline(fin, ty);
 			ty = AppData::GetMaterialFile(ty);
-			LoadMaterials(ty, TexCache, materials, Shader);
+			materials = Material::LoadAllFromFile(ty, TexCache);
 		}
 		else if (ty == "v")
 		{
@@ -182,11 +181,9 @@ bool Obj::Load(const DeviceResourcesPtr& DeviceResources, const std::string& Fil
 	//last mesh
 	if (vertices.size() > 0)
 	{
-		Materials::LitMaterial mtl;
+		Material mtl;
 		if (materials.find(curMaterial) != materials.end())
 			mtl = materials[curMaterial];
-		else
-			mtl.shader = Shader;
 
 		meshes[name] = { name, nextVertex, (unsigned)vertices.size() - nextVertex, nextIndex, (unsigned)indices.size() - nextIndex, mtl, Bounds() };
 	}

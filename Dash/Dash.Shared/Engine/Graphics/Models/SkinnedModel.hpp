@@ -3,15 +3,15 @@
 #include "Pch.hpp"
 #include "Skinning.hpp"
 #include "Engine/Graphics/DeviceResources.hpp"
-#include "Engine/Graphics/Shaders/LitSkinnedShader.hpp"
-#include "Engine/Graphics/Shaders/PositionColorShader.hpp"
+#include "Engine/Graphics/Shaders/ShaderStructures.hpp"
+#include "VertexFormats.hpp"
 #include "Model.hpp"
 
 //An animated model. Contains a group of meshes and a skeleton
 class SkinnedModel : public Model
 {
 public:
-	typedef Shaders::LitSkinnedShader::Vertex VertexType;
+	typedef Vertexes::SkinnedVertex VertexType;
 	typedef unsigned IndexType;
 	
 	SkinnedModel() = default;
@@ -41,6 +41,6 @@ public:
 		Bind(Slot);
 	}
 
-	inline BasicMesh<Shaders::PositionColorShader::Vertex, unsigned> CreateSkeletalMesh(const Color& VertexColor = Color(255, 0, 0)) const { return CreateSkeletalMesh(pose, VertexColor); }
-	BasicMesh<Shaders::PositionColorShader::Vertex, unsigned> CreateSkeletalMesh(const std::string& Pose, const Color& VertexColor = Color(255, 0, 0)) const; //create a mesh skeleton using the joints of this model. These meshes use the VertexPositionColor. Returns a triangle list vertex buffer
+	inline BasicMesh<Vertexes::PositionColorVertex, unsigned> CreateSkeletalMesh(const Color& VertexColor = Color(255, 0, 0)) const { return CreateSkeletalMesh(pose, VertexColor); }
+	BasicMesh<Vertexes::PositionColorVertex, unsigned> CreateSkeletalMesh(const std::string& Pose, const Color& VertexColor = Color(255, 0, 0)) const; //create a mesh skeleton using the joints of this model. These meshes use the VertexPositionColor. Returns a triangle list vertex buffer
 };

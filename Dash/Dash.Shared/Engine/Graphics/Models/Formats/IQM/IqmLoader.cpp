@@ -107,8 +107,8 @@ std::shared_ptr<Model> Iqm::Load(const DeviceResourcesPtr& DeviceResources, cons
 	bool isSkinned = (tmp.header.numJoints > 0); //IQM supports both skinned and not-skinned models. This loader supports both
 
 	auto fp = Filename.find_last_of('/') + 1;
-	auto matFile = StringOps::CombinePaths(AppData::BaseContentFolder, AppData::BaseMaterialsFolder, Filename.substr(fp, Filename.find_last_of('.') - fp) + ".matl");
-	Osl::Document doc(matFile);
+	auto mtlFile = StringOps::CombinePaths(AppData::BaseContentFolder, AppData::BaseMaterialsFolder, Filename.substr(fp, Filename.find_last_of('.') - fp) + ".matl");
+	auto mtls = Material::LoadAllFromFile(mtlFile, TexCache);
 
 	std::shared_ptr<Model> mdl = nullptr;
 
@@ -158,21 +158,19 @@ std::shared_ptr<Model> Iqm::Load(const DeviceResourcesPtr& DeviceResources, cons
 				if (tmp.colors != nullptr)
 					v.color = DirectX::PackedVector::XMUBYTEN4(_c.r, _c.g, _c.b, 1);
 				if (tmp.blendIndices != nullptr)
-					v.indices = DirectX::PackedVector::XMUBYTE4(_i.a, _i.b, _i.c, _i.d);
+					v.blIndices = DirectX::PackedVector::XMUBYTE4(_i.a, _i.b, _i.c, _i.d);
 				if (tmp.blendWeights != nullptr)
-					v.weights = DirectX::PackedVector::XMUBYTEN4(_w.a, _w.b, _w.c, _w.d);
+					v.blWeights = DirectX::PackedVector::XMUBYTEN4(_w.a, _w.b, _w.c, _w.d);
 
 				vertices.push_back(v);
 			}
 
 			//material
 
-			std::shared_ptr<Materials::LitMaterial> mat;
-			std::string matStr(tmp.texts + m.material);
-			if (doc.Contains(matStr))
-				*mat = Materials::LitMaterial(TexCache, doc[matStr], ShCache.Load(ShaderType::LitSkinned));
-			else
-				*mat = Materials::LitMaterial(ShCache.Load(ShaderType::LitSkinned));
+			Material mtl;
+			std::string mtlStr(tmp.texts + m.material);
+			if (mtls.find(mtlStr) != mtls.end())
+				mtl = mtls[mtlStr];
 
 			::Bounds bnd;
 			if (tmp.bounds != nullptr)
@@ -182,7 +180,7 @@ std::shared_ptr<Model> Iqm::Load(const DeviceResourcesPtr& DeviceResources, cons
 				bnd.xyRadius = tmp.bounds[i].xyRadius;
 			}
 			std::string mname = std::string(tmp.texts + m.name);
-			meshes[mname] = { mname, m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat, bnd };
+			meshes[mname] = { mname, m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mtl, bnd };
 		}
 
 		std::map<std::string, ::SkinnedSequence> sequences;
@@ -264,12 +262,10 @@ std::shared_ptr<Model> Iqm::Load(const DeviceResourcesPtr& DeviceResources, cons
 
 			//material
 
-			std::shared_ptr<Materials::LitMaterial> mat;
-			std::string matStr(tmp.texts + m.material);
-			if (doc.Contains(matStr))
-				*mat = Materials::LitMaterial(TexCache, doc[matStr], ShCache.Load(ShaderType::Lit));
-			else
-				*mat = Materials::LitMaterial(ShCache.Load(ShaderType::Lit));
+			Material mtl;
+			std::string mtlStr(tmp.texts + m.material);
+			if (mtls.find(mtlStr) != mtls.end())
+				mtl = mtls[mtlStr];
 
 			::Bounds bnd;
 			if (tmp.bounds != nullptr)
@@ -279,7 +275,7 @@ std::shared_ptr<Model> Iqm::Load(const DeviceResourcesPtr& DeviceResources, cons
 				bnd.xyRadius = tmp.bounds[i].xyRadius;
 			}
 			std::string mname = std::string(tmp.texts + m.name);
-			meshes[mname] = { mname, m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mat, bnd };
+			meshes[mname] = { mname, m.firstVertex, m.numVertices, m.firstTriangle * 3, m.numTriangles * 3, mtl, bnd };
 
 			mdl = std::make_shared<Model>(DeviceResources, vertices, indices, PrimitiveTopology::TriangleList, meshes);
 		}

@@ -1,23 +1,21 @@
 #include "Pch.hpp"
 #include "Skybox.hpp"
-#include "Engine/Graphics/Shaders/PositionTextureShader.hpp"
+#include "Engine/Graphics/Models/VertexFormats.hpp"
 
 using namespace Math;
 
-using V = Shaders::PositionTextureShader::Vertex;
-
 Skybox::Skybox(const DeviceResourcesPtr& DeviceResources, float S)
 {
-	std::vector<V> vertices =
+	std::vector<Vertexes::PositionTextureVertex> vertices =
 	{
-		V({ -S, -S, -S }, { 0, 0 }),
-		V({ -S, S, -S }, { 1, 0 }),
-		V({ S, S, -S }, { 0, 1 }),
-		V({ S, -S, -S }, { 1, 1 }),
-		V({ -S, -S, S }, { 0, 1 }),
-		V({ -S, S, S }, { 1, 0 }),
-		V({ S, S, S }, { 0, 0 }),
-		V({ S, -S, S }, { 0, 0 }),
+		Vertexes::PositionTextureVertex({ -S, -S, -S }, { 0, 0 }),
+		Vertexes::PositionTextureVertex({ -S, S, -S }, { 1, 0 }),
+		Vertexes::PositionTextureVertex({ S, S, -S }, { 0, 1 }),
+		Vertexes::PositionTextureVertex({ S, -S, -S }, { 1, 1 }),
+		Vertexes::PositionTextureVertex({ -S, -S, S }, { 0, 1 }),
+		Vertexes::PositionTextureVertex({ -S, S, S }, { 1, 0 }),
+		Vertexes::PositionTextureVertex({ S, S, S }, { 0, 0 }),
+		Vertexes::PositionTextureVertex({ S, -S, S }, { 0, 0 }),
 	};
 
 	static const std::vector<unsigned> indices =

@@ -23,16 +23,6 @@ void Model::Draw(unsigned Slot) const
 	//Draw all of the meshes
 	for (auto& m : meshes)
 	{
-		auto sh = m.second.material->shader.get();
-		if (sh != Shader::ActiveShader)
-		{
-			sh->Apply();
-			sh->SetInputLayout();
-		}
-
-		m.second.material->Apply();
-		sh->Update();
-
 		//Draw the objects.
 		m.second.Draw(devContext);
 	}

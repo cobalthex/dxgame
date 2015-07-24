@@ -2,11 +2,11 @@
 
 #include "Pch.hpp"
 #include "Engine/Graphics/DeviceResources.hpp"
-#include "Engine/Graphics/Shaders/ShaderStructures.hpp"
+#include "VertexFormats.hpp"
 #include "ModelMesh.hpp"
 #include "Mesh.hpp"
 
-//An static (lit) model. Contains a group of meshes
+//An static model. Contains a group of meshes
 class Model : public Mesh
 {
 public:
@@ -32,7 +32,9 @@ public:
 
 		Bind(Slot);
 	}
-	virtual void Draw(unsigned Slot = 0) const; //Draw the model
+	virtual void Draw(unsigned Slot = 0) const; //Draw the model (Does not apply materials)
+
+	static bool RenderSort(const std::shared_ptr<Model>& A, const std::shared_ptr<Model>& B); //A sorting function to sort by shader for rendering
 
 protected:
 	DeviceResourcesPtr deviceResources;

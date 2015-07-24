@@ -44,9 +44,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Game\Scenes\TestScene.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)App\AppData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\ModelCache.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShaderStructures.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticLitShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Material.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\VertexFormats.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp" />
@@ -121,6 +121,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)App\AppData.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\ModelCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticLitShader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\VertexFormats.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\mrfixit.iqm" />

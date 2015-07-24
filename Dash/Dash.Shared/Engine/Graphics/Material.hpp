@@ -17,6 +17,8 @@ enum class BlendMode
 	Additive
 };
 
+class TextureCache;
+
 //The monolithic material for all standard models in game
 //Shader usage determined on parameters and model type
 class Material

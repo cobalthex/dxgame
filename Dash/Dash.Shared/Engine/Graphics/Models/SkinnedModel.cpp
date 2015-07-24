@@ -51,14 +51,14 @@ void SkinnedModel::Skin(const std::string& Pose, Matrix* PoseArray, size_t MaxPo
 	}
 }
 
-BasicMesh<Shaders::PositionColorShader::Vertex, unsigned> SkinnedModel::CreateSkeletalMesh(const std::string& Pose, const Color& VertexColor) const
+BasicMesh<Vertexes::PositionColorVertex, unsigned> SkinnedModel::CreateSkeletalMesh(const std::string& Pose, const Color& VertexColor) const
 {
-	std::vector<Shaders::PositionColorShader::Vertex> vertices;
+	std::vector<Vertexes::PositionColorVertex> vertices;
 	std::vector<unsigned> indices;
 	vertices.reserve(joints.size() * 3); //octahedrons (6 vertices)
 	indices.reserve(joints.size() * 3); //8 faces
 
-	Shaders::PositionColorShader::Vertex v;
+	Vertexes::PositionColorVertex v;
 	v.color = VertexColor;
 
 	float radius = 0.05f;
@@ -105,5 +105,5 @@ BasicMesh<Shaders::PositionColorShader::Vertex, unsigned> SkinnedModel::CreateSk
 
 	delete[] transforms;
 
-	return BasicMesh<Shaders::PositionColorShader::Vertex, unsigned>(vertices, indices, PrimitiveTopology::TriangleList);
+	return BasicMesh<Vertexes::PositionColorVertex, unsigned>(vertices, indices, PrimitiveTopology::TriangleList);
 }
