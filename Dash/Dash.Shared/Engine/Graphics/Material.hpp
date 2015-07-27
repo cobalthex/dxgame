@@ -18,6 +18,8 @@ enum class BlendMode
 };
 
 class TextureCache;
+enum class ShaderType;
+enum class VertexFormats;
 
 //The monolithic material for all standard models in game
 //Shader usage determined on parameters and model type
@@ -38,6 +40,8 @@ public:
 
 	bool useTexture;
 	std::shared_ptr<Texture2D> texture;
+
+	ShaderType GetShaderType(VertexFormats VertexFormat) const; //Specify the correct shader that this material uses based on this material's properties and the vertex format specified
 
 	static std::map<std::string, Material> LoadAllFromFile(const std::string& File, TextureCache& TexCache); //Load all of the materials from a file, stored by name
 };

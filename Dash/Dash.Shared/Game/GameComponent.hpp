@@ -3,7 +3,7 @@
 #include "Engine/Graphics/Drawable.hpp"
 #include "Game.hpp"
 
-//The base for game components (renderables mainly)
+//The base for game components
 class GameComponent : public Drawable
 {
 public:

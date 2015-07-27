@@ -11,27 +11,15 @@
 
 namespace Shaders
 {
-	class StaticLitShader : public Shader
+	class StaticUnlitShader : public Shader
 	{
 	public:
-		struct MaterialBufferDef : public ConstantBufferDef
-		{
-			Color emissive;
-			Color ambient;
-			Color diffuse;
-			Color specular;
-			float specularPower;
-			bool useTexture;
-		};
-
-		StaticLitShader() = default;
-		StaticLitShader(const DeviceResourcesPtr& DeviceResources);
+		StaticUnlitShader() = default;
+		StaticUnlitShader(const DeviceResourcesPtr& DeviceResources);
 
 		inline void Apply() override
 		{
 			object.BindVertex(0);
-			material.BindPixel(0);
-			lighting.BindPixel(1);
 
 			vshader.Apply();
 			pshader.Apply();
@@ -39,18 +27,13 @@ namespace Shaders
 		inline void Update() override
 		{
 			object.Update();
-			material.Update();
-			lighting.Update();
 		}
 
-		virtual void ApplyMaterial(const Material& Material);
-		virtual inline ShaderType Type() const { return ShaderType::StaticLit; }
+		virtual inline ShaderType Type() const { return ShaderType::StaticUnlit; }
 
 		inline void SetInputLayout() const { if (vshader.IsValid()) vshader.DeviceContext()->IASetInputLayout(inputLayout.Get()); }
 
 		ConstantBuffer<ObjectBufferDef> object;
-		ConstantBuffer<MaterialBufferDef> material;
-		ConstantBuffer<LightBufferDef> lighting;
 
 	protected:
 		VertexShader vshader;

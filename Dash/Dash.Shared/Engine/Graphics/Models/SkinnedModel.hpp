@@ -2,6 +2,7 @@
 
 #include "Pch.hpp"
 #include "Skinning.hpp"
+#include "Engine/Animation/Timeline.hpp"
 #include "Engine/Graphics/DeviceResources.hpp"
 #include "Engine/Graphics/Shaders/ShaderStructures.hpp"
 #include "VertexFormats.hpp"
@@ -40,6 +41,9 @@ public:
 
 		Bind(Slot);
 	}
+
+	inline void AddPoseToTimeline(Timeline& Timeline, const std::string& Pose) { Timeline.Add(&poses[Pose]); }
+	inline void AddCurrentPoseToTimeline(Timeline& Timeline) { Timeline.Add(&poses[pose]); }
 
 	inline BasicMesh<Vertexes::PositionColorVertex, unsigned> CreateSkeletalMesh(const Color& VertexColor = Color(255, 0, 0)) const { return CreateSkeletalMesh(pose, VertexColor); }
 	BasicMesh<Vertexes::PositionColorVertex, unsigned> CreateSkeletalMesh(const std::string& Pose, const Color& VertexColor = Color(255, 0, 0)) const; //create a mesh skeleton using the joints of this model. These meshes use the VertexPositionColor. Returns a triangle list vertex buffer

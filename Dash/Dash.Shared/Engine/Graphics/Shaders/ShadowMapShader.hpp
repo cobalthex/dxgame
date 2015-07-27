@@ -44,8 +44,6 @@ namespace Shaders
 
 		inline void Apply() override
 		{
-			ActiveShader = this;
-
 			world.BindVertex(0);
 			light.BindPixel(0);
 

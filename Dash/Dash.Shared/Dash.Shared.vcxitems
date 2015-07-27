@@ -24,6 +24,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Curves\Curve.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Data\Formats\Json\Json.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Data\Formats\Osl\Osl.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Game\Maps\Map.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Effects\ShadowMapEffect.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Formats\IQM\IqmLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\Formats\OBJ\ObjLoader.cpp" />
@@ -37,6 +38,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShaderCache.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\ShadowMapShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticLitShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticUnlitShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImage.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\WICTextureLoader.cpp">
@@ -78,6 +80,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\ModelCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\VertexFormats.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticLitShader.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticUnlitShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Textures\Formats\StbImageWrite.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\Formats\DWriteFontCollectionLoader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Text\FpsDisplay.hpp" />
@@ -179,9 +182,10 @@
       <ShaderModel>4.0</ShaderModel>
       <EnableDebuggingInformation>true</EnableDebuggingInformation>
     </FxCompile>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\Unlit.ps.hlsl">
+    <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\StaticUnlit.ps.hlsl">
       <ShaderType>Pixel</ShaderType>
       <ShaderModel>4.0</ShaderModel>
+      <FileType>Document</FileType>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

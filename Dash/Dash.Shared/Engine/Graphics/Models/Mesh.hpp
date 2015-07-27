@@ -2,7 +2,10 @@
 
 #include "Pch.hpp"
 #include "Engine/Graphics/DeviceResources.hpp"
+#include "Engine/Common/PlatformHelpers.hpp"
 #include "Engine/Common/Box.hpp"
+
+enum class VertexFormats;
 
 typedef ComPtr<ID3D11Buffer> VertexBuffer;
 typedef ComPtr<ID3D11Buffer> IndexBuffer;
@@ -44,6 +47,7 @@ public:
 
 	inline const VertexBuffer& Vertices() const { return vertices; }
 	inline const IndexBuffer& Indices() const { return indices; }
+	inline VertexFormats VertexFormat() const { return vertexFormat; }
 	inline unsigned VertexCount() const { return vertexCount; }
 	inline unsigned IndexCount() const { return indexCount; }
 	inline unsigned VertexStride() const { return vertexStride; }
@@ -165,6 +169,7 @@ protected:
 	ComPtr<ID3D11DeviceContext> devContext;
 
 	VertexBuffer vertices;
+	VertexFormats vertexFormat;
 	unsigned vertexCount;
 	unsigned vertexStride;
 

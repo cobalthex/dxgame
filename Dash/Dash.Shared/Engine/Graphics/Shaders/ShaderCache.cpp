@@ -1,13 +1,7 @@
 #include "Pch.hpp"
 #include "ShaderCache.hpp"
-
-#include "PositionColorShader.hpp"
-#include "PositionTextureShader.hpp"
-#include "LitShader.hpp"
-#include "UnlitShader.hpp"
-#include "LitSkinnedShader.hpp"
-
-Shader* Shader::ActiveShader = nullptr;
+#include "StaticLitShader.hpp"
+#include "StaticUnlitShader.hpp"
 
 std::shared_ptr<Shader> ShaderCache::Load(const ShaderType& Key)
 {
@@ -16,11 +10,8 @@ std::shared_ptr<Shader> ShaderCache::Load(const ShaderType& Key)
 
 	switch (Key)
 	{
-	case ShaderType::PositionColor: return (cache[Key] = std::make_shared<Shaders::PositionColorShader>(deviceResources));
-	case ShaderType::PositionTexture: return (cache[Key] = std::make_shared<Shaders::PositionTextureShader>(deviceResources));
-	case ShaderType::Lit: return (cache[Key] = std::make_shared<Shaders::LitShader>(deviceResources));
-	case ShaderType::Unlit: return (cache[Key] = std::make_shared<Shaders::UnlitShader>(deviceResources));
-	case ShaderType::LitSkinned: return (cache[Key] = std::make_shared<Shaders::LitSkinnedShader>(deviceResources));
+	case ShaderType::StaticLit: return (cache[Key] = std::make_shared<Shaders::StaticLitShader>(deviceResources));
+	case ShaderType::StaticUnlit: return (cache[Key] = std::make_shared<Shaders::StaticUnlitShader>(deviceResources));
 	default: return nullptr;
 	}
 }
@@ -31,13 +22,21 @@ bool ShaderCache::Reload()
 	{
 		switch (s.first)
 		{
-		case ShaderType::PositionColor: (s.second = std::make_shared<Shaders::PositionColorShader>(deviceResources)); break;
-		case ShaderType::PositionTexture: (s.second = std::make_shared<Shaders::PositionTextureShader>(deviceResources)); break;
-		case ShaderType::Lit: (s.second = std::make_shared<Shaders::LitShader>(deviceResources)); break;
-		case ShaderType::Unlit: (s.second = std::make_shared<Shaders::UnlitShader>(deviceResources)); break;
-		case ShaderType::LitSkinned: (s.second = std::make_shared<Shaders::LitSkinnedShader>(deviceResources)); break;
+		case ShaderType::StaticLit: (s.second = std::make_shared<Shaders::StaticLitShader>(deviceResources));
+		case ShaderType::StaticUnlit: (s.second = std::make_shared<Shaders::StaticUnlitShader>(deviceResources));
 		}
 	}
 
 	return true;
+}
+
+std::shared_ptr<Shader> ShaderCache::ApplyShader(ShaderType Type)
+{
+	auto& sh = Load(Type);
+	if (lastActiveShader != Type)
+	{
+		sh->Apply();
+		lastActiveShader = Type;
+	}
+	return sh;
 }

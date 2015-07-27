@@ -20,8 +20,6 @@ TestScene::TestScene(Game& Game, const DeviceResourcesPtr& DeviceResources)
 	CreateDeviceResources();
 	CreateWindowResources(DeviceResources->GetWindow().Get());
 	loadingComplete = true;
-
-	litShader = std::static_pointer_cast<Shaders::LitShader>(game.LoadShader(ShaderType::Lit));
 }
 
 //Initializes view parameters when the window size changes.
@@ -56,9 +54,10 @@ void TestScene::CreateDeviceResources()
 	orc = game.LoadModel("mrfixit.iqm");
 	cube = game.LoadModel("cube.iqm");
 	map.world = game.LoadModel("tracktest.iqm");
+	map.models.push_back(orc);
+	map.models.push_back(cube);
 
-	SkinnedModel* sorc = (SkinnedModel*)orc.get();
-	timeline.Add(&sorc->poses[sorc->pose]);
+	sp_cast<SkinnedModel>(orc)->AddCurrentPoseToTimeline(timeline);
 	timeline.isLooping = true;
 	timeline.Start();
 
@@ -91,14 +90,14 @@ void TestScene::CreateStage(float Radius)
 
 	static const std::vector<unsigned> indices = { 0, 1, 2, 3 };
 
-	std::map<std::string, Model::MeshType> meshes;
+	std::map<std::string, ModelMesh> meshes;
 
-	Materials::LitMaterial mat(game.LoadShader<Shaders::LitShader>(ShaderType::Lit));
-	mat.diffuseMap = game.LoadTexture("ground.dds");
-	mat.useTexture = (mat.diffuseMap != nullptr && mat.diffuseMap->IsValid());
-	mat.ambient = mat.diffuse = Color(1, 1, 1);
+	Material mtl;
+	mtl.texture = game.LoadTexture("ground.dds");
+	mtl.useTexture = (mtl.texture != nullptr && mtl.texture->IsValid());
+	mtl.ambient = mtl.diffuse = Color(1, 1, 1);
 
-	meshes["stage"] = { "stage", 0, 4, 0, 4, mat, Bounds() };
+	meshes["stage"] = { "stage", 0, 4, 0, 4, mtl, Bounds() };
 
 	stage = Model(deviceResources, verts, indices, PrimitiveTopology::TriangleStrip, meshes);
 
@@ -124,25 +123,11 @@ void TestScene::Update(const StepTimer& Timer)
 
 	cam.CalcMatrices();
 
-	litShader->object.data.world = Matrix::CreateRotationZ(XM_PIDIV2) * Matrix::CreateRotationY(XM_PIDIV2);
-	litShader->object.data.Calc(cam.View(), cam.Projection());
-
 	timeline.Update();
 	lastMouse = mouse;
 }
 
-enum class VertexTypes
-{
-	Static,
-	Skinned
-};
-VertexTypes ModelVertexType(std::shared_p)
-
-//Renders one frame using the vertex and pixel shaders.
 void TestScene::Draw(const StepTimer& Timer)
 {
-	if (!loadingComplete)
-		return;
-
-
+	map.Draw(deviceResources->GetD3DDeviceContext(), cam, game.ShaderCache());
 }

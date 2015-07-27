@@ -136,14 +136,16 @@ enum class ShaderType
 	PositionColor,
 	PositionTexture,
 	Text,
-	Lit,
-	Unlit,
-	LitSkinned,
+	StaticUnlit,
+	SkinnedUnlit,
+	StaticLit,
+	SkinnedLit,
 
 	ShadowMap
 };
 
 class Model;
+class Material;
 
 //The abstract parent for composite shaders (can contain multiple shader bases, constant buffers, vertex types, etc)
 class Shader
@@ -154,8 +156,6 @@ public:
 
 	virtual inline ShaderType Type() const = 0; //Return the type of shader that this is
 
-	virtual inline void ApplyMaterial(const std::shared_ptr<Model>& Model) { } //Apply a model's material to this shader (specific to each shader)
+	virtual inline void ApplyMaterial(const Material& Material) { } //Apply a model's material to this shader (specific to each shader)
 	virtual inline void SetInputLayout() const { } //Set any input layouts if this applies
-
-	static Shader* ActiveShader; //the currently set shader. Useful for not rebinding the same shader
 };

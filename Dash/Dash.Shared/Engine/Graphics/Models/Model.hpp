@@ -34,8 +34,6 @@ public:
 	}
 	virtual void Draw(unsigned Slot = 0) const; //Draw the model (Does not apply materials)
 
-	static bool RenderSort(const std::shared_ptr<Model>& A, const std::shared_ptr<Model>& B); //A sorting function to sort by shader for rendering
-
 protected:
 	DeviceResourcesPtr deviceResources;
 

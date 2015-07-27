@@ -24,7 +24,7 @@ std::shared_ptr<Model> ModelCache::Load(const std::string& Key)
 	if (Sys::FileExists(file))
 	{
 		if (StringOps::EndsWith(StringOps::ToLower(file), ".iqm"))
-			cache[key] = Iqm::Load(deviceResources, file, *texCache, *shCache);
+			cache[key] = Iqm::Load(deviceResources, file, *texCache);
 
 		return cache[key];
 	}

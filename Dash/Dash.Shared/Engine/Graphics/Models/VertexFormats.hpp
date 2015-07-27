@@ -6,8 +6,8 @@
 using namespace Math;
 using namespace DirectX::PackedVector;
 
-//All of the possible vertex types
-enum class VertexTypes
+//All of the possible vertex formats
+enum class VertexFormats
 {
 	Static,
 	Skinned,
@@ -18,10 +18,10 @@ enum class VertexTypes
 //All of the available vertex formats
 namespace Vertexes
 {
-	template <VertexTypes Ty>
+	template <VertexFormats Fmt>
 	struct Vertex
 	{
-		static inline VertexTypes VertexType() { return Ty; } //Get this type of vertex
+		static inline VertexFormats VertexFormat() { return Fmt; } //Get this type of vertex
 
 		//The element description of this vertex
 		static const D3D11_INPUT_ELEMENT_DESC ElementDesc[];
@@ -32,7 +32,7 @@ namespace Vertexes
 	};
 
 	template <>
-	struct Vertex<VertexTypes::Static>
+	struct Vertex<VertexFormats::Static>
 	{
 		Vector3 position;
 		Vector3 normal;
@@ -58,10 +58,10 @@ namespace Vertexes
 		static const D3D11_INPUT_ELEMENT_DESC ElementDesc[];
 		static const unsigned ElementCount;
 	};
-	using StaticVertex = Vertex<VertexTypes::Static>;
+	using StaticVertex = Vertex<VertexFormats::Static>;
 
 	template <>
-	struct Vertex<VertexTypes::Skinned>
+	struct Vertex<VertexFormats::Skinned>
 	{
 		Vector3 position;
 		Vector3 normal;
@@ -93,10 +93,10 @@ namespace Vertexes
 		static const D3D11_INPUT_ELEMENT_DESC ElementDesc[];
 		static const unsigned ElementCount;
 	};
-	using SkinnedVertex = Vertex<VertexTypes::Skinned>;
+	using SkinnedVertex = Vertex<VertexFormats::Skinned>;
 
 	template <>
-	struct Vertex<VertexTypes::PositionTexture>
+	struct Vertex<VertexFormats::PositionTexture>
 	{
 		Vector3 position;
 		Vector2 texCoord;
@@ -107,10 +107,10 @@ namespace Vertexes
 		static const D3D11_INPUT_ELEMENT_DESC ElementDesc[];
 		static const unsigned ElementCount;
 	};
-	using PositionTextureVertex = Vertex<VertexTypes::PositionTexture>;
+	using PositionTextureVertex = Vertex<VertexFormats::PositionTexture>;
 
 	template <>
-	struct Vertex<VertexTypes::PositionColor>
+	struct Vertex<VertexFormats::PositionColor>
 	{
 		Vector3 position;
 		Color color;
@@ -121,5 +121,5 @@ namespace Vertexes
 		static const D3D11_INPUT_ELEMENT_DESC ElementDesc[];
 		static const unsigned ElementCount;
 	};
-	using PositionColorVertex = Vertex<VertexTypes::PositionColor>;
+	using PositionColorVertex = Vertex<VertexFormats::PositionColor>;
 };

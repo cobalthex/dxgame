@@ -36,6 +36,4 @@ private:
 	void CreateStage(float Radius);
 
 	Model stage;
-
-	std::shared_ptr<Shaders::LitShader> litShader;
 };

@@ -8,9 +8,9 @@
     <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\PositionTexture.vs.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\ShadowMap.ps.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\ShadowMap.vs.hlsl" />
-    <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\Unlit.ps.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\StaticLit.ps.hlsl" />
     <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\StaticLit.vs.hlsl" />
+    <FxCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\Sources\StaticUnlit.ps.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)App\app.cpp" />
@@ -47,6 +47,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticLitShader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Material.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\VertexFormats.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Game\Maps\Map.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticUnlitShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)App\App.hpp" />
@@ -122,6 +124,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\ModelCache.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticLitShader.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Models\VertexFormats.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Engine\Graphics\Shaders\StaticUnlitShader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Models\mrfixit.iqm" />

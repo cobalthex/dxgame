@@ -4,6 +4,16 @@
 #include "Engine/Common/PlatformHelpers.hpp"
 #include "Engine/Common/StreamOps.hpp"
 #include "Engine/Data/Formats/Osl/Osl.hpp"
+#include "Engine/Graphics/Models/VertexFormats.hpp"
+#include "Engine/Graphics/Shaders/Shader.hpp"
+
+ShaderType Material::GetShaderType(VertexFormats VertexFormat) const
+{
+	if (!useLighting)
+		return (VertexFormat == VertexFormats::Skinned ? ShaderType::SkinnedUnlit : ShaderType::StaticUnlit);
+	else
+		return (VertexFormat == VertexFormats::Skinned ? ShaderType::SkinnedLit : ShaderType::StaticLit);
+}
 
 std::map<std::string, Material> Material::LoadAllFromFile(const std::string& MaterialFile, TextureCache& TexCache)
 {

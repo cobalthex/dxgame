@@ -39,3 +39,4 @@
 
 //Convenience
 using Microsoft::WRL::ComPtr;
+template <typename T, typename U> inline auto sp_cast(const std::shared_ptr<U>& Ptr) -> decltype(std::static_pointer_cast<T>(Ptr)) { return std::static_pointer_cast<T>(Ptr); }
