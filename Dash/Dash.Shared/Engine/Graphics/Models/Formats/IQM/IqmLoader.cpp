@@ -198,8 +198,8 @@ std::shared_ptr<Model> Iqm::Load(const DeviceResourcesPtr& DeviceResources, cons
 			unsigned millis = (unsigned)(1000 / (a.frameRate > 0 ? a.frameRate : DefaultFrameTime));
 
 			//create frames
-			for (unsigned i = 0; i < a.numFrames; i++)
-				s.Append(Keyframe(TimePoint(TimeType(i * millis))));
+			for (unsigned j = 0; j < a.numFrames; j++)
+				s.Append(Keyframe(TimePoint(TimeType(j * millis))));
 
 			std::string pname = std::string(tmp.texts + a.name);
 			sequences[pname] = s;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Pch.hpp"
-#include "Engine/Common/Time.hpp"
 
 //Basic settings passed to events
 struct BaseEventArgs
