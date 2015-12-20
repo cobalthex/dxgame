@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>596e2746-063a-42f2-bc95-67fadec7792a</UniqueIdentifier>
+      <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
+    </Filter>
+    <Filter Include="Content">
+      <UniqueIdentifier>bd5a9c91-924e-4536-bd2c-19ec52a61239</UniqueIdentifier>
+    </Filter>
+    <Image Include="Assets\LockScreenLogo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square150x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Wide310x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>fddb9f0e-5739-4948-ba0f-7cc2baf47da4</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blah">
+      <UniqueIdentifier>{6739c77e-877a-4489-ae22-0daa82a5fd00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{9be0ef52-8187-43a5-9dec-ca4570770b9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Events">
+      <UniqueIdentifier>{5acadf7b-7f73-4e26-841a-2f0fd4bb6d79}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="Dx12Main.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="scene.cpp" />
+    <ClCompile Include="Graphics\DeviceResources.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Model.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\Sequence.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation\Timeline.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Math.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dx12Main.hpp" />
+    <ClInclude Include="App.hpp" />
+    <ClInclude Include="pch.hpp" />
+    <ClInclude Include="scene.hpp" />
+    <ClInclude Include="Graphics\d3dx12.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DirectXHelper.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\DeviceResources.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Model.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\iqm.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Skinning.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\ShaderStructures.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\StepTimer.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\Animation.hpp">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\Sequence.hpp">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\Timeline.hpp">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation\TimelineEvents.hpp">
+      <Filter>Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\CallbackCollection.hpp">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\CallbackId.hpp">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\Event.hpp">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\EventQueue.hpp">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\Mrfixit.iqm">
+      <Filter>Content</Filter>
+    </None>
+    <None Include="Content\Lighting.hlsli">
+      <Filter>Content</Filter>
+    </None>
+    <None Include="Dx12_TemporaryKey.pfx">
+      <Filter>Blah</Filter>
+    </None>
+    <None Include="Math.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Content\Head.dds">
+      <Filter>Content</Filter>
+    </Image>
+    <Image Include="Content\Body.dds">
+      <Filter>Content</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Content\shader.vs.hlsl">
+      <Filter>Content</Filter>
+    </FxCompile>
+    <FxCompile Include="Content\shader.ps.hlsl">
+      <Filter>Content</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <Filter>Blah</Filter>
+    </AppxManifest>
+  </ItemGroup>
+</Project>
